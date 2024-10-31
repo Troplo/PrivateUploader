@@ -3516,6 +3516,31 @@
   resolved "https://registry.yarnpkg.com/@yarnpkg/lockfile/-/lockfile-1.1.0.tgz#e77a97fbd345b76d83245edcd17d393b1b41fb31"
   integrity sha512-GpSwvyXOcOOlV70vbnzjj4fW5xW/FdUF6nQEt1ENy7m4ZCczi1+/buVUPAqmGfqznsORNFzUMjctTIp8a9tuCQ==
 
+"@yeger/debounce@2.0.10":
+  version "2.0.10"
+  resolved "https://registry.yarnpkg.com/@yeger/debounce/-/debounce-2.0.10.tgz#8f6a3ee93a856e1625cdb902a1dc9ea3e06bfe27"
+  integrity sha512-61K6anfnaJ6ziIXiFOKCqtWCmxy6SeVGxKsG2ae+98SihFo1lT8p/Ny351+sXM5rfa5136u09277JxTXymgalw==
+
+"@yeger/vue-lib-adapter@2.0.10":
+  version "2.0.10"
+  resolved "https://registry.yarnpkg.com/@yeger/vue-lib-adapter/-/vue-lib-adapter-2.0.10.tgz#4ca53df6b066ea2b97a6135db9b3be8263140dde"
+  integrity sha512-rHmTZxdrpuh+BheAjQcCZrY4ERpMGpLZHYY99nsqd5RoG1nXXzRkhhNlT3tfWlikW0Wr8UpoxA+/dOlYrCDrtQ==
+
+"@yeger/vue-masonry-wall-core@5.0.13":
+  version "5.0.13"
+  resolved "https://registry.yarnpkg.com/@yeger/vue-masonry-wall-core/-/vue-masonry-wall-core-5.0.13.tgz#d192bd769b43a831bb1f2966a7474f64bf6a4d40"
+  integrity sha512-Sh4kj9uijz/SPy6M0ryVcakIIB31rw6FRlDGZYCADT6ublAYB+39MCcTITIUPAsFtEqk4Nl0IMCS6Gs29LDYVA==
+  dependencies:
+    "@yeger/debounce" "2.0.10"
+    "@yeger/vue-lib-adapter" "2.0.10"
+
+"@yeger/vue-masonry-wall@^5.0.16":
+  version "5.0.16"
+  resolved "https://registry.yarnpkg.com/@yeger/vue-masonry-wall/-/vue-masonry-wall-5.0.16.tgz#4400741526426147b9edc895e1653ee8f3c57c57"
+  integrity sha512-UbgQhUSwtsALa4ovW/zYCaQjgxIsKQsGNQffE2Lx/hzbNjPoP6wluBbWbQWszPSEEw1wh3JfcVx5uvoH5dK6Rg==
+  dependencies:
+    "@yeger/vue-masonry-wall-core" "5.0.13"
+
 "@yr/monotone-cubic-spline@^1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@yr/monotone-cubic-spline/-/monotone-cubic-spline-1.0.3.tgz#7272d89f8e4f6fb7a1600c28c378cc18d3b577b9"

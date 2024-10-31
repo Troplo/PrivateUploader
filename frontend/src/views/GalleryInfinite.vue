@@ -1,5 +1,5 @@
 <template>
-  <v-container class="gallery-infinite">
+  <v-container>
     <GalleryNavigation
       :supports="
         supports || {
@@ -10,7 +10,7 @@
           sort: true
         }
       "
-      @refreshGallery="getGallery(undefined, true)"
+      @refreshGallery="getGallery()"
       @update:show="show = $event"
       v-model:search="show.search"
       @update:filter="
@@ -34,9 +34,7 @@
       :items="gallery"
       :page="page"
       :loading="loading"
-      :path="path"
       :random-attachment-loading="randomLoading"
-      :show="show"
       :supports="
         supports || {
           multiSelect: true,
@@ -48,6 +46,7 @@
           }
         }
       "
+      :searched="show.searched"
       @delete="deleteItem"
       @refresh="getGallery()"
       @remove="removeItemFromCollection($event.item, $event.collection)"
@@ -78,7 +77,14 @@ import {
   Upload
 } from "@/gql/graphql";
 import { isNumeric } from "@/plugins/isNumeric";
-import { StateHandler } from "@/components/Scroll/types";
+import {
+  useApolloClient,
+  useSubscription,
+  UseSubscriptionReturn
+} from "@vue/apollo-composable";
+import functions from "@/plugins/functions";
+import { UploadsSubscription } from "@/graphql/gallery/subscriptions/createUploads.graphql";
+import { UpdateUploadsSubscription } from "@/graphql/gallery/subscriptions/updateUploads.graphql";
 import GalleryCoreInfinite from "@/components/Gallery/GalleryCoreInfinite.vue";
 
 export default defineComponent({
@@ -105,16 +111,23 @@ export default defineComponent({
       show: {
         search: "",
         metadata: true,
-        selected: [GalleryFilter.All],
+        selected: [GalleryFilter.IncludeMetadata],
         sort: GallerySort.CreatedAt,
-        order: GalleryOrder.Desc
+        order: GalleryOrder.Desc,
+        /**
+         * @description If the current state is a search
+         */
+        searched: false
       },
-      randomLoading: false
+      randomLoading: false,
+      createSubscription: null as UseSubscriptionReturn<any, any> | null,
+      updateSubscription: null as UseSubscriptionReturn<any, any> | null
     };
   },
   computed: {
     rid() {
-      return this.$route.params.id;
+      const id = this.$route.params.id;
+      return isNumeric(id) ? parseInt(id) : id;
     }
   },
   methods: {
@@ -124,6 +137,23 @@ export default defineComponent({
       /*this.$functions.copy(
         "https://" + this.$user.user?.domain.domain + "/i/" + data.attachment
       );*/
+      const {
+        data: { gallery }
+      } = await useApolloClient().client.query({
+        query: GalleryQuery,
+        variables: {
+          input: {
+            page: 1,
+            type: this.type,
+            order: GalleryOrder.Random,
+            limit: 1,
+            collectionId: typeof this.id === "number" ? this.id : undefined,
+            shareLink: typeof this.id === "string" ? this.id : undefined
+          }
+        },
+        fetchPolicy: "network-only"
+      });
+      functions.copy(this.$app.domain + gallery.items?.[0]?.attachment);
       this.randomLoading = false;
     },
     removeItemFromCollection(item: Upload, collection: CollectionCache) {
@@ -157,14 +187,10 @@ export default defineComponent({
         collections: [...this.gallery.items[index]?.collections, collection]
       };
     },
-    async getGallery(
-      input?: { state: StateHandler; page: number },
-      reset: boolean = false
-    ) {
+    async getGallery() {
       this.loading = true;
-      if (input) {
-        input.state.loading();
-        this.page++;
+      if (this.$experiments.experiments.PROGRESSIVE_UI) {
+        this.$app.componentLoading = true;
       }
       const {
         data: { gallery }
@@ -179,28 +205,17 @@ export default defineComponent({
             sort: this.show.sort,
             type: this.type,
             order: this.show.order,
-            collectionId: isNumeric(this.rid) ? parseInt(this.rid) : undefined,
-            shareLink: isNumeric(this.rid) ? undefined : this.rid,
-            limit: 12
+            collectionId: typeof this.rid === "number" ? this.rid : undefined,
+            shareLink: typeof this.rid === "string" ? this.rid : undefined
           }
         } as GalleryInput
       });
-      if (this.gallery && !reset) {
-        this.gallery = {
-          items: [...this.gallery.items, ...gallery.items],
-          pager: gallery.pager
-        };
-      } else {
-        this.gallery = gallery;
-        this.$route.params.page = 1;
-      }
-      if (!gallery.items.length && input) {
-        input.state.complete();
-      } else if (input) {
-        input.state.loaded();
-      }
-
+      this.show.searched = !!this.show.search.length;
+      this.gallery = gallery;
       this.loading = false;
+      if (this.$experiments.experiments.PROGRESSIVE_UI) {
+        this.$app.componentLoading = false;
+      }
       return gallery;
     },
     socketRegister(
@@ -211,59 +226,88 @@ export default defineComponent({
       if (this.page !== 1) return;
       if (Array.isArray(uploads)) {
         for (const upload of uploads) {
-          this.gallery.items.unshift(upload.upload);
+          this.gallery = {
+            items: [upload.upload, ...this.gallery.items],
+            pager: this.gallery.pager
+          };
         }
       } else {
         this.gallery.items.unshift(uploads.upload);
       }
     },
     init() {
-      this.$socket.off("gallery/create", this.socketRegister);
       this.$app.title = this.name || "Gallery";
       this.page = parseInt(<string>this.$route.params.page) || 1;
       this.getGallery();
-      if (this.type === GalleryType.Personal) {
-        this.$sockets.gallery.on("create", this.socketRegister);
-      }
+      this.generateSubscription();
+    },
+    generateSubscription() {
+      this.createSubscription?.stop();
+      this.createSubscription = useSubscription(
+        UploadsSubscription,
+        {
+          input: {
+            type: this.type,
+            collectionId: typeof this.id === "number" ? this.id : undefined
+          }
+        },
+        {
+          context: {
+            noToast: true
+          }
+        }
+      );
+
+      this.updateSubscription?.stop();
+      this.updateSubscription = useSubscription(
+        UpdateUploadsSubscription,
+        {},
+        {
+          context: {
+            noToast: true
+          }
+        }
+      );
     }
   },
   mounted() {
     this.init();
   },
   unmounted() {
-    if (this.type === GalleryType.Personal) {
-      this.$socket.off("gallery/create", this.socketRegister);
-    }
+    this.createSubscription?.stop();
+    this.updateSubscription?.stop();
   },
   watch: {
+    "createSubscription.result"(val) {
+      if (this.page !== 1 || !val) return;
+      this.gallery.items = [val.onCreateUpload.upload, ...this.gallery.items];
+    },
+    "updateSubscription.result"(val) {
+      if (!val) return;
+      for (const upload of val.onUpdateUploads) {
+        const index = this.gallery.items.findIndex(
+          (i: any) => i.id === upload.id
+        );
+        if (index === -1) return;
+        this.gallery.items[index] = {
+          ...this.gallery.items[index],
+          ...upload
+        };
+      }
+    },
     "$route.params.page"(page) {
-      if (!page) return;
       this.page = parseInt(page) || 1;
       this.getGallery();
+    },
+    type() {
+      this.init();
     },
     endpoint() {
       this.init();
     },
-    "show.selected"() {
-      if (
-        this.show.selected.includes(GalleryFilter.All) &&
-        this.show.selected.length > 1
-      ) {
-        this.show.selected.splice(
-          this.show.selected.indexOf(GalleryFilter.All),
-          1
-        );
-      }
-    },
-    type() {
-      this.getGallery(undefined, true);
+    id() {
+      this.init();
     }
   }
 });
 </script>
-
-<style>
-.gallery-infinite {
-  user-select: none;
-}
-</style>

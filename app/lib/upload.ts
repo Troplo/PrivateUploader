@@ -44,7 +44,10 @@ const storage: multer.StorageEngine = multer.diskStorage({
 // })
 
 const uploader = multer({
-  storage
+  storage,
+  limits: {
+    files: 20
+  }
 })
 
 const uploaderSmall = multer({

@@ -114,8 +114,6 @@ if (mainWorker) {
       }
     },
     {
-      // Maximum number of jobs that can run concurrently.
-      // Another way is removing this option and making multiple workers like worker1, worker2, etc.
       concurrency: 10,
       connection
     }
