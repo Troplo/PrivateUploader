@@ -6,4 +6,3 @@
 /.well-known/* https://api.flowinity.com/.well-known/:splat 200
 /graphql https://api.flowinity.com/graphql 200
 /graphql/* https://api.flowinity.com/graphql/:splat 200
-https://flowinity.com/ https://www.flowinity.com/ 301
