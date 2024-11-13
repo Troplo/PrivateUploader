@@ -266,6 +266,7 @@ export class CoreResolver {
     @Arg("input") input: SetExperimentInput
   ) {
     const validExperiments = [
+      Experiments.PROGRESSIVE_UI,
       Experiments.WEATHER,
       Experiments.DISABLE_ANIMATIONS,
       Experiments.NOTIFICATION_SOUND,
