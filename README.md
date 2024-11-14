@@ -1,4 +1,4 @@
-![PrivateUploader Banner](https://i.flowinity.com/i/cc7ba831c18a.png)
+![Flowinity Banner](https://assets.flowinity.com/home/0th.png)
 
 # Flowinity (formerly PrivateUploader) [![codecov](https://codecov.io/gh/PrivateUploader/PrivateUploader/branch/api-v4/graph/badge.svg?token=RT9XLUOX5Y)](https://codecov.io/gh/PrivateUploader/PrivateUploader)
 
@@ -17,8 +17,7 @@ documentation and resources are lacking initially, but will improve over time.
 ## Don't want to host your own server?
 
 You can use the official public instance of Flowinity at
-[https://flowinity.com](https://www.flowinity.com) (previously
-[https://privateuploader.com](https://privateuploader.com)).
+[https://flowinity.com](https://www.flowinity.com).
 
 <details>
   <summary><h2>Screenshots (Click to expand)</h2></summary>
