@@ -93,7 +93,7 @@
           color="white"
           label="URL to Report"
           outlined
-          placeholder="https://assets.flowinity.com/home/7th.png"
+          placeholder="https://i.flowinity.com/i/..."
           variant="filled"
           @keyup.enter="reportUpload"
         />
