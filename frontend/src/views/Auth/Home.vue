@@ -44,30 +44,30 @@
       class="text-gradient">{{ $app.site.name }}</span>?
     </v-card-title>
     <div class="d-flex flex-column" style="gap: 10px;">
-      <PromoCard width="100%" title="Chat with friends in an instant!" image="https://i.flowinity.com/i/6bc5f9f7f4d3.png">
+      <PromoCard width="100%" title="Chat with friends in an instant!" image="https://assets.flowinity.com/home/1st.png">
         As a fully-fledged chatting application, you can instantly contact your friends with direct messages and in
         groups.
       </PromoCard>
-      <PromoCard width="100%" title="Have Full Control" image="https://i.flowinity.com/i/8ec635313416.png" :right="true">
+      <PromoCard width="100%" title="Have Full Control" image="https://assets.flowinity.com/home/2nd.png" :right="true">
         With {{ $app.site.name }} Communications you can now create "Ranks" which can be assigned to individual users
         with a vast number of different permissions to choose from.<br>
         <v-chip class="mt-1" variant="outlined">New in version 4</v-chip>
       </PromoCard>
-      <PromoCard width="100%" title="Safely Store Your Files" image="https://i.flowinity.com/i/815f20a6f39e.png">
+      <PromoCard width="100%" title="Safely Store Your Files" image="https://assets.flowinity.com/home/3rd.png">
         With the Gallery, you can securely store files such as screenshots, images, videos, and other
         files.<br><br>{{ $app.site.name }} also integrates with ShareX, and has APIs to create various other
         integrations.
       </PromoCard>
-      <PromoCard width="100%" title="Organization Made Easy" image="https://i.flowinity.com/i/8e62bab88002.png"
+      <PromoCard width="100%" title="Organization Made Easy" image="https://assets.flowinity.com/home/4th.png"
                  :right="true">
         You can add as many files as you please into Collections, which can be shared publicly, or to other
         {{ $app.site.name }} users with different permissions.
       </PromoCard>
-      <PromoCard width="100%" title="Security First" image="https://i.flowinity.com/i/34f6a6a57bc9.png">
+      <PromoCard width="100%" title="Security First" image="https://assets.flowinity.com/home/5th.png">
         With {{ $app.site.name }}, you can easily create as many API keys as you want, all with different account access
         permissions.<br><br>You can even create Alternate Passwords which have different account permissions when used.
       </PromoCard>
-      <PromoCard width="100%" title="100% Open Source" image="https://i.flowinity.com/i/1ff020441915.png" :right="true">
+      <PromoCard width="100%" title="100% Open Source" image="https://assets.flowinity.com/home/6th.png" :right="true">
         {{ $app.site.name }} is completely open source on GitHub, and can also be easily self-hosted bare-metal or under
         Docker (Only Linux supported).<br><br>
         <v-btn variant="outlined" href="https://github.com/Flowinity/Flowinity">
@@ -93,7 +93,7 @@
           color="white"
           label="URL to Report"
           outlined
-          placeholder="https://i.flowinity.com/i/aae2fb2c0cf8.png"
+          placeholder="https://assets.flowinity.com/home/7th.png"
           variant="filled"
           @keyup.enter="reportUpload"
         />
