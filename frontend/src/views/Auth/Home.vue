@@ -84,7 +84,7 @@
       <p>
         Is there a file hosted on {{ $app.site.name }} that you believe violates
         our
-        <router-link to="/policies/content">Content Policy?</router-link>
+        <router-link to="/policies/content">Content Policy</router-link>?
         Please report it here.
       </p>
       <div class="mt-4 mb-n2">
