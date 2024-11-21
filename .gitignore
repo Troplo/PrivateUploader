@@ -30,6 +30,9 @@ app/config/tpu.old.json
 app/config/config.old.json
 app/config/private.pem
 app/config/public.pem
+app/config/hs256-key.pem
+app/config/rs256-key.public.pem
+app/config/rs256-key.private.pem
 storage/*
 frontend_build/
 frontend_build.old/

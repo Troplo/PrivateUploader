@@ -19,9 +19,9 @@ import { ExperimentOverride } from "@app/classes/graphql/core/experiments"
 import { Experiment } from "@app/models/experiment.model"
 import { GqlError } from "@app/lib/gqlErrors"
 import { Upload } from "@app/models/upload.model"
-import fs from "fs"
 import { AwsService } from "@app/services/aws.service"
 import mime from "mime"
+import { Op } from "sequelize"
 
 @Resolver()
 @Service()
@@ -362,6 +362,50 @@ export class AdminResolver {
         { mimeType },
         { where: { attachment: upload.attachment } }
       )
+    }
+    return { success: true }
+  }
+
+  @Authorization({
+    accessLevel: AccessLevel.ADMIN,
+    scopes: "*",
+    allowMaintenance: true
+  })
+  @Mutation(() => Success)
+  async adminRenameS3Object(@Ctx() ctx: Context) {
+    // const upload = await Upload.findOne({
+    //   where: {
+    //     location: {
+    //       [Op.ne]: "local"
+    //     }
+    //   },
+    //   order: [["createdAt", "DESC"]]
+    // })
+    // const result = await this.awsService.renameObject(
+    //   upload!.sha256sum!,
+    //   upload!.attachment
+    // )
+    // console.log(result, upload!.attachment, upload!.sha256sum)
+    return { success: true }
+  }
+
+  @Authorization({
+    accessLevel: AccessLevel.ADMIN,
+    scopes: "*",
+    allowMaintenance: true
+  })
+  @Mutation(() => Success)
+  async adminRenameLocationNewFormat(@Ctx() ctx: Context) {
+    const uploads = await Upload.findAll({
+      where: {
+        location: {
+          [Op.not]: "local"
+        }
+      }
+    })
+    for (const upload of uploads) {
+      const location = `${upload.location}/${upload.sha256sum}:1`
+      await upload.update({ location })
     }
     return { success: true }
   }

@@ -131,7 +131,9 @@ export class GalleryService {
           if (!upload.attachment) return
           await fs.unlinkSync(global.storageRoot + upload.attachment)
         } else {
-          await this.awsService.deleteFile(upload.sha256sum!)
+          const location = upload.location.split("/")[1].split(":")[0]
+          if (!location) return
+          await this.awsService.deleteFile(location)
         }
       } catch (e) {
         console.log(e)
@@ -207,7 +209,6 @@ export class GalleryService {
         reject(err)
       })
     })
-
 
     const upload = await Upload.create({
       attachment, // Attachment hash

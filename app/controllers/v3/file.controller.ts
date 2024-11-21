@@ -68,37 +68,22 @@ export class FileControllerV3 {
     if (!upload) {
       throw Errors.NOT_FOUND
     }
-    //Acropalypse temporary patch
-    if (
-      (upload.userId === 1 &&
-        upload.name.startsWith("Screenshot_2022") &&
-        user?.id !== 1 &&
-        config.officialInstance) ||
-      upload.user?.banned ||
-      !upload.user
-    ) {
-      const file = path.resolve(appRoot + "/assets/AuthRequired.png")
-      await promisify<string, void>(res.sendFile.bind(res))(file)
-      return res
-    }
 
     const media =
       upload.type === "image" ||
       upload.type === "video" ||
       upload.type === "audio"
     if (upload.location !== "local") {
-      if (!upload.sha256sum) {
-        throw Errors.NOT_FOUND
-      }
       // file = await this.awsService.retrieveFile(upload.sha256sum)
       // Create a temporary link to the file
-      const link = await this.awsService.getSignedUrl(
-        upload.sha256sum,
-        upload.name,
-        force || !media ? "attachment" : "inline",
-        upload.mimeType
-      )
-      res.redirect(link)
+      // const link = await this.awsService.getSignedUrl(
+      //   upload.sha256sum,
+      //   upload.name,
+      //   force || !media ? "attachment" : "inline",
+      //   upload.mimeType
+      // )
+      const path = upload.location.split(":")[0]
+      res.redirect(`https://${path}`)
       return res
     }
 
