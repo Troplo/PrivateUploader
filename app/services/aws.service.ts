@@ -42,6 +42,7 @@ export class AwsService {
             accessKeyId: this.s3Config.accessKeyId!,
             secretAccessKey: this.s3Config.secretAccessKey!
           },
+          region: this.s3Config.region!,
           endpoint: this.s3Config.endpoint!
         })
       }
