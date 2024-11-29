@@ -389,6 +389,7 @@
     "type": "Type",
     "originalName": "Original name",
     "uploadedName": "Uploaded name",
+    "location": "Location",
     "createdAt": "Created at",
     "create": "Create",
     "size": "Size",

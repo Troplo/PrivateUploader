@@ -3,7 +3,8 @@ import { Service } from "typedi"
 import {
   S3Client,
   HeadObjectCommand,
-  DeleteObjectCommand
+  DeleteObjectCommand,
+  GetObjectCommand
 } from "@aws-sdk/client-s3"
 import crypto from "crypto"
 import { Upload } from "@app/models/upload.model"
@@ -11,23 +12,40 @@ import { Upload as S3Upload } from "@aws-sdk/lib-storage"
 import fs from "fs"
 import redisClient from "@app/redis"
 import axios from "axios"
+import { SignatureV4 } from "@aws-sdk/signature-v4"
+import { HttpRequest } from "@aws-sdk/protocol-http"
+import { Hash } from "@aws-sdk/hash-node"
+import path from "path"
+import { getSignedUrl } from "@aws-sdk/cloudfront-signer"
+import Errors from "@app/lib/errors"
 
 const PART_SIZE = 20 * 1024 * 1024
 
 @Service()
 export class AwsService {
-  s3: S3Client | null = null
+  s3: Record<string, S3Client> = {}
+  // TpuConfig["aws"] can be an array or object, so get the first array
+  s3Config: S3Config
   constructor() {
-    if (!config.aws?.enabled) {
+    if (config.aws && "length" in config.aws) {
+      this.s3Config = config.aws.find((aws) => aws.default) || config.aws[0]
+    } else if (config.aws?.enabled) {
+      this.s3Config = config.aws
+    } else {
       return
     }
-    this.s3 = new S3Client({
-      credentials: {
-        accessKeyId: config.aws.accessKeyId!,
-        secretAccessKey: config.aws.secretAccessKey!
-      },
-      endpoint: config.aws.endpoint!
-    })
+    for (const cfg of "length" in config.aws ? config.aws : [config.aws]) {
+      this.s3 = {
+        ...this.s3,
+        [cfg.bucket!]: new S3Client({
+          credentials: {
+            accessKeyId: this.s3Config.accessKeyId!,
+            secretAccessKey: this.s3Config.secretAccessKey!
+          },
+          endpoint: this.s3Config.endpoint!
+        })
+      }
+    }
   }
 
   async uploadFile(
@@ -42,7 +60,8 @@ export class AwsService {
       Bucket: string
     }[]
   > {
-    if (!this.s3) {
+    const s3 = this.s3[this.s3Config.bucket!]
+    if (!s3) {
       return []
     }
 
@@ -87,10 +106,10 @@ export class AwsService {
       let exists = false
       try {
         const command = new HeadObjectCommand({
-          Bucket: config.aws!.bucket!,
+          Bucket: this.s3Config.bucket!,
           Key: key
         })
-        const data = await this.s3.send(command)
+        const data = await s3.send(command)
         console.log("Exists", data)
         exists = true
       } catch {}
@@ -100,7 +119,7 @@ export class AwsService {
         upload.type === "video" ||
         upload.type === "audio"
       const params = {
-        Bucket: config.aws!.bucket!,
+        Bucket: this.s3Config.bucket!,
         Key: key,
         Body: fileStream,
         ContentDisposition: `${!media ? "attachment" : "inline"}; filename="${
@@ -111,7 +130,7 @@ export class AwsService {
       if (!exists) {
         try {
           const s3Upload = new S3Upload({
-            client: this.s3,
+            client: s3,
             queueSize: 4,
             leavePartsOnError: false,
             tags: [{ Key: "userId", Value: upload.userId.toString() }],
@@ -123,13 +142,13 @@ export class AwsService {
         }
       }
       uploads.push({
-        Location: `${config.aws!.bucketUrl}/${key}`,
+        Location: `${this.s3Config.bucketUrl}/${key}`,
         Key: key,
-        Bucket: config.aws!.bucket!
+        Bucket: this.s3Config.bucket!
       })
       await Upload.update(
         // use version 2
-        { location: `${config.aws!.bucket!}/${key}:2`, sha256sum },
+        { location: `${this.s3Config.bucket!}/${key}:2`, sha256sum },
         { where: { attachment: file.attachment } }
       )
       // delete file since it's now on AWS
@@ -179,44 +198,66 @@ export class AwsService {
   //   return data.Body
   // }
   //
-  // async getSignedUrl(
-  //   key: string,
-  //   filename: string,
-  //   type: "attachment" | "inline" = "attachment",
-  //   mimeType = "application/octet-stream",
-  //   // 7 days
-  //   expiry = 60 * 60 * 24 * 7
-  // ): Promise<string> {
-  //   if (!this.s3) {
-  //     return ""
-  //   }
-  //   const cacheKey = `s3SignedUrl:${key}:${filename}:${type}:${mimeType}:${expiry}`
-  //   const cached = await redisClient.get(cacheKey)
-  //   // if cached version is 4d old, refresh it
-  //   if (cached && (await redisClient.ttl(cacheKey)) > 60 * 60 * 24 * 4) {
-  //     return cached
-  //   }
-  //   const params = {
-  //     Bucket: config.aws!.bucket!,
-  //     Key: key,
-  //     Expires: expiry,
-  //     ResponseContentDisposition: `${type}; filename="${filename}"`,
-  //     ResponseContentType: mimeType
-  //   }
-  //   let signed = await this.s3.getSignedUrlPromise("getObject", params)
-  //   if (config.aws!.bucketUrl)
-  //     signed = signed.replace(
-  //       `${config.aws!.endpoint}/${config.aws!.bucket}`,
-  //       config.aws!.bucketUrl
-  //     )
-  //   await redisClient.set(cacheKey, signed, {
-  //     EX: expiry
-  //   })
-  //   return signed
-  // }
+  async getSignedUrl(
+    key: string,
+    filename: string,
+    type: "attachment" | "inline" = "attachment",
+    mimeType = "application/octet-stream",
+    bucket: string = this.s3Config.bucket!,
+    // 7 days
+    expiry = 60 * 60 * 24 * 7
+  ): Promise<string> {
+    const s3 = this.s3[bucket]
+    if (!s3 || !key) {
+      throw Errors.REMOTE_RESOURCE_MISSING
+    }
+    const cacheKey = `s3SignedUrl:${key}:${filename}:${type}:${mimeType}:${expiry}`
+    const cached = await redisClient.get(cacheKey)
+    // if cached version is 4d old, refresh it
+    if (cached && (await redisClient.ttl(cacheKey)) > 60 * 60 * 24 * 4) {
+      return cached
+    }
+    const cfg =
+      "length" in config.aws!
+        ? config.aws.find((aws) => aws.bucket === bucket) || config.aws![0]
+        : config.aws!
 
-  async deleteFile(key: string): Promise<void> {
-    if (!key || !this.s3) {
+    const url = new URL(`https://${cfg.bucket}/${key}`)
+    const disposition = `${type}; filename="${filename.replace(/"/g, "")}"`
+    url.searchParams.set("response-content-disposition", disposition)
+    url.searchParams.set("response-content-type", mimeType)
+    const policy = {
+      Statement: [
+        {
+          Resource: url,
+          Condition: {
+            DateLessThan: {
+              "AWS:EpochTime": Math.floor(Date.now() / 1000) + expiry
+            }
+          },
+          Action: "s3:GetObject",
+          Effect: "Allow"
+        }
+      ]
+    }
+
+    const signedUrl = getSignedUrl({
+      keyPairId: cfg.accessKeyId!,
+      privateKey: cfg.secretAccessKey!,
+      policy: JSON.stringify(policy)
+    })
+    const fixedSignedUrl = new URL(signedUrl)
+    fixedSignedUrl.searchParams.set("response-content-disposition", disposition)
+
+    await redisClient.set(cacheKey, fixedSignedUrl.href, {
+      EX: expiry
+    })
+    return fixedSignedUrl.href
+  }
+
+  async deleteFile(key: string, bucket: string): Promise<void> {
+    const s3 = this.s3[bucket]
+    if (!key || !s3) {
       return
     }
     const uploads = await Upload.findAll({
@@ -224,13 +265,12 @@ export class AwsService {
         sha256sum: key
       }
     })
-    console.log(uploads.length)
     if (uploads.length === 0) {
       const command = new DeleteObjectCommand({
-        Bucket: config.aws!.bucket!,
+        Bucket: this.s3Config!.bucket!,
         Key: key
       })
-      await this.s3.send(command)
+      await s3.send(command)
       if (config.cloudflare?.enabled) {
         // get the cached cdn links to clear from the Cloudflare cache
         const signedUrls = await redisClient

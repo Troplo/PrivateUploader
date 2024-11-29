@@ -20,6 +20,7 @@ const GalleryQuery = gql`
         }
         id
         createdAt
+        location
         updatedAt
         attachment
         userId

@@ -133,7 +133,10 @@ export class GalleryService {
         } else {
           const location = upload.location.split("/")[1].split(":")[0]
           if (!location) return
-          await this.awsService.deleteFile(location)
+          await this.awsService.deleteFile(
+            location,
+            upload.location.split("/")[0]
+          )
         }
       } catch (e) {
         console.log(e)

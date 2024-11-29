@@ -151,16 +151,7 @@ export class DefaultTpuConfig {
     sentry: {
       dsn: null
     },
-    aws: {
-      accessKeyId: null,
-      secretAccessKey: null,
-      region: null,
-      bucket: null,
-      enabled: false,
-      profile: null,
-      endpoint: null,
-      bucketUrl: null
-    },
+    aws: [],
     cloudflare: {
       enabled: false,
       key: null,

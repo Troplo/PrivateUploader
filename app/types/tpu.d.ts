@@ -1,3 +1,15 @@
+declare type S3Config = {
+  enabled: boolean
+  accessKeyId: string | null
+  region: string | null
+  secretAccessKey: string | null
+  bucket: string | null
+  bucketUrl: string | null
+  profile: string | null
+  endpoint: string | null
+  default?: boolean | null
+}
+
 declare type TpuConfig = {
   hostnameWithProtocol: string
   hostname: string
@@ -145,16 +157,7 @@ declare type TpuConfig = {
         dsn: string | null
       }
     | undefined
-  aws?: {
-    enabled: boolean
-    accessKeyId: string | null
-    region: string | null
-    secretAccessKey: string | null
-    bucket: string | null
-    bucketUrl: string | null
-    profile: string | null
-    endpoint: string | null
-  }
+  aws?: S3Config | (S3Config & { default: boolean })[]
   cloudflare?: {
     enabled: boolean
     key: string | null

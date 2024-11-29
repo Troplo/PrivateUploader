@@ -405,6 +405,10 @@ let Errors = {
   BLOCKED: {
     message: "You have been blocked by this user.",
     status: 400
+  },
+  REMOTE_RESOURCE_MISSING: {
+    message: "The remote resource on the distributed network is missing.",
+    status: 500
   }
 }
 

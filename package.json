@@ -58,7 +58,11 @@
   },
   "dependencies": {
     "@alt3/sequelize-to-json-schemas": "^0.3.56",
+    "@aws-sdk/cloudfront-signer": "^3.696.0",
+    "@aws-sdk/hash-node": "^3.374.0",
+    "@aws-sdk/protocol-http": "^3.374.0",
     "@aws-sdk/s3-request-presigner": "^3.637.0",
+    "@aws-sdk/signature-v4": "^3.374.0",
     "@babel/preset-env": "^7.23.9",
     "@editorjs/editorjs": "^2.27.2",
     "@elysiajs/graphql-yoga": "^0.7.1",
