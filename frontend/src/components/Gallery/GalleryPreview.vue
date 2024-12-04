@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="height: 220px">
     <v-hover v-if="item.type === 'image'" v-slot="{ isHovering, props }">
       <v-img
         v-if="show || item.fileSize <= 12582912"
@@ -38,12 +38,11 @@
     <video
       v-else-if="item.type === 'video'"
       controls
-      height="220"
-      style="width: 100%"
+      style="width: 100%; height: 220px"
     >
       <source :src="$app.domain + item.attachment" type="video/mp4" />
     </video>
-    <audio v-else-if="item.type === 'audio'" controls>
+    <audio style="margin: auto; height: 137px" v-else-if="item.type === 'audio'" controls>
       <source :src="$app.domain + item.attachment" type="audio/mpeg" />
     </audio>
     <v-card
