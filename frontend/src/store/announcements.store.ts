@@ -6,7 +6,7 @@ import {
   type AnnouncementQuery,
   AnnouncementDocument
 } from "@/troploservices-gql/graphql";
-import { nextTick, ref, watch } from "vue";
+import { nextTick, onMounted, ref, watch } from "vue";
 import { useApolloClient } from "@vue/apollo-composable";
 import { useDisplay } from "vuetify";
 
@@ -23,7 +23,8 @@ export const useAnnouncementsStore = defineStore("announcements", () => {
   ): Promise<AnnouncementsQuery["announcements"]> {
     const { data } = await apolloClient.client.query({
       query: AnnouncementsDocument,
-      variables: { input }
+      variables: { input },
+      fetchPolicy: "network-only"
     });
     return data.announcements;
   }

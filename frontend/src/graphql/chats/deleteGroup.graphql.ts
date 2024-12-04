@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-const DeleteGroupMutation = gql`
+export const DeleteGroupMutation = gql`
   mutation DeleteGroup($input: DangerZoneChatInput!) {
     deleteGroup(input: $input) {
       success
@@ -8,7 +8,7 @@ const DeleteGroupMutation = gql`
   }
 `;
 
-const LeaveGroupMutation = gql`
+export const LeaveGroupMutation = gql`
   mutation LeaveChat($input: LeaveChatInput!) {
     leaveChat(input: $input) {
       success

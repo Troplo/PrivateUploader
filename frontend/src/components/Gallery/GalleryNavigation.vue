@@ -75,6 +75,16 @@
         </template>
       </v-select>
     </v-col>
+    <v-col
+      v-if="supports.upload && !$experiments.experiments.PROGRESSIVE_UI"
+      sm="auto"
+      align-self="center"
+    >
+      <v-btn block @click="$app.dialogs.upload.value = true">
+        <v-icon class="mr-1">mdi-upload</v-icon>
+        {{ $t("generic.upload") }}
+      </v-btn>
+    </v-col>
   </v-row>
 </template>
 

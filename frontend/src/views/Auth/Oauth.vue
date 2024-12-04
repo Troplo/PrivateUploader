@@ -36,11 +36,9 @@
             <template v-else>Add {{ app.bot.username }} to your chat.</template>
             <span v-if="app.verified">
               <v-tooltip location="top" activator="parent">
-                Created by the Flowinity team
+                Created by the TPU team
               </v-tooltip>
-              <v-icon class="text-medium-emphasis" size="20">
-                checkbox-circle-fill
-              </v-icon>
+              <v-icon>mdi-check-circle</v-icon>
             </span>
           </p>
           <p class="text-center text-grey">
@@ -66,7 +64,7 @@
               >
                 <template #prepend>
                   <v-icon color="green" class="ml-4 mr-1">
-                    checkbox-circle-fill
+                    mdi-check-circle
                   </v-icon>
                 </template>
                 <v-list-item-title
@@ -96,7 +94,7 @@
               >
                 <template #prepend>
                   <v-icon color="green" class="ml-4 mr-1">
-                    checkbox-circle-fill
+                    mdi-check-circle
                   </v-icon>
                 </template>
                 <v-list-item-title
@@ -165,12 +163,11 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import { ChatPermission, OauthApp } from "@/gql/graphql";
 import {
-  AddBotToChatDocument,
-  ChatPermission,
-  OauthApp,
-  OauthAppConsentDocument
-} from "@/gql/graphql";
+  AddBotToChat,
+  OauthAppConsentQuery
+} from "@/graphql/developer/consent.graphql";
 import UserAvatar from "@/components/Users/UserAvatar.vue";
 import FlowinityBanner from "@/components/Brand/FlowinityBanner.vue";
 
@@ -271,7 +268,7 @@ export default defineComponent({
         const {
           data: { oauthAppConsent, availableChatPermissions }
         } = await this.$apollo.query({
-          query: OauthAppConsentDocument,
+          query: OauthAppConsentQuery,
           variables: {
             input: {
               id: this.appId
@@ -307,7 +304,7 @@ export default defineComponent({
       this.loading = true;
       try {
         await this.$apollo.mutate({
-          mutation: AddBotToChatDocument,
+          mutation: AddBotToChat,
           variables: {
             input: {
               permissions: this.permissionsMap,

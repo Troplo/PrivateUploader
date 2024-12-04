@@ -32,9 +32,7 @@
         v-if="tab !== 0 && tab !== 5"
         v-model="search"
         label="Search"
-        :placeholder="
-          tab !== 4 ? 'Search for friends' : 'Search for blocked users'
-        "
+        placeholder="Search for friends"
         outlined
         dense
         clearable
@@ -48,14 +46,16 @@
             :key="chat.id"
             :image="image(chat)"
             :secondary-text="
-              chat.sortDate
-                ? `Last message was ${$date(parseInt(chat.sortDate)).fromNow()}`
+              chat._redisSortDate
+                ? `Last message was ${$date(
+                    parseInt(chat._redisSortDate)
+                  ).fromNow()}`
                 : chat.description
             "
-            :right-text="chat.sortDate ? undefined : 'Promoted'"
+            :right-text="chat._redisSortDate ? undefined : 'Promoted'"
             :title="$chat.chatName(chat)"
             :to="
-              chat.sortDate
+              chat._redisSortDate
                 ? `/communications/${chat.association?.id}`
                 : '/invite/flowinity'
             "
@@ -112,7 +112,7 @@
         <div>
           <v-divider></v-divider>
           <div class="d-flex justify-center align-center">
-            <v-icon size="90">group-line</v-icon>
+            <v-icon size="96">mdi-account-multiple-plus</v-icon>
             <div class="ml-2" style="max-width: 400px">
               <v-card-title
                 class="text-h6"
@@ -141,13 +141,13 @@ import { useChatStore } from "@/store/chat.store";
 import {
   BlockedUser,
   Chat,
-  ChatInviteDocument,
   Friend,
   FriendAction,
   FriendStatus,
   UserStatus
 } from "@/gql/graphql";
 import { useApolloClient } from "@vue/apollo-composable";
+import { ChatInviteQuery } from "@/graphql/chats/invite.graphql";
 import DynamicCard from "@/components/Core/DynamicCard.vue";
 import FriendsList from "@/components/Communications/SocialHub/FriendsList.vue";
 import Overline from "@/components/Core/Typography/Overline.vue";
@@ -173,39 +173,39 @@ const addFriend = ref({
 const tabs = ref([
   {
     title: "Feed",
-    icon: "chat-3-line"
+    icon: "mdi-account-multiple"
   },
   {
     title: "Friends",
-    icon: "group-line",
+    icon: "mdi-account-group",
     badge: () =>
       currentFriendsOffline.value.length + currentFriendsOnline.value.length
   },
   {
     title: "Incoming",
-    icon: "user-received-line",
+    icon: "mdi-inbox-arrow-down",
     badge: () => incomingFriends.value.length
   },
   {
     title: "Outgoing",
-    icon: "user-shared-line",
+    icon: "mdi-inbox-arrow-up",
     badge: () => outgoingFriends.value.length
   },
   {
     title: "Blocked",
-    icon: "user-forbid-line",
+    icon: "mdi-block-helper",
     badge: () => userStore.blocked.length
   },
   {
     title: "Add Friend",
-    icon: "user-add-line"
+    icon: "mdi-account-plus"
   }
 ]);
 
 async function getPromotedChat() {
   if (!appStore.site.officialInstance) return;
   const chat = await apolloClient.client.query({
-    query: ChatInviteDocument,
+    query: ChatInviteQuery,
     variables: {
       input: {
         inviteId: "flowinity"
@@ -222,9 +222,9 @@ onMounted(() => {
 });
 
 const recentChats = computed(() => {
-  // find ones with sortDate within 48h
+  // find ones with _redisSortDate within 48h
   const chats = chatStore.chats.filter((chat) => {
-    return chat.sortDate > Date.now() - 48 * 60 * 60 * 1000;
+    return chat._redisSortDate > Date.now() - 48 * 60 * 60 * 1000;
   });
   return promotedGroup.value ? [...chats, promotedGroup.value] : chats;
 });

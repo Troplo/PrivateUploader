@@ -31,7 +31,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import CoreDialog from "@/components/Core/Dialogs/Dialog.vue";
-import { Domain } from "@/gql/graphql";
+import { Domain } from "@/models/domain";
 
 export default defineComponent({
   name: "ModifyDomainDialog",

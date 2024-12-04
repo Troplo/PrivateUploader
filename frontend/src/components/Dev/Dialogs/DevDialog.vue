@@ -4,8 +4,7 @@
     class="dev-overlay"
     :style="{ zIndex }"
     :class="{
-      foreground: sortedDialogs.slice().reverse()[0]?.id === id,
-      collapsed
+      foreground: sortedDialogs.slice().reverse()[0]?.id === id
     }"
     @click="
       debugStore.dialogs.find((dialog) => dialog.id === id)
@@ -22,15 +21,9 @@
       <div class="flex gap-2 items-center">
         <slot name="header"></slot>
       </div>
-      <div>
-        <v-btn size="x-small" icon @click="collapsed = !collapsed">
-          <v-icon v-if="!collapsed">mdi-arrow-collapse</v-icon>
-          <v-icon v-else>mdi-arrow-expand</v-icon>
-        </v-btn>
-        <v-btn size="x-small" icon class="float-right" @click="$emit('close')">
-          <v-icon>mdi-close</v-icon>
-        </v-btn>
-      </div>
+      <v-btn size="small" class="float-right" @click="$emit('close')">
+        <v-icon>mdi-close</v-icon>
+      </v-btn>
     </div>
     <div class="content">
       <slot />
@@ -39,7 +32,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, onUnmounted } from "vue";
 import { useDebugStore } from "@/store/debug.store";
 
 const id = `tpu-dev-${Math.random().toString(36).substring(2, 10)}`;
@@ -66,8 +59,6 @@ const zIndex = computed(() => {
 onUnmounted(() => {
   debugStore.dialogs = debugStore.dialogs.filter((dialog) => dialog.id !== id);
 });
-
-const collapsed = ref(false);
 
 function drag(element: any) {
   try {

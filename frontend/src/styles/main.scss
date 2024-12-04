@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  font-family: FlowinityIcons, Inter, sans-serif;
+  font-family: Inter, sans-serif;
 }
 
 .user-content {
@@ -11,7 +11,7 @@
 }
 
 @supports (font-variation-settings: normal) {
-  :root { font-family: FlowinityIcons, InterVariable, sans-serif; }
+  :root { font-family: InterVariable, sans-serif; }
 }
 
 .text-gradient {
@@ -574,10 +574,6 @@ p:has(.emoji-large) img {
   color: white
 }
 
-.dev-overlay.collapsed .content {
-  display: none;
-}
-
 .dev-header {
   padding: 10px;
   cursor: move;
@@ -714,7 +710,7 @@ p:has(.emoji-large) img {
 }
 
 .v-list-item-subtitle {
-  display: flex;
+  display: unset
 }
 
 .v-skeleton-loader__chip {
@@ -818,4 +814,3 @@ h6 {
     padding-inline-start: 40px;
   }
 }
-

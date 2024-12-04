@@ -24,7 +24,3 @@ pnpm-debug.log*
 analyze-tpu-bundle.html
 vite.crt
 vite.key
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/

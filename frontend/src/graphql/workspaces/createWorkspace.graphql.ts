@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-const CreateWorkspaceMutation = gql`
+export const CreateWorkspaceMutation = gql`
   mutation CreateWorkspace($input: String!) {
     createWorkspace(input: $input) {
       id

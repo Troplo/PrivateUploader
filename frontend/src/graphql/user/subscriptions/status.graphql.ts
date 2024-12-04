@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client/core";
 
-const UserStatusSubscription = gql`
-  subscription OnUserStatus {
+export const UserStatusSubscription = gql`
+  subscription UserStatus {
     onUserStatus {
       id
       status

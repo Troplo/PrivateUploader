@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-const AddChatUserMutation = gql`
+export const AddChatUserMutation = gql`
   mutation AddChatUsers($input: AddChatUser!) {
     addChatUsers(input: $input) {
       success

@@ -48,7 +48,7 @@
       :text="$t('settings.setup.actions.apiKey')"
       class="mr-2 mt-2"
       color="teal"
-      icon="file-copy-line"
+      icon="mdi-content-copy"
       @click="$functions.copy(selected)"
     />
     <HoverChip

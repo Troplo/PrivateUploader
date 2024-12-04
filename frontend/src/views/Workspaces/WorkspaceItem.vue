@@ -54,7 +54,27 @@
         </template>
       </PromoNoContent>
     </template>
-    <template v-if="!fail && ready">
+    <template v-if="collaborators.length">
+      <teleport
+        v-if="
+          !$vuetify.display.mobile && !$experiments.experiments.PROGRESSIVE_UI
+        "
+        to="#header-actions"
+      >
+        <div style="display: flex; gap: 4px">
+          <UserAvatar
+            v-for="collab in collaborators"
+            :key="collab.userId"
+            :user="$user.users[collab.userId]"
+            :status="true"
+            size="32"
+            :dot-status="true"
+            :typing="collab.typing"
+          />
+        </div>
+      </teleport>
+    </template>
+    <template v-if="!fail && ready && $experiments.experiments.PROGRESSIVE_UI">
       <teleport to="#appbar-options">
         <accessible-transition mode="out-in" name="slide-up" appear>
           <span class="flex gap-2 items-center">
@@ -136,6 +156,8 @@ import Attaches from "@editorjs/attaches";
 import LinkTool from "@editorjs/link";
 //@ts-ignore
 import AlignmentTuneTool from "editorjs-text-alignment-blocktune";
+//@ts-ignore;
+import WorkspaceHome from "@/views/Workspaces/WorkspaceHome.vue";
 //@ts-ignore
 import Undo from "editorjs-undo";
 import { defineComponent, h, markRaw } from "vue";
@@ -146,14 +168,16 @@ import {
   CollabEventType,
   NoteCollabPosition,
   UpdateNoteEventType,
-  WorkspaceNote,
-  SaveNoteCollabPositionDocument,
-  OnUpdateNoteDocument,
-  OnNoteCollabPositionDocument
+  WorkspaceNote
 } from "@/gql/graphql";
 import { ApolloClient, NormalizedCacheObject } from "@apollo/client/core";
 import { isNumeric } from "@/plugins/isNumeric";
 import { useApolloClient } from "@vue/apollo-composable";
+import {
+  NoteCollabPositionSubscription,
+  SaveNoteCollabPositionMutation,
+  UpdateNoteSubscription
+} from "@/graphql/workspaces/collaboration";
 import UserAvatar from "@/components/Users/UserAvatar.vue";
 import functions from "@/plugins/functions";
 import AccessibleTransition from "@/components/Core/AccessibleTransition.vue";
@@ -161,13 +185,20 @@ import {
   RiCloseCircleFill,
   RiCloseCircleLine,
   RiCloseLine,
+  RiCollageFill,
+  RiCollageLine,
+  RiFileTextFill,
   RiFileTextLine,
   RiHistoryLine,
+  RiShare2Line,
   RiShareForwardFill,
+  RiShareLine,
+  RiStickyNoteFill,
   RiStickyNoteLine
 } from "@remixicon/vue";
 import { RailMode } from "@/store/progressive.store";
 import PromoNoContent from "@/components/Core/PromoNoContent.vue";
+import FlowinityLogo from "@/components/Brand/FlowinityLogo.vue";
 import FlowinityLogoAnimated from "@/components/Brand/FlowinityLogoAnimated.vue";
 
 interface NoteCollabPositionWithTyping extends NoteCollabPosition {
@@ -178,12 +209,16 @@ interface NoteCollabPositionWithTyping extends NoteCollabPosition {
 export default defineComponent({
   components: {
     FlowinityLogoAnimated,
+    FlowinityLogo,
     PromoNoContent,
     RiHistoryLine,
     RiShareForwardFill,
+    RiShareLine,
+    RiShare2Line,
     AccessibleTransition,
     UserAvatar,
-    WorkspaceShareDialog
+    WorkspaceShareDialog,
+    WorkspaceHome
   },
   props: ["id"],
   data: function () {
@@ -284,7 +319,7 @@ export default defineComponent({
         : this.$route.params.id;
       this.unsubscribeFromNote();
       const observer = useApolloClient().client.subscribe({
-        query: OnUpdateNoteDocument,
+        query: UpdateNoteSubscription,
         variables: {
           id: typeof id === "number" ? id : null,
           shareLink: typeof id === "string" ? id : null
@@ -337,7 +372,7 @@ export default defineComponent({
         }
       });
       const observerPosition = useApolloClient().client.subscribe({
-        query: OnNoteCollabPositionDocument,
+        query: NoteCollabPositionSubscription,
         variables: {
           id: typeof id === "number" ? id : null,
           shareLink: typeof id === "string" ? id : null
@@ -793,7 +828,7 @@ export default defineComponent({
           position
         };
         this.$apollo.mutate({
-          mutation: SaveNoteCollabPositionDocument,
+          mutation: SaveNoteCollabPositionMutation,
           variables: {
             input: {
               noteId: parseInt(this.$route.params.id),

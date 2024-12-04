@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-const DomainQuery = gql`
+export const DomainQuery = gql`
   query Domains {
     domains {
       domain

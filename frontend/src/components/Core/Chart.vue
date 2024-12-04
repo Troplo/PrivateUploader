@@ -1,10 +1,14 @@
 <template>
   <div :id="'chartnext-' + id">
-    <template v-if="apex">
-      For developers: ApexCharts is not supported in v5.
-      <br />
-      <br />
-    </template>
+    <apexchart
+      v-if="apex"
+      :height="height"
+      :options="chartOptions"
+      :series="seriesRes"
+      :type="type"
+      :width="getWidth()"
+      title=""
+    />
     <template v-else-if="type === 'line'">
       <Line
         v-if="chartJSData"
@@ -26,6 +30,7 @@
 
 <script lang="ts">
 import { Bar, Line } from "vue-chartjs";
+import apexchart from "vue3-apexcharts";
 import chartJS, {
   BarElement,
   CategoryScale,
@@ -52,7 +57,7 @@ ChartJS.register(
 );
 export default defineComponent({
   name: "Chart",
-  components: { Line, Bar },
+  components: { Line, Bar, apexchart },
   props: [
     "data",
     "height",
@@ -240,3 +245,9 @@ export default defineComponent({
   }
 });
 </script>
+
+<style>
+.apexcharts-svg {
+  background: transparent !important;
+}
+</style>

@@ -23,7 +23,7 @@
         color="blue"
         variant="tonal"
         v-if="$app.activeNags.IAF_PROMO"
-        icon="checkbox-circle-fill"
+        icon="mdi-check-circle"
       >
         <p v-if="!$user.gold">
           By inviting a friend to {{ $app.site.name }}, you will both get a free

@@ -1,15 +1,16 @@
-import { OnUserStatusDocument } from "@/gql/graphql";
 import { useUserStore } from "@/store/user.store";
-import { useApolloClient, useSubscription } from "@vue/apollo-composable";
-import { useUserPresenceStore } from "@/store/userPresence.store";
+import { useSubscription } from "@vue/apollo-composable";
+import { UserStatusSubscription } from "@/graphql/user/subscriptions/status.graphql";
 
 export default function setup() {
   const userStore = useUserStore();
-  const userPresenceStore = useUserPresenceStore();
-  const userStatus = useSubscription(OnUserStatusDocument);
-  const cache = useApolloClient().client.cache;
+  const userStatus = useSubscription(UserStatusSubscription);
 
   userStatus.onResult(({ data: { onUserStatus } }) => {
-    userPresenceStore.updateLocalStatus(onUserStatus.id, onUserStatus.status);
+    const index = userStore.tracked.findIndex((f) => f.id === onUserStatus.id);
+
+    if (index === -1) return;
+    userStore.tracked[index].status = onUserStatus.status;
+    userStore.tracked[index].platforms = onUserStatus.platforms;
   });
 }

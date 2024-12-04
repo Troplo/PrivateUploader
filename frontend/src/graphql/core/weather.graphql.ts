@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-const WeatherQuery = gql`
+export const WeatherQuery = gql`
   query Weather {
     weather {
       temp

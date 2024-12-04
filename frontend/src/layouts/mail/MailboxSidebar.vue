@@ -4,7 +4,7 @@
     color="dark"
     floating
     permanent
-    class="ml-4"
+    :class="{ 'ml-4': $experiments.experiments.PROGRESSIVE_UI }"
   >
     <v-list nav>
       <v-list-item

@@ -47,18 +47,6 @@
       </v-card-subtitle>
 
       <v-card-subtitle>
-        {{ $t("generic.location") }}:
-        <span
-          :class="{
-            'text-red': item.location === 'local',
-            'text-green': item.location !== 'local'
-          }"
-        >
-          {{ item.location }}
-        </span>
-      </v-card-subtitle>
-
-      <v-card-subtitle>
         {{ $t("generic.createdAt") }}:
         {{ $date(item.createdAt).format("Do of MMMM YYYY, h:mm A") }}
       </v-card-subtitle>

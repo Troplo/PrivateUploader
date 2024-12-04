@@ -14,7 +14,7 @@
       </v-card-title>
       <div class="d-flex justify-center">
         <UserAvatar :chat="chat" size="70" />
-        <v-icon size="70">arrow-right-s-line</v-icon>
+        <v-icon size="70">mdi-arrow-right</v-icon>
         <UserAvatar :user="user" size="70" />
       </div>
       <v-card-subtitle class="initial my-2">
@@ -47,13 +47,10 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import CoreDialog from "@/components/Core/Dialogs/Dialog.vue";
-import {
-  Chat,
-  PartialUserFriend,
-  TransferGroupOwnershipDocument
-} from "@/gql/graphql";
+import { Chat, PartialUserFriend } from "@/gql/graphql";
 import UserAvatar from "@/components/Users/UserAvatar.vue";
 import DangerZoneInput from "@/components/Core/DangerZoneInput.vue";
+import { TransferOwnershipMutation } from "@/graphql/chats/transferOwnership.graphql";
 
 export default defineComponent({
   components: { DangerZoneInput, UserAvatar, CoreDialog },
@@ -82,7 +79,7 @@ export default defineComponent({
       this.loading = true;
       try {
         await this.$apollo.mutate({
-          mutation: TransferGroupOwnershipDocument,
+          mutation: TransferOwnershipMutation,
           variables: {
             input: {
               userId: this.user.id,

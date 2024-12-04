@@ -41,11 +41,9 @@
                     {{ app.name }}
                     <span v-if="app.verified">
                       <v-tooltip location="top" activator="parent">
-                        Created by the Flowinity team
+                        Created by the TPU team
                       </v-tooltip>
-                      <v-icon class="text-medium-emphasis" size="20">
-                        checkbox-circle-fill
-                      </v-icon>
+                      <v-icon color="grey">mdi-check-circle</v-icon>
                     </span>
                   </v-card-title>
                   <v-card-subtitle>
@@ -171,19 +169,19 @@
           </v-card-text>
           <v-card-text>
             <v-btn color="blue" @click="$functions.copy(app.secret)">
-              <v-icon class="mr-1">file-copy-line</v-icon>
+              <v-icon class="mr-1">mdi-content-copy</v-icon>
               Copy secret
             </v-btn>
             <v-btn class="ml-1" color="blue" @click="$functions.copy(app.id)">
-              <v-icon class="mr-1">file-copy-line</v-icon>
+              <v-icon class="mr-1">mdi-content-copy</v-icon>
               Copy client ID
             </v-btn>
             <v-btn class="ml-1" color="red" @click="resetSecret">
-              <v-icon class="mr-1">reset-right-line</v-icon>
+              <v-icon class="mr-1">mdi-sync</v-icon>
               Reset secret
             </v-btn>
             <v-btn class="ml-1" color="red" @click="deleteConfirm = true">
-              <v-icon class="mr-1">close-line</v-icon>
+              <v-icon class="mr-1">mdi-delete</v-icon>
               Delete
             </v-btn>
             <br />
@@ -329,20 +327,22 @@
 import { defineComponent } from "vue";
 import { ScopeDefinition } from "@/views/Auth/Oauth.vue";
 import CoreDialog from "@/components/Core/Dialogs/Dialog.vue";
+import { MyAppQuery } from "@/graphql/developer/myApps.graphql";
 import {
-  AddOauthUserDocument,
   AvailableChatPermissionsDocument,
   ChatPermission,
-  DeleteOauthAppDocument,
-  DevAppDocument,
   OauthApp,
-  OauthUser,
-  ResetOauthSecretDocument,
-  UpdateOauthAppDocument,
-  UpdateOauthUserDocument
+  OauthUser
 } from "@/gql/graphql";
 import UserAvatar from "@/components/Users/UserAvatar.vue";
 import CreateBotAccountDialog from "@/components/Admin/AppAuth/CreateBotAccountDialog.vue";
+import {
+  AddOauthUserMutation,
+  DeleteOauthAppMutation,
+  ResetOauthAppSecretMutation,
+  UpdateOauthAppMutation,
+  UpdateOauthUserMutation
+} from "@/graphql/developer/updateApp.graphql";
 
 export default defineComponent({
   name: "AdminOauthItem",
@@ -409,7 +409,7 @@ export default defineComponent({
       try {
         this.loading = true;
         await this.$apollo.mutate({
-          mutation: UpdateOauthUserDocument,
+          mutation: UpdateOauthUserMutation,
           variables: {
             input: {
               id,
@@ -435,7 +435,7 @@ export default defineComponent({
       try {
         this.loading = true;
         await this.$apollo.mutate({
-          mutation: DeleteOauthAppDocument,
+          mutation: DeleteOauthAppMutation,
           variables: {
             input: {
               id: this.app.id
@@ -452,7 +452,7 @@ export default defineComponent({
       try {
         this.loading = true;
         await this.$apollo.mutate({
-          mutation: ResetOauthSecretDocument,
+          mutation: ResetOauthAppSecretMutation,
           variables: {
             input: {
               id: this.app.id
@@ -475,7 +475,7 @@ export default defineComponent({
         const {
           data: { oauthApp }
         } = await this.$apollo.query({
-          query: DevAppDocument,
+          query: MyAppQuery,
           fetchPolicy: "network-only",
           variables: {
             input: {
@@ -492,7 +492,7 @@ export default defineComponent({
       try {
         this.loading = true;
         await this.$apollo.mutate({
-          mutation: UpdateOauthAppDocument,
+          mutation: UpdateOauthAppMutation,
           variables: {
             input: {
               name: this.app.name,
@@ -523,7 +523,7 @@ export default defineComponent({
         }
         this.loading = true;
         await this.$apollo.mutate({
-          mutation: AddOauthUserDocument,
+          mutation: AddOauthUserMutation,
           variables: {
             input: {
               oauthAppId: this.app.id,

@@ -10,6 +10,8 @@ import {
   RiAddLine,
   RiAppleFill,
   RiAppleLine,
+  RiArticleFill,
+  RiArticleLine,
   RiAuctionFill,
   RiAuctionLine,
   RiBarChartFill,
@@ -55,8 +57,6 @@ import {
   RiMailLine,
   RiMicrosoftFill,
   RiMicrosoftLine,
-  RiNewsFill,
-  RiNewsLine,
   RiNotificationLine,
   RiPieChartLine,
   RiRefreshFill,
@@ -71,8 +71,6 @@ import {
   RiSparkling2Line,
   RiStarFill,
   RiStarLine,
-  RiSurveyFill,
-  RiSurveyLine,
   RiToolsFill,
   RiToolsLine,
   RiUserFill,
@@ -102,7 +100,6 @@ import { VIcon } from "vuetify/components";
 import functions from "@/plugins/functions";
 import { useTheme } from "vuetify";
 import { useCollectionsStore } from "@/store/collections.store";
-import { useModulesStore } from "@/store/modules.store";
 
 export enum RailMode {
   HOME,
@@ -110,7 +107,6 @@ export enum RailMode {
   CHAT,
   WORKSPACES,
   MEET,
-  FORMS,
   MAIL,
   ADMIN,
   DEBUG,
@@ -135,6 +131,7 @@ export interface NavigationOption {
   menu?: ContextMenuItem[];
   options?: NavigationOption[];
   parentPath?: string;
+  externalPath?: string;
 }
 
 export interface ContextMenuItem {
@@ -164,21 +161,21 @@ export const useProgressiveUIStore = defineStore("progressive", () => {
 
   function getParent(itemPath: string) {
     let find: NavigationOption | undefined;
-    for (const key in navigation.railOptions.value) {
-      const included = navigation.options[key].value?.find(
+    for (const key in navigation.value.railOptions) {
+      const included = navigation.value.options[key]?.find(
         (option) => option.path === itemPath
       );
       if (included) {
-        find = navigation.railOptions.value.find(
+        find = navigation.value.railOptions.find(
           (option) => option.path === itemPath
         );
         break;
       }
-      const findIn = navigation.options[key].value?.find((option) =>
+      const findIn = navigation.value.options[key]?.find((option) =>
         option.options?.find((o) => o.path === itemPath)
       );
       if (findIn) {
-        find = navigation.options[key].value.find(
+        find = navigation.value.options[key].find(
           (option) => option.path === findIn.path
         );
       }
@@ -209,8 +206,8 @@ export const useProgressiveUIStore = defineStore("progressive", () => {
         }
       });
     };
-    for (const mode in navigation.options) {
-      flattenNavigation(navigation.options[mode].value);
+    for (const mode in navigation.value.options) {
+      flattenNavigation(navigation.value.options[mode]);
     }
     return pathToOption;
   });
@@ -218,139 +215,131 @@ export const useProgressiveUIStore = defineStore("progressive", () => {
     parseInt(localStorage.getItem("railMode") || "0") ||
       (RailMode.HOME as RailMode as RailMode)
   );
-  const modulesStore = useModulesStore();
-  const navigation = {
-    options: {
-      [RailMode.HOME]: computed(() => {
-        console.log("HOME - RECOMPUTED");
-        return [
-          {
-            icon: markRaw(RiHome5Line),
-            name: "Home",
-            path: "/",
-            selectedIcon: markRaw(RiHome5Fill)
-          },
-          {
-            icon: markRaw(RiLineChartLine),
-            name: "Insights",
-            path: "/insights",
-            selectedIcon: markRaw(RiLineChartFill),
-            scopesRequired: ["insights.view"],
-            options: [
-              {
-                icon: markRaw(RiFlowChart),
-                name: "Weekly",
-                path: "/insights/weekly"
-              },
-              {
-                icon: markRaw(RiPieChartLine),
-                name: "Monthly",
-                path: "/insights/monthly"
-              },
-              {
-                icon: markRaw(
-                  h(VIcon, {
-                    icon: "mdi-chart-gantt",
-                    color: userStore.theme.dark ? "white" : "black"
-                  })
-                ),
-                name: "Annually",
-                path: "/insights/yearly"
-              },
-              {
-                icon: markRaw(RiBarChartFill),
-                name: "Dynamic",
-                path: "/insights/dynamic"
-              }
-            ]
-          },
-          {
-            icon: markRaw(RiGroupLine),
-            name: "Users",
-            path: "/users",
-            selectedIcon: markRaw(RiGroupFill)
-          },
-          {
-            icon: markRaw(RiUserLine),
-            name: "My Profile",
-            path: `/u/${userStore.user?.username}`,
-            selectedIcon: markRaw(RiUserFill),
-            allowOverride: true
-          },
-          {
-            icon: markRaw(RiNewsLine),
-            name: "News",
-            path: "/news",
-            selectedIcon: markRaw(RiNewsFill)
-          }
-        ];
-      }),
-      [RailMode.GALLERY]: computed(() => {
-        console.log("GALLERY - RECOMPUTED");
-        return [
-          {
-            icon: markRaw(RiImage2Line),
-            name: "My Gallery",
-            path: "/gallery",
-            selectedIcon: markRaw(RiImage2Fill),
-            scopesRequired: ["gallery.view"]
-          },
-          {
-            icon: markRaw(RiStarLine),
-            name: "Starred",
-            path: "/starred",
-            selectedIcon: markRaw(RiStarFill),
-            scopesRequired: ["starred.view"]
-          },
-          {
-            icon: markRaw(RiSparkling2Line),
-            name: `AutoCollects`,
-            path: "/autoCollect",
-            selectedIcon: markRaw(RiSparkling2Fill),
-            badge: userStore.user?.pendingAutoCollects || "",
-            scopesRequired: ["collections.view"],
-            options: [
-              {
-                icon: markRaw(RiSettings5Line),
-                name: "Settings",
-                path: "/autoCollect/configure",
-                selectedIcon: markRaw(RiSettings5Fill)
-              }
-            ]
-          },
-          {
-            icon: markRaw(RiSlideshow2Line),
-            name: "Slideshows",
-            path: "/settings/slideshows",
-            selectedIcon: markRaw(RiSlideshow2Fill),
-            scopesRequired: ["user.modify"]
-          }
-        ];
-      }),
-      [RailMode.CHAT]: computed(() => {
-        console.log("CHAT - RECOMPUTED");
-        return [
-          {
-            icon: markRaw(RiGroup2Line),
-            name: "Social Hub",
-            path: "/social",
-            selectedIcon: markRaw(RiGroup2Fill),
-            badge: friendStore.incomingFriends.length
-              ? friendStore.incomingFriends.length.toLocaleString()
-              : undefined,
-            scopesRequired: ["user.view"]
-          },
-          {
-            icon: markRaw(RiAddLine),
-            name: "Join or Create",
-            click: () => {
-              appStore.dialogs.createChat = true;
+  const navigation = computed({
+    get() {
+      return {
+        options: {
+          [RailMode.HOME]: [
+            {
+              icon: markRaw(RiHome5Line),
+              name: "Home",
+              path: "/",
+              selectedIcon: markRaw(RiHome5Fill)
             },
-            selectedIcon: markRaw(RiChat1Fill),
-            scopesRequired: ["chats.create"]
-          },
-          ...chatStore.chats
-            .map((chat) => ({
+            {
+              icon: markRaw(RiLineChartLine),
+              name: "Insights",
+              path: "/insights",
+              selectedIcon: markRaw(RiLineChartFill),
+              scopesRequired: ["insights.view"],
+              options: [
+                {
+                  icon: markRaw(RiFlowChart),
+                  name: "Weekly",
+                  path: "/insights/weekly"
+                },
+                {
+                  icon: markRaw(RiPieChartLine),
+                  name: "Monthly",
+                  path: "/insights/monthly"
+                },
+                {
+                  icon: markRaw(
+                    h(VIcon, {
+                      icon: "mdi-chart-gantt",
+                      color: userStore.theme.dark ? "white" : "black"
+                    })
+                  ),
+                  name: "Annually",
+                  path: "/insights/yearly"
+                },
+                {
+                  icon: markRaw(RiBarChartFill),
+                  name: "Dynamic",
+                  path: "/insights/dynamic"
+                }
+              ]
+            },
+            {
+              icon: markRaw(RiGroupLine),
+              name: "Users",
+              path: "/users",
+              selectedIcon: markRaw(RiGroupFill)
+            },
+            {
+              icon: markRaw(RiUserLine),
+              name: "My Profile",
+              path: `/u/${userStore.user?.username}`,
+              selectedIcon: markRaw(RiUserFill),
+              allowOverride: true
+            },
+            {
+              icon: markRaw(RiArticleLine),
+              name: "News",
+              path: "/news",
+              selectedIcon: markRaw(RiArticleFill)
+            }
+          ],
+          [RailMode.GALLERY]: [
+            {
+              icon: markRaw(RiImage2Line),
+              name: "My Gallery",
+              path: "/gallery",
+              selectedIcon: markRaw(RiImage2Fill),
+              scopesRequired: ["gallery.view"]
+            },
+            {
+              icon: markRaw(RiStarLine),
+              name: "Starred",
+              path: "/starred",
+              selectedIcon: markRaw(RiStarFill),
+              scopesRequired: ["starred.view"]
+            },
+            {
+              icon: markRaw(RiSparkling2Line),
+              name: `AutoCollects`,
+              path: "/autoCollect",
+              selectedIcon: markRaw(RiSparkling2Fill),
+              badge: userStore.user?.pendingAutoCollects || "",
+              scopesRequired: ["collections.view"],
+              options: [
+                {
+                  icon: markRaw(RiSettings5Line),
+                  name: "Settings",
+                  path: "/autoCollect/configure",
+                  selectedIcon: markRaw(RiSettings5Fill)
+                }
+              ]
+            },
+            {
+              icon: markRaw(RiSlideshow2Line),
+              name: "Slideshows",
+              path: "/settings/slideshows",
+              selectedIcon: markRaw(RiSlideshow2Fill),
+              scopesRequired: ["user.modify"]
+            }
+          ],
+          [RailMode.CHAT]: [
+            {
+              icon: markRaw(RiGroup2Line),
+              name: "Social Hub",
+              path: "/social",
+              selectedIcon: markRaw(RiGroup2Fill),
+              badge: friendStore.incomingFriends.length
+                ? friendStore.incomingFriends.length.toLocaleString()
+                : undefined,
+              scopesRequired: ["user.view"]
+            },
+            {
+              icon: markRaw(RiAddLine),
+              name: "Join or Create",
+              click: () => {
+                appStore.dialogs.createChat = true;
+              },
+              selectedIcon: markRaw(RiChat1Fill),
+              scopesRequired: ["chats.create"]
+            },
+            ...chatStore.chats.map((chat) => ({
               icon: markRaw(
                 h(
                   "span",
@@ -377,332 +366,542 @@ export const useProgressiveUIStore = defineStore("progressive", () => {
                   : undefined,
               name: chatStore.chatName(chat),
               path: `/communications/${chat.association.id}`,
-              badge: chat.unread ? chat.unread.toLocaleString() : undefined
-            }))
-            .sort((a, b) => {
-              const aDate = parseInt(a.sortDate);
-              const bDate = parseInt(b.sortDate);
-              return bDate - aDate;
-            })
-        ];
-      }),
-      [RailMode.WORKSPACES]: computed(() => {
-        console.log("WORKSPACES - RECOMPUTED");
-        return [
-          {
-            icon: markRaw(RiFileTextLine),
-            name: "Recent",
-            path: "/workspaces",
-            selectedIcon: markRaw(RiFileTextFill)
-          }
-        ];
-      }),
-      [RailMode.SETTINGS]: computed(() => {
-        console.log("SETTINGS - RECOMPUTED");
-        return [
-          {
-            icon: markRaw(RiUserLine),
-            name: "My Account",
-            path: "/settings/dashboard",
-            selectedIcon: markRaw(RiUserFill)
-          },
-          {
-            icon: markRaw(RiShieldUserLine),
-            name: "Privacy",
-            path: "/settings/privacy",
-            selectedIcon: markRaw(RiShieldUserFill)
-          },
-          {
-            icon: markRaw(RiLockLine),
-            name: "Security",
-            path: "/settings/security",
-            selectedIcon: markRaw(RiLockFill)
-          },
-          {
-            icon: markRaw(RiToolsLine),
-            name: "Setup & Clients",
-            path: "/settings/clients",
-            selectedIcon: markRaw(RiToolsFill)
-          },
-          {
-            icon: h(VIcon, {
-              icon: "add-line"
-            }),
-            name: "Flowinity Pro",
-            path: "/settings/subscriptions",
-            selectedIcon: h(VIcon, {
-              icon: "add-line"
-            })
-          },
-          {
-            icon: markRaw(RiGlobalLine),
-            name: "Domains",
-            path: "/settings/domains",
-            selectedIcon: markRaw(RiGlobalLine)
-          },
-          {
-            icon: markRaw(RiLink),
-            name: "Linked Applications",
-            path: "/settings/integrations",
-            selectedIcon: markRaw(RiLink)
-          } /*
-              {
-                icon: markRaw(RiWebhookLine),
-                name: "Webhooks",
-                path: "/settings/webhooks",
-                selectedIcon: markRaw(RiWebhookFill)
-              },*/,
-          {
-            icon: markRaw(RiCodeLine),
-            name: "Developer Portal",
-            path: "/settings/developer",
-            selectedIcon: markRaw(RiCodeFill)
-          },
-          ...(appStore.platform !== Platform.WEB
-            ? [
+              badge: chat.unread ? chat.unread.toLocaleString() : undefined,
+              menu: [
                 {
-                  icon: markRaw(
-                    appStore.platform === Platform.WINDOWS
-                      ? RiMicrosoftLine
-                      : appStore.platform === Platform.MAC
-                      ? RiAppleLine
-                      : h(VIcon, {
-                          icon: "mdi-linux"
-                        })
-                  ),
-                  name: "Desktop Settings",
-                  path: "/settings/desktop",
-                  selectedIcon: markRaw(
-                    appStore.platform === Platform.WINDOWS
-                      ? RiMicrosoftFill
-                      : appStore.platform === Platform.MAC
-                      ? RiAppleFill
-                      : h(VIcon, {
-                          icon: "mdi-linux"
-                        })
-                  )
+                  name: "Notifications",
+                  icon: markRaw(RiNotificationLine),
+                  menu: [
+                    {
+                      name: "All",
+                      action: () => {
+                        chatStore.setNotifications("all", chat.association.id);
+                        // TODO: implement proper reactivity
+                        _activeContextMenu.value.menu =
+                          navigation.value.options[navigationMode.value].find(
+                            (option) =>
+                              option.path ===
+                              `/communications/${chat.association.id}`
+                          )?.menu || [];
+                      },
+                      append:
+                        chat.association.notifications === "all"
+                          ? h(VIcon, {
+                              icon: "mdi-check"
+                            })
+                          : undefined
+                    },
+                    {
+                      name: "Mentions",
+                      action: () => {
+                        chatStore.setNotifications(
+                          "mentions",
+                          chat.association.id
+                        );
+                        // TODO: implement proper reactivity
+                        _activeContextMenu.value.menu =
+                          navigation.value.options[navigationMode.value].find(
+                            (option) =>
+                              option.path ===
+                              `/communications/${chat.association.id}`
+                          )?.menu || [];
+                      },
+                      append:
+                        chat.association.notifications === "mentions"
+                          ? h(VIcon, {
+                              icon: "mdi-check"
+                            })
+                          : undefined
+                    },
+                    {
+                      name: "None",
+                      action: () => {
+                        chatStore.setNotifications("none", chat.association.id);
+                        // TODO: implement proper reactivity
+                        _activeContextMenu.value.menu =
+                          navigation.value.options[navigationMode.value].find(
+                            (option) =>
+                              option.path ===
+                              `/communications/${chat.association.id}`
+                          )?.menu || [];
+                      },
+                      append:
+                        chat.association.notifications === "none"
+                          ? h(VIcon, {
+                              icon: "mdi-check"
+                            })
+                          : undefined
+                    }
+                  ]
+                },
+                {
+                  name: "Group Settings",
+                  icon: markRaw(RiSettings5Line),
+                  action: () => {
+                    chatStore.dialogs.groupSettings.itemId = chat.id;
+                    chatStore.dialogs.groupSettings.value = true;
+                  },
+                  shown:
+                    chatStore.hasPermission(
+                      [
+                        "ADMIN",
+                        "OVERVIEW",
+                        "VIEW_AUDIT_LOG",
+                        "ADD_USERS",
+                        "REMOVE_USERS",
+                        "OWNER",
+                        "BAN_USERS",
+                        "REMOVE_USERS",
+                        "CREATE_EMOJI",
+                        "MANAGE_INTEGRATIONS",
+                        "MANAGE_RANKS",
+                        "VIEW_INSIGHTS"
+                      ],
+                      chat
+                    ) && chat.type === "group"
+                },
+                {
+                  name: "View Profile Page",
+                  icon: markRaw(RiUserLine),
+                  action: () => {
+                    const router = window._tpu_router;
+                    router.push(
+                      `/u/${userStore.users[chat.recipient.id]?.username}`
+                    );
+                  },
+                  shown: chat.type === "direct" && chat.recipient
+                },
+                {
+                  name: "Message",
+                  icon: markRaw(RiChat1Line),
+                  action: async () => {
+                    const data = await chatStore.createChat(
+                      [chat.recipient.id],
+                      "DIRECT"
+                    );
+                    const router = window._tpu_router;
+                    router.push(`/communications/${data.association.id}`);
+                  },
+                  shown: chat.type === "direct"
+                },
+                {
+                  name: "Send Friend Request",
+                  icon: markRaw(RiAddLine),
+                  action: () => {
+                    friendStore.actOnFriend(
+                      chat.recipient.id,
+                      FriendAction.Send
+                    );
+                  },
+                  color: "green",
+                  shown:
+                    chat.recipient &&
+                    !friendStore.friends.find(
+                      (f) => f.friendId === chat.recipient.id
+                    ) &&
+                    !userStore.blocked.find(
+                      (b) => b.blockedUserId === chat.recipient.id
+                    )
+                },
+                {
+                  name: "Friend Request Sent",
+                  icon: markRaw(RiAddLine),
+                  action: () => {},
+                  color: "grey",
+                  shown:
+                    chat.recipient &&
+                    friendStore.friends.find(
+                      (f) => f.friendId === chat.recipient.id
+                    )?.status === FriendStatus.Outgoing
+                },
+                {
+                  name: "Accept Friend Request",
+                  icon: markRaw(RiUserFollowLine),
+                  action: () => {
+                    friendStore.actOnFriend(
+                      chat.recipient.id,
+                      FriendAction.Accept
+                    );
+                  },
+                  color: "green",
+                  shown:
+                    chat.recipient &&
+                    friendStore.friends.find(
+                      (f) => f.friendId === chat.recipient.id
+                    )?.status === FriendStatus.Incoming
+                },
+                {
+                  name: "Remove Friend",
+                  icon: markRaw(RiUserUnfollowLine),
+                  action: () => {
+                    friendStore.actOnFriend(
+                      chat.recipient.id,
+                      FriendAction.Remove
+                    );
+                  },
+                  color: "red",
+                  shown:
+                    chat.recipient &&
+                    friendStore.friends.find(
+                      (f) => f.friendId === chat.recipient.id
+                    )?.status === FriendStatus.Accepted
+                },
+                {
+                  name: "Block",
+                  icon: markRaw(RiUserForbidLine),
+                  action: () => {
+                    userStore.dialogs.block.userId = chat.recipient.id;
+                    userStore.dialogs.block.username =
+                      userStore.users[chat.recipient.id]?.username;
+                    userStore.dialogs.block.value = true;
+                  },
+                  color: "red",
+                  shown:
+                    chat.recipient &&
+                    !userStore.blocked.find(
+                      (b) => b.blockedUserId === chat.recipient.id
+                    )
+                },
+                {
+                  name: "Unblock",
+                  icon: markRaw(RiUserFollowLine),
+                  action: () => {
+                    userStore.dialogs.block.userId = chat.recipient.id;
+                    userStore.dialogs.block.username =
+                      userStore.users[chat.recipient.id]?.username;
+                    userStore.dialogs.block.value = true;
+                  },
+                  color: "green",
+                  shown:
+                    chat.recipient &&
+                    userStore.blocked.find(
+                      (b) => b.blockedUserId === chat.recipient.id
+                    ) !== undefined
+                },
+                {
+                  name: "Leave",
+                  icon: markRaw(RiCloseLine),
+                  action: () => {
+                    chatStore.dialogs.leave.itemId = chat.id;
+                    chatStore.dialogs.leave.value = true;
+                  },
+                  color: "red",
+                  shown: computed(() => {
+                    return (
+                      chat.userId !== userStore.user?.id &&
+                      chat.type !== "direct"
+                    );
+                  })
+                },
+                {
+                  name: "Close",
+                  icon: markRaw(RiCloseLine),
+                  action: () => {
+                    chatStore.leaveChat(chat.association.id);
+                  },
+                  color: "red",
+                  shown: computed(() => {
+                    return chat.type === "direct";
+                  })
                 }
               ]
-            : []),
-          {
-            icon: markRaw(RiInformationLine),
-            name: "About",
-            path: "/settings/about",
-            selectedIcon: markRaw(RiInformationFill)
-          }
-        ];
-      }),
-      [RailMode.ADMIN]: computed(() => {
-        console.log("ADMIN - RECOMPUTED");
-        return [
-          {
-            icon: null,
-            name: `Access Level: ${
-              userStore.user?.administrator
-                ? "Admin"
-                : userStore.user?.moderator
-                ? "Moderator"
-                : "User"
-            }`,
-            path: "",
-            selectedIcon: null
-          },
+            }))
+          ],
+          [RailMode.WORKSPACES]: [
+            {
+              icon: markRaw(RiFileTextLine),
+              name: "Recent",
+              path: "/workspaces",
+              selectedIcon: markRaw(RiFileTextFill)
+            }
+          ],
+          [RailMode.SETTINGS]: [
+            {
+              icon: markRaw(RiUserLine),
+              name: "My Account",
+              path: "/settings/dashboard",
+              selectedIcon: markRaw(RiUserFill)
+            },
+            {
+              icon: markRaw(RiShieldUserLine),
+              name: "Privacy",
+              path: "/settings/privacy",
+              selectedIcon: markRaw(RiShieldUserFill)
+            },
+            {
+              icon: markRaw(RiLockLine),
+              name: "Security",
+              path: "/settings/security",
+              selectedIcon: markRaw(RiLockFill)
+            },
+            {
+              icon: markRaw(RiToolsLine),
+              name: "Setup & Clients",
+              path: "/settings/clients",
+              selectedIcon: markRaw(RiToolsFill)
+            },
+            {
+              icon: h(VIcon, {
+                icon: "mdi-plus"
+              }),
+              name: "Flowinity Pro",
+              path: "/settings/subscriptions",
+              selectedIcon: h(VIcon, {
+                icon: "mdi-plus"
+              })
+            },
+            {
+              icon: markRaw(RiGlobalLine),
+              name: "Domains",
+              path: "/settings/domains",
+              selectedIcon: markRaw(RiGlobalLine)
+            },
+            {
+              icon: markRaw(RiLink),
+              name: "Linked Applications",
+              path: "/settings/integrations",
+              selectedIcon: markRaw(RiLink)
+            } /*
+        {
+          icon: markRaw(RiWebhookLine),
+          name: "Webhooks",
+          path: "/settings/webhooks",
+          selectedIcon: markRaw(RiWebhookFill)
+        },*/,
+            {
+              icon: markRaw(RiCodeLine),
+              name: "Developer Portal",
+              path: "/settings/developer",
+              selectedIcon: markRaw(RiCodeFill)
+            },
+            ...(appStore.platform !== Platform.WEB
+              ? [
+                  {
+                    icon: markRaw(
+                      appStore.platform === Platform.WINDOWS
+                        ? RiMicrosoftLine
+                        : appStore.platform === Platform.MAC
+                        ? RiAppleLine
+                        : h(VIcon, {
+                            icon: "mdi-linux"
+                          })
+                    ),
+                    name: "Desktop Settings",
+                    path: "/settings/desktop",
+                    selectedIcon: markRaw(
+                      appStore.platform === Platform.WINDOWS
+                        ? RiMicrosoftFill
+                        : appStore.platform === Platform.MAC
+                        ? RiAppleFill
+                        : h(VIcon, {
+                            icon: "mdi-linux"
+                          })
+                    )
+                  }
+                ]
+              : []),
+            {
+              icon: markRaw(RiInformationLine),
+              name: "About",
+              path: "/settings/about",
+              selectedIcon: markRaw(RiInformationFill)
+            }
+          ],
+          [RailMode.ADMIN]: [
+            {
+              icon: null,
+              name: `Access Level: ${
+                userStore.user?.administrator
+                  ? "Admin"
+                  : userStore.user?.moderator
+                  ? "Moderator"
+                  : "User"
+              }`,
+              path: "",
+              selectedIcon: null
+            },
+            {
+              icon: markRaw(RiDashboardLine),
+              name: "Dashboard",
+              path: "/admin/dashboard",
+              selectedIcon: markRaw(RiDashboardFill)
+            },
+            {
+              icon: markRaw(RiGroupLine),
+              name: "Users",
+              path: "/admin/users",
+              selectedIcon: markRaw(RiGroupFill)
+            },
+            {
+              icon: markRaw(RiGiftLine),
+              name: "Invite a Friend",
+              path: "/admin/invites",
+              selectedIcon: markRaw(RiGiftFill)
+            },
+            {
+              icon: markRaw(RiGlobalLine),
+              name: "Domains",
+              path: "/admin/domains",
+              selectedIcon: markRaw(RiGlobalLine)
+            },
+            {
+              icon: markRaw(RiRefreshLine),
+              name: "Caching",
+              path: "/admin/cache",
+              selectedIcon: markRaw(RiRefreshFill)
+            },
+            {
+              icon: markRaw(RiChat1Line),
+              name: "Communications",
+              path: "/admin/communications",
+              selectedIcon: markRaw(RiChat1Fill)
+            },
+            {
+              icon: markRaw(RiStarLine),
+              name: "Badges",
+              path: "/admin/badges",
+              selectedIcon: markRaw(RiStarFill)
+            },
+            {
+              icon: markRaw(RiSparkling2Line),
+              name: "AutoCollects",
+              path: "/admin/autoCollect",
+              selectedIcon: markRaw(RiSparkling2Fill)
+            },
+            {
+              icon: markRaw(RiLockLine),
+              name: "AppAuth / Developer",
+              path: "/admin/oauth",
+              selectedIcon: markRaw(RiLockFill)
+            }
+          ],
+          [RailMode.MAIL]: mailStore.mailboxes.map((mailbox) => ({
+            icon: markRaw(RiMailLine),
+            name: mailbox.name === "INBOX" ? "Inbox" : mailbox.name,
+            path: `/mail/${mailbox.path}`,
+            selectedIcon: markRaw(RiMailFill),
+            badge: mailbox.unread ? mailbox.unread.toLocaleString() : undefined
+          })),
+          [RailMode.DEBUG]: [],
+          [RailMode.MEET]: []
+        } as Record<RailMode, NavigationOption[]>,
+        miscOptions: {
+          [RailMode.HOME]: [
+            {
+              icon: markRaw(RiGiftLine),
+              name: "Invite a Friend",
+              path: "",
+              selectedIcon: markRaw(RiGiftFill),
+              click: () => {
+                appStore.dialogs.inviteAFriend = true;
+              }
+            },
+            {
+              icon: markRaw(RiDownloadLine),
+              name: "Get the App",
+              path: "/downloads",
+              selectedIcon: markRaw(RiDownloadFill)
+            },
+            {
+              icon: markRaw(RiInformationLine),
+              name: "About Flowinity",
+              path: "/settings/about",
+              selectedIcon: markRaw(RiInformationFill)
+            }
+          ]
+        } as Record<RailMode, NavigationOption[]>,
+        railOptions: [
           {
             icon: markRaw(RiDashboardLine),
             name: "Dashboard",
-            path: "/admin/dashboard",
+            id: RailMode.HOME,
+            path: "/",
             selectedIcon: markRaw(RiDashboardFill)
           },
           {
-            icon: markRaw(RiGroupLine),
-            name: "Users",
-            path: "/admin/users",
-            selectedIcon: markRaw(RiGroupFill)
-          },
-          {
-            icon: markRaw(RiGiftLine),
-            name: "Invite a Friend",
-            path: "/admin/invites",
-            selectedIcon: markRaw(RiGiftFill)
-          },
-          {
-            icon: markRaw(RiGlobalLine),
-            name: "Domains",
-            path: "/admin/domains",
-            selectedIcon: markRaw(RiGlobalLine)
-          },
-          {
-            icon: markRaw(RiRefreshLine),
-            name: "Caching",
-            path: "/admin/cache",
-            selectedIcon: markRaw(RiRefreshFill)
+            icon: markRaw(RiFolderImageLine),
+            name: "Files",
+            id: RailMode.GALLERY,
+            path: "/gallery",
+            selectedIcon: markRaw(RiFolderImageFill),
+            badge: userStore.user?.pendingAutoCollects || "",
+            scopesRequired: ["gallery", "starred", "collections"]
           },
           {
             icon: markRaw(RiChat1Line),
             name: "Communications",
-            path: "/admin/communications",
-            selectedIcon: markRaw(RiChat1Fill)
+            id: RailMode.CHAT,
+            path: "/communications",
+            selectedIcon: markRaw(RiChat1Fill),
+            badge: chatStore.totalUnread
+              ? chatStore.totalUnread.toLocaleString()
+              : undefined,
+            experimentsRequired: ["COMMUNICATIONS"],
+            scopesRequired: ["chats.view"]
           },
           {
-            icon: markRaw(RiStarLine),
-            name: "Badges",
-            path: "/admin/badges",
-            selectedIcon: markRaw(RiStarFill)
+            icon: markRaw(RiFileTextLine),
+            name: "Workspaces",
+            id: RailMode.WORKSPACES,
+            path: "/workspaces",
+            selectedIcon: markRaw(RiFileTextFill),
+            experimentsRequired: ["INTERACTIVE_NOTES"],
+            scopesRequired: ["workspaces.view"]
           },
           {
-            icon: markRaw(RiSparkling2Line),
-            name: "AutoCollects",
-            path: "/admin/autoCollect",
-            selectedIcon: markRaw(RiSparkling2Fill)
+            icon: markRaw(RiVideoChatLine),
+            name: "Meet",
+            id: RailMode.MEET,
+            path: "/meet",
+            selectedIcon: markRaw(RiVideoChatFill),
+            experimentsRequired: ["MEET"],
+            scopesRequired: ["meet.view"]
           },
           {
-            icon: markRaw(RiLockLine),
-            name: "AppAuth / Developer",
-            path: "/admin/oauth",
-            selectedIcon: markRaw(RiLockFill)
+            icon: markRaw(RiMailLine),
+            name: "Mail",
+            id: RailMode.MAIL,
+            path: "/mail",
+            selectedIcon: markRaw(RiMailFill),
+            experimentsRequired: ["WEBMAIL"],
+            badge: mailStore.unread
+              ? mailStore.unread.toLocaleString()
+              : undefined,
+            scopesRequired: ["mail.view"]
+          },
+          {
+            icon: markRaw(RiAuctionLine),
+            name: "Admin",
+            id: RailMode.ADMIN,
+            path: "/admin",
+            selectedIcon: markRaw(RiAuctionFill),
+            experimentsRequired: ["ACCOUNT_DEV_ELIGIBLE"],
+            scopesRequired: ["*"]
+          },
+          {
+            icon: markRaw(RiBug2Line),
+            name: "Debug",
+            id: RailMode.DEBUG,
+            path: "",
+            selectedIcon: markRaw(RiBug2Fill),
+            experimentsRequired: ["ACCOUNT_DEV_ELIGIBLE"]
+          },
+          {
+            icon: markRaw(RiSettings5Line),
+            name: "Settings",
+            id: RailMode.SETTINGS,
+            path: "/settings",
+            selectedIcon: markRaw(RiSettings5Fill),
+            misc: true,
+            scopesRequired: ["user.modify"]
           }
-        ];
-      }),
-      [RailMode.MAIL]: computed(() => {
-        console.log("MAIL - RECOMPUTED");
-        return mailStore.mailboxes.map((mailbox) => ({
-          icon: markRaw(RiMailLine),
-          name: mailbox.name === "INBOX" ? "Inbox" : mailbox.name,
-          path: `/mail/${mailbox.path}`,
-          selectedIcon: markRaw(RiMailFill),
-          badge: mailbox.unread ? mailbox.unread.toLocaleString() : undefined
-        }));
-      }),
-      [RailMode.DEBUG]: computed(() => []),
-      [RailMode.MEET]: computed(() => []),
-      [RailMode.FORMS]: computed(
-        () => modulesStore.modules["FlowForms"].navigationOptions
-      )
+        ]
+      };
     },
-    miscOptions: {
-      [RailMode.HOME]: [
-        {
-          icon: markRaw(RiGiftLine),
-          name: "Invite a Friend",
-          path: "",
-          selectedIcon: markRaw(RiGiftFill),
-          click: () => {
-            appStore.dialogs.inviteAFriend = true;
-          }
-        },
-        {
-          icon: markRaw(RiDownloadLine),
-          name: "Get the App",
-          path: "/downloads",
-          selectedIcon: markRaw(RiDownloadFill)
-        },
-        {
-          icon: markRaw(RiInformationLine),
-          name: "About Flowinity",
-          path: "/settings/about",
-          selectedIcon: markRaw(RiInformationFill)
-        }
-      ]
-    } as Record<RailMode, NavigationOption[]>,
-    railOptions: computed(() => {
-      console.log("Recomputing");
-      return [
-        {
-          icon: markRaw(RiDashboardLine),
-          name: "Dashboard",
-          id: RailMode.HOME,
-          path: "/",
-          selectedIcon: markRaw(RiDashboardFill)
-        },
-        {
-          icon: markRaw(RiFolderImageLine),
-          name: "Files",
-          id: RailMode.GALLERY,
-          path: "/gallery",
-          selectedIcon: markRaw(RiFolderImageFill),
-          badge: userStore.user?.pendingAutoCollects || "",
-          scopesRequired: ["gallery", "starred", "collections"]
-        },
-        {
-          icon: markRaw(RiChat1Line),
-          name: "Comms",
-          id: RailMode.CHAT,
-          path: "/communications",
-          selectedIcon: markRaw(RiChat1Fill),
-          badge: chatStore.totalUnread
-            ? chatStore.totalUnread.toLocaleString()
-            : undefined,
-          experimentsRequired: ["COMMUNICATIONS"],
-          scopesRequired: ["chats.view"]
-        },
-        {
-          icon: markRaw(RiFileTextLine),
-          name: "Workspaces",
-          id: RailMode.WORKSPACES,
-          path: "/workspaces",
-          selectedIcon: markRaw(RiFileTextFill),
-          experimentsRequired: ["INTERACTIVE_NOTES"],
-          scopesRequired: ["workspaces.view"]
-        },
-        {
-          icon: markRaw(RiVideoChatLine),
-          name: "Meet",
-          id: RailMode.MEET,
-          path: "/meet",
-          selectedIcon: markRaw(RiVideoChatFill),
-          experimentsRequired: ["MEET"],
-          scopesRequired: ["meet.view"]
-        },
-        {
-          icon: markRaw(RiSurveyLine),
-          name: "Forms",
-          id: RailMode.FORMS,
-          path: "/forms",
-          selectedIcon: markRaw(RiSurveyFill),
-          experimentsRequired: ["SURVEYS"],
-          scopesRequired: ["forms.view"]
-        },
-        {
-          icon: markRaw(RiMailLine),
-          name: "Mail",
-          id: RailMode.MAIL,
-          path: "/mail",
-          selectedIcon: markRaw(RiMailFill),
-          experimentsRequired: ["WEBMAIL"],
-          badge: mailStore.unread
-            ? mailStore.unread.toLocaleString()
-            : undefined,
-          scopesRequired: ["mail.view"]
-        },
-        {
-          icon: markRaw(RiAuctionLine),
-          name: "Admin",
-          id: RailMode.ADMIN,
-          path: "/admin",
-          selectedIcon: markRaw(RiAuctionFill),
-          experimentsRequired: ["ACCOUNT_DEV_ELIGIBLE"],
-          scopesRequired: ["*"]
-        },
-        {
-          icon: markRaw(RiBug2Line),
-          name: "Debug",
-          id: RailMode.DEBUG,
-          path: "",
-          selectedIcon: markRaw(RiBug2Fill),
-          experimentsRequired: ["ACCOUNT_DEV_ELIGIBLE"]
-        },
-        {
-          icon: markRaw(RiSettings5Line),
-          name: "Settings",
-          id: RailMode.SETTINGS,
-          path: "/settings",
-          selectedIcon: markRaw(RiSettings5Fill),
-          misc: true,
-          scopesRequired: ["user.modify"]
-        }
-      ];
-    })
-  };
+    set() {
+      console.warn("Cannot set navigation");
+    }
+  });
 
   const shifting = ref(false);
 
@@ -712,7 +911,7 @@ export const useProgressiveUIStore = defineStore("progressive", () => {
 
     shifting.value = e.shiftKey;
 
-    const eligible = navigation.railOptions.value.filter((rail) => {
+    const eligible = navigation.value.railOptions.filter((rail) => {
       if (rail.fake) return false;
       if (!rail.experimentsRequired) return true;
 
@@ -749,8 +948,8 @@ export const useProgressiveUIStore = defineStore("progressive", () => {
   });
 
   const currentRail = computed(() => {
-    if (!navigationMode.value) return navigation.railOptions.value[0];
-    return navigation.railOptions.value.find(
+    if (!navigationMode.value) return navigation.value.railOptions[0];
+    return navigation.value.railOptions.find(
       (rail) => rail.id === navigationMode.value
     );
   });
@@ -778,6 +977,14 @@ export const useProgressiveUIStore = defineStore("progressive", () => {
     item: NavigationOption & { _rail: number };
     rail: NavigationOption[];
   } | null>(null);
+
+  const currentNavOptions = computed(() => {
+    return navigation.value.options[navigationMode.value as RailMode];
+  });
+
+  const currentMiscNavOptions = computed(() => {
+    return navigation.value.miscOptions[navigationMode.value as RailMode];
+  });
 
   const currentNavItem = computed({
     get() {
@@ -886,6 +1093,8 @@ export const useProgressiveUIStore = defineStore("progressive", () => {
     scrollPosition,
     currentNavItem,
     _currentNavItem,
+    currentNavOptions,
+    currentMiscNavOptions,
     currentRail,
     shifting,
     lookupNav,

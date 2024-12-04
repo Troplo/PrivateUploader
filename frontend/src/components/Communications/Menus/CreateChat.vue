@@ -97,7 +97,7 @@
               )
             "
           >
-            <v-icon>file-copy-line</v-icon>
+            <v-icon>mdi-content-copy</v-icon>
           </v-btn>
         </p>
         <i
@@ -146,7 +146,8 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import UserAvatar from "@/components/Users/UserAvatar.vue";
-import { CreateChatInviteDocument, FriendStatus } from "@/gql/graphql";
+import { FriendStatus } from "@/gql/graphql";
+import { CreateChatInviteMutation } from "@/graphql/chats/invite.graphql";
 
 export default defineComponent({
   name: "CreateChat",
@@ -234,7 +235,7 @@ export default defineComponent({
         const {
           data: { createChatInvite }
         } = await this.$apollo.mutate({
-          mutation: CreateChatInviteDocument,
+          mutation: CreateChatInviteMutation,
           variables: {
             input: {
               rankId: this.rankId,

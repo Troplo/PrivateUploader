@@ -52,7 +52,7 @@
         </template>
         <v-list-item-title>{{ menu.name }}</v-list-item-title>
         <template #append v-if="menu.menu?.length">
-          <v-icon>arrow-right-s-line</v-icon>
+          <v-icon>mdi-arrow-right</v-icon>
         </template>
         <template #append v-else>
           <component :is="menu.append" />
@@ -78,11 +78,6 @@
           </p>
         </div>
       </accessible-transition>
-      <small
-        class="absolute bottom-0 right-0 text-xs text-medium-emphasis mb-1 mr-1"
-      >
-        {{ $app.version.current }}
-      </small>
       <div id="sidebar-actions" class="flex items-center mr-4" />
     </div>
   </router-link>
@@ -109,7 +104,7 @@
           >
             <SideBarItem
               v-for="item in entries as NavigationOption[]"
-              :key="item.path"
+              :key="item.id + item.path + ''"
               class="flex items-center"
               :item="item"
               :disabled="
@@ -189,9 +184,9 @@ import {
 import { useAppStore } from "@/store/app.store";
 import { computed, nextTick, watch } from "vue";
 import SidebarList from "@/layouts/communications/SidebarList.vue";
-import SideBarItem from "@/layouts/default/SideBarItem.vue";
-import SidebarDebug from "@/layouts/default/SidebarDebug.vue";
-import SidebarCollections from "@/layouts/default/SidebarCollections.vue";
+import SideBarItem from "@/layouts/progressive/SideBarItem.vue";
+import SidebarDebug from "@/layouts/progressive/SidebarDebug.vue";
+import SidebarCollections from "@/layouts/progressive/SidebarCollections.vue";
 import MailSidebarList from "@/layouts/mail/SidebarList.vue";
 import WorkspacesSidebarList from "@/layouts/default/WorkspacesSidebarList.vue";
 import AdminSidebarList from "@/components/Admin/AdminSidebarList.vue";

@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-const PermissionsQuery = gql`
+export const PermissionsQuery = gql`
   query AvailableChatPermissions {
     availableChatPermissions {
       id

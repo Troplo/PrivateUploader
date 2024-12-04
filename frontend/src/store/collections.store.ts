@@ -1,25 +1,29 @@
 // Utilities
 import { defineStore } from "pinia";
+import { CollectionCache } from "@/types/collection";
 import {
-  AddToCollectionDocument,
+  UserCollectionsQuery,
+  UserLightCollectionsQuery
+} from "@/graphql/collections/getUserCollections.graphql";
+import { CollectionQuery } from "@/graphql/collections/getCollection.graphql";
+import {
   Collection,
-  CollectionDocument,
   CollectionInput,
   Pager,
-  RemoveFromCollectionDocument,
-  UserCollectionsInput,
-  CollectionsDocument,
-  LightCollectionsDocument,
-  LightCollectionsQuery
+  UserCollectionsInput
 } from "@/gql/graphql";
 import { useApolloClient, useMutation } from "@vue/apollo-composable";
 import { useRoute } from "vue-router";
 import { isNumeric } from "@/plugins/isNumeric";
 import { computed, ref } from "vue";
+import {
+  AddToCollectionMutation,
+  RemoveFromCollectionMutation
+} from "@/graphql/collections/addToCollection.graphql";
 
 export const useCollectionsStore = defineStore("collections", () => {
   const route = useRoute();
-  const items = ref<LightCollectionsQuery["collections"]>([]);
+  const items = ref<CollectionCache[]>([]);
   const pager = ref<Pager>({
     currentPage: 0,
     endIndex: 0,
@@ -88,7 +92,7 @@ export const useCollectionsStore = defineStore("collections", () => {
     const {
       data: { collections }
     } = await useApolloClient().client.query({
-      query: CollectionsDocument,
+      query: UserCollectionsQuery,
       variables: {
         input: {
           ...input,
@@ -116,7 +120,7 @@ export const useCollectionsStore = defineStore("collections", () => {
     const {
       data: { collection }
     } = await useApolloClient().client.query({
-      query: CollectionDocument,
+      query: CollectionQuery,
       fetchPolicy: "network-only",
       variables: {
         input: {
@@ -132,7 +136,7 @@ export const useCollectionsStore = defineStore("collections", () => {
     const {
       data: { collections }
     } = await useApolloClient().client.query({
-      query: LightCollectionsDocument,
+      query: UserLightCollectionsQuery,
       fetchPolicy: "network-only",
       variables: {
         input: {}
@@ -144,7 +148,7 @@ export const useCollectionsStore = defineStore("collections", () => {
   }
 
   async function addToCollection(collectionId: number, items: number[]) {
-    const data = useMutation(AddToCollectionDocument, {
+    const data = useMutation(AddToCollectionMutation, {
       variables: {
         input: {
           collectionId,
@@ -156,7 +160,7 @@ export const useCollectionsStore = defineStore("collections", () => {
   }
 
   async function removeFromCollection(collectionId: number, items: number[]) {
-    const data = useMutation(RemoveFromCollectionDocument, {
+    const data = useMutation(RemoveFromCollectionMutation, {
       variables: {
         input: {
           collectionId,

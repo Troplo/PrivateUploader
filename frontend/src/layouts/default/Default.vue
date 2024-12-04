@@ -33,21 +33,86 @@
     <NicknameDialog v-model="$app.dialogs.nickname.value" />
     <QuickSwitcher v-model="$app.dialogs.quickSwitcher" />
     <UploadFileV2 v-model="$app.dialogs.upload.value" />
-    <RenderMonitor v-if="$app.dialogs.renderMonitor" />
     <MemoryProfiler v-if="$app.dialogs.memoryProfiler" />
+    <v-overlay
+      v-if="!$experiments.experiments.PROGRESSIVE_UI"
+      persistent
+      :model-value="$app.componentLoading && $app.loading"
+      class="align-center justify-center"
+      absolute
+    >
+      <FlowinityLogoAnimated
+        :animated="true"
+        :skip-init="true"
+        style="width: 128px"
+      />
+    </v-overlay>
     <!-- must be false because if it's undefined, the appbar will render after the state is loaded -->
-    <progressive-app-bar v-else-if="$app.site.finishedSetup !== false" />
+    <default-bar
+      v-if="
+        $app.site.finishedSetup !== false &&
+        !$experiments.experiments.PROGRESSIVE_UI
+      "
+    />
+    <progressive-app-bar
+      v-else-if="
+        $app.site.finishedSetup !== false &&
+        $experiments.experiments.PROGRESSIVE_UI
+      "
+    />
     <template v-if="!$vuetify.display.mobile">
-      <progressive-super-bar v-if="$app.site.finishedSetup !== false" />
-      <progressive-side-bar v-if="$app.site.finishedSetup !== false" />
+      <progressive-super-bar
+        v-if="
+          $app.site.finishedSetup !== false &&
+          $experiments.experiments.PROGRESSIVE_UI
+        "
+      />
+      <progressive-side-bar
+        v-if="
+          $app.site.finishedSetup !== false &&
+          $experiments.experiments.PROGRESSIVE_UI
+        "
+      />
     </template>
     <template v-else>
-      <progressive-side-bar-mobile v-if="$app.site.finishedSetup !== false" />
+      <progressive-side-bar-mobile
+        v-if="
+          $app.site.finishedSetup !== false &&
+          $experiments.experiments.PROGRESSIVE_UI
+        "
+      />
+    </template>
+    <rail-bar
+      v-if="
+        $experiments.experiments.RAIL_SIDEBAR &&
+        $app.rail &&
+        $app.site.finishedSetup &&
+        !$experiments.experiments.PROGRESSIVE_UI
+      "
+    />
+    <template v-if="!$experiments.experiments.PROGRESSIVE_UI">
+      <keep-alive v-if="$app.rail">
+        <component :is="currentRailComponent" />
+      </keep-alive>
+      <sidebar
+        v-if="
+          !$app.rail &&
+          (!$vuetify.display.mobile ||
+            ($vuetify.display.mobile && $app.railMode === 'tpu') ||
+            !$chat.isCommunications) &&
+          $app.site.finishedSetup
+        "
+      />
+      <comms-sidebar v-if="!$app.rail && $chat.isCommunications" />
+      <workspaces-sidebar v-if="!$app.rail" />
     </template>
     <theme-engine-wrapper />
     <default-view
       :style="{
-        'margin-left': !$vuetify.display.mobile ? '16px' : undefined
+        'margin-left':
+          $experiments.experiments.PROGRESSIVE_UI && !$vuetify.display.mobile
+            ? '16px'
+            : undefined
       }"
     />
   </v-app>
@@ -65,7 +130,8 @@
     <template
       v-if="$route.name !== 'Slideshow' && $app.site.finishedSetup !== false"
     >
-      <progressive-app-bar />
+      <unauth-bar v-if="!$experiments.experiments.PROGRESSIVE_UI" />
+      <progressive-app-bar v-else />
     </template>
     <default-view />
   </v-app>
@@ -73,6 +139,10 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import MessageToast from "@/components/Communications/MessageToast.vue";
+import Sidebar from "@/layouts/default/Sidebar.vue";
+import WorkspacesSidebar from "@/layouts/default/WorkspacesSidebar.vue";
+import CommsSidebar from "@/layouts/communications/CommsSidebar.vue";
+import DefaultBar from "./AppBar.vue";
 import DefaultView from "./View.vue";
 import UnauthBar from "@/layouts/unauth/AppBar.vue";
 import URLConfirmDialog from "@/components/Communications/Dialogs/URLConfirm.vue";
@@ -82,6 +152,7 @@ import WorkspaceDeleteDialog from "@/components/Workspaces/Dialogs/Delete.vue";
 import QuickSwitcher from "@/components/Core/Dialogs/QuickSwitcher.vue";
 import NicknameDialog from "@/components/Core/Dialogs/Nickname.vue";
 import ThemeEngineWrapper from "@/components/Core/ThemeEngineWrapper.vue";
+import RailBar from "@/layouts/default/RailBar.vue";
 import Gold from "@/components/Dashboard/Dialogs/Gold.vue";
 import InviteAFriend from "@/components/Dashboard/Dialogs/InviteAFriend.vue";
 import Feedback from "@/components/Dashboard/Dialogs/Feedback.vue";
@@ -89,21 +160,19 @@ import PrivacyPolicyDialog from "@/components/Core/Dialogs/PrivacyPolicy.vue";
 import BlockUserDialog from "@/components/Users/Dialogs/Block.vue";
 import NetworkInspector from "@/components/Dev/Dialogs/NetworkInspector.vue";
 import DateOfBirthConfirm from "@/components/Users/Dialogs/DateOfBirthConfirm.vue";
-import ProgressiveAppBar from "@/layouts/default/ProgressiveAppBar.vue";
-import ProgressiveSideBar from "@/layouts/default/ProgressiveSideBar.vue";
-import ProgressiveSuperBar from "@/layouts/default/ProgressiveSuperBar.vue";
+import ProgressiveAppBar from "@/layouts/progressive/ProgressiveAppBar.vue";
+import ProgressiveSideBar from "@/layouts/progressive/ProgressiveSideBar.vue";
+import ProgressiveSuperBar from "@/layouts/progressive/ProgressiveSuperBar.vue";
 import Connecting from "@/components/Core/Dialogs/Connecting.vue";
 import ImageDialog from "@/components/Communications/Dialogs/ImageDialog.vue";
 import GroupSettingsDialog from "@/components/Communications/Dialogs/GroupSettingsV2.vue";
 import FlowinityLogoAnimated from "@/components/Brand/FlowinityLogoAnimated.vue";
 import UploadFileV2 from "@/components/Gallery/Dialogs/UploadFileV2.vue";
-import ProgressiveSideBarMobile from "@/layouts/default/ProgressiveSideBarMobile.vue";
-import RenderMonitor from "@/components/Dev/Dialogs/RenderMonitor.vue";
+import ProgressiveSideBarMobile from "@/layouts/progressive/ProgressiveSideBarMobile.vue";
 
 export default defineComponent({
-  name: "FlowinityDefaultLayout",
+  name: "TPUDefaultLayout",
   components: {
-    RenderMonitor,
     ProgressiveSideBarMobile,
     UploadFileV2,
     FlowinityLogoAnimated,
@@ -115,6 +184,10 @@ export default defineComponent({
     ProgressiveAppBar,
     DateOfBirthConfirm,
     NetworkInspector,
+    Sidebar,
+    WorkspacesSidebar,
+    CommsSidebar,
+    DefaultBar,
     DefaultView,
     UnauthBar,
     URLConfirmDialog,
@@ -124,6 +197,7 @@ export default defineComponent({
     QuickSwitcher,
     NicknameDialog,
     ThemeEngineWrapper,
+    RailBar,
     Gold,
     InviteAFriend,
     Feedback,
@@ -220,20 +294,29 @@ export default defineComponent({
         )
           return;
       }
-      if (this.$chat.memberSidebarShown || this.$app.mainDrawer) return;
+      if (
+        (this.$experiments.experiments.PROGRESSIVE_UI &&
+          this.$chat.memberSidebarShown) ||
+        (!this.$experiments.experiments.PROGRESSIVE_UI &&
+          this.$app.workspaceDrawer) ||
+        this.$app.mainDrawer
+      )
+        return;
       this.touchEndX = event.changedTouches[0].screenX;
       if (!this.touchStartX || !this.touchEndX) return;
       if (this.touchEndX > this.touchStartX) {
         if (this.touchEndX - this.touchStartX > 130) {
           this.touchStartX = null;
           this.touchEndX = null;
-          this.$app.mainDrawer = !this.$app.mainDrawer;
+          this.$app.toggleMain();
         }
       } else if (this.touchEndX < this.touchStartX) {
         if (this.touchStartX - this.touchEndX > 130) {
           this.touchStartX = null;
           this.touchEndX = null;
-          if (this.$chat.isCommunications) {
+          if (!this.$experiments.experiments.PROGRESSIVE_UI) {
+            this.$app.toggleWorkspace();
+          } else if (this.$chat.isCommunications) {
             this.$chat.memberSidebarShown = true;
           }
         }

@@ -1,0 +1,3 @@
+[submodule "frontend-v5"]
+	path = frontend-v5
+	url = https://github.com/Flowinity/frontend-v5

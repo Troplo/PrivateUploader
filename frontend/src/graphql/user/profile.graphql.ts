@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-const ProfileQuery = gql`
+export const ProfileQuery = gql`
   query User($input: UserProfileInput!) {
     user(input: $input) {
       username

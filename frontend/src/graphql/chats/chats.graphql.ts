@@ -1,7 +1,16 @@
 import { gql } from "@apollo/client/core";
 
-const ChatsQuery = gql`
+export const ChatsQuery = gql`
   query ChatsQuery {
+    userEmoji {
+      id
+      userId
+      chatId
+      icon
+      name
+      createdAt
+      updatedAt
+    }
     chats {
       id
       description
@@ -13,15 +22,11 @@ const ChatsQuery = gql`
       icon
       createdAt
       updatedAt
-      sortDate
+      _redisSortDate
       usersCount
       onlineCount
       recipient {
         id
-      }
-      typing {
-        expires
-        userId
       }
       association {
         id
@@ -38,21 +43,7 @@ const ChatsQuery = gql`
   }
 `;
 
-const UserEmoji = gql`
-  query UserEmoji {
-    userEmoji {
-      id
-      userId
-      chatId
-      icon
-      name
-      createdAt
-      updatedAt
-    }
-  }
-`;
-
-const ChatQuery = gql`
+export const ChatQuery = gql`
   query Chat($input: ChatInput!) {
     chat(input: $input) {
       id
@@ -90,7 +81,7 @@ const ChatQuery = gql`
   }
 `;
 
-const _OldChatsQuery = gql`
+export const _OldChatsQuery = gql`
   query ChatsQueryOld {
     userEmoji {
       id
@@ -141,7 +132,7 @@ const _OldChatsQuery = gql`
         lastRead
         ranksMap
       }
-      sortDate
+      _redisSortDate
       recipient {
         id
       }
@@ -161,7 +152,7 @@ const _OldChatsQuery = gql`
   }
 `;
 
-const GetChatUsersQuery = gql`
+export const GetChatUsersQuery = gql`
   query GetChatUsers($input: ChatInput!) {
     chat(input: $input) {
       users {

@@ -81,7 +81,7 @@
   <v-text-field v-model="search" label="Search" />
   <v-select
     v-model="version"
-    :items="[0, 1, 2, 3, 4, 'CURRENT']"
+    :items="[0, 1, 2, 3, 4, 5, 6]"
     label="TPU Version"
   />
   <span class="text-blue">

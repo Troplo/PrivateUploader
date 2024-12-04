@@ -1,12 +1,12 @@
 import { gql } from "@apollo/client/core";
 
-const VerifyEmailMutation = gql`
+export const VerifyEmailMutation = gql`
   mutation VerifyEmail($token: String!) {
     verifyEmail(token: $token)
   }
 `;
 
-const SendEmailVerificationMutation = gql`
+export const SendEmailVerificationMutation = gql`
   mutation SendVerificationEmail {
     resendVerificationEmail
   }

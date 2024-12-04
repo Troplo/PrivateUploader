@@ -16,8 +16,6 @@ import functions from "@/plugins/functions";
 import router from "@/router";
 import { useMessagesStore } from "@/store/message.store";
 import { useProgressiveUIStore } from "@/store/progressive.store";
-import { useModulesStore } from "@/store/modules.store";
-import { useToast } from "vue-toastification";
 import { useEndpointsStore } from "@/store/endpoints.store";
 
 function createSocket(namespace: string) {
@@ -91,16 +89,11 @@ export default function setup(app) {
   app.config.globalProperties.$functions = functions;
 
   window.central = {
-    userStore: useUserStore(),
+    user: user.user,
     emit: (platform: string, event: string, data: any) => {
       if (platform === "geo" && event === "history") {
         console.log(data);
       }
-    },
-    modulesStore: useModulesStore(),
-    vuetify,
-    router,
-    token: localStorage.getItem("token"),
-    toast: useToast()
+    }
   };
 }

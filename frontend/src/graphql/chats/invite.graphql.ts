@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-const ChatInviteQuery = gql`
+export const ChatInviteQuery = gql`
   query ChatInvite($input: InviteInput!) {
     chatInvite(input: $input) {
       id
@@ -39,7 +39,7 @@ const ChatInviteQuery = gql`
   }
 `;
 
-const GetInvitesForChatQuery = gql`
+export const GetInvitesForChatQuery = gql`
   query GetInvitesForChat($input: ChatInput!) {
     chat(input: $input) {
       invites {
@@ -55,7 +55,7 @@ const GetInvitesForChatQuery = gql`
   }
 `;
 
-const JoinChatInviteMutation = gql`
+export const JoinChatInviteMutation = gql`
   mutation JoinChatFromInvite($input: JoinChatFromInviteInput!) {
     joinChatFromInvite(input: $input) {
       id
@@ -63,7 +63,7 @@ const JoinChatInviteMutation = gql`
   }
 `;
 
-const CreateChatInviteMutation = gql`
+export const CreateChatInviteMutation = gql`
   mutation CreateChatInvite($input: CreateInviteInput!) {
     createChatInvite(input: $input) {
       id

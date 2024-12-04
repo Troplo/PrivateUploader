@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-const LoginMutation = gql`
+export const LoginMutation = gql`
   mutation Login($input: LoginInput!) {
     login(input: $input) {
       token

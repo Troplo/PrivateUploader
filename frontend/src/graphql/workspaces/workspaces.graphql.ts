@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-const WorkspacesQuery = gql`
+export const WorkspacesQuery = gql`
   query Workspaces {
     workspaces {
       id

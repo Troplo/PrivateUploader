@@ -3,8 +3,8 @@
     <v-row>
       <v-col md="6">
         <UserWidget />
-        <BlogWidget class="mt-6" />
-        <AnnouncementsWidget class="mt-6" />
+        <AnnouncementsWidget class="mt-6" v-if="!$app.site.officialInstance" />
+        <NewsWidget v-else class="mt-6" />
       </v-col>
       <v-col md="6">
         <StatsWidget />
@@ -18,18 +18,18 @@
 import { defineComponent } from "vue";
 import UserWidget from "@/components/Dashboard/UserWidget.vue";
 import StatsWidget from "@/components/Dashboard/StatsWidget.vue";
-import GraphWidget from "@/components/Dashboard/GraphWidget.vue";
-import BlogWidget from "@/components/Dashboard/BlogWidget.vue";
 import AnnouncementsWidget from "@/components/Dashboard/AnnouncementsWidget.vue";
+import GraphWidget from "@/components/Dashboard/GraphWidget.vue";
+import NewsWidget from "@/components/Dashboard/NewsWidget.vue";
 
 export default defineComponent({
   name: "Home",
   components: {
-    BlogWidget,
+    NewsWidget,
     GraphWidget,
+    AnnouncementsWidget,
     StatsWidget,
-    UserWidget,
-    AnnouncementsWidget
+    UserWidget
   },
   mounted() {
     this.$app.title = "Dashboard";

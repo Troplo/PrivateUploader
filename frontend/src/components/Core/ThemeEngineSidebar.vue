@@ -7,10 +7,21 @@
     <v-card>
       <v-color-picker
         v-if="menu.selected"
-        :model-value="$vuetify.theme.themes.dark.colors[menu.selected]"
+        :model-value="
+          menu.selected === 'nameColor'
+            ? $user.user.nameColor
+            : $vuetify.theme.themes.dark.colors[menu.selected]
+        "
         mode="hex"
         @update:model-value="setThemeColor($event, menu.selected)"
       />
+      <v-btn
+        :block="true"
+        v-if="menu.selected === 'nameColor'"
+        @click="setThemeColor(null, menu.selected)"
+      >
+        Reset
+      </v-btn>
     </v-card>
   </v-menu>
   <template v-if="$app.themeEditor">
@@ -22,7 +33,7 @@
         </v-chip>
       </v-toolbar-title>
       <v-btn icon @click="reset">
-        <v-icon>restart-line</v-icon>
+        <v-icon>mdi-restart</v-icon>
         <v-tooltip activator="parent" location="top">
           {{ $t("themeEditor.reset") }}
         </v-tooltip>
@@ -151,6 +162,18 @@
           @click="openMenu($event, 'toolbar')"
         />
         {{ $t("themeEditor.colors.toolbar") }}
+      </v-card-title>
+      <v-card-title>
+        <v-avatar
+          class="v-avatar--variant-outlined pointer"
+          :color="$user.user.nameColor"
+          size="22"
+          @click="openMenu($event, 'nameColor')"
+        />
+        {{ $t("themeEditor.colors.nameColor") }}
+        <v-chip size="x-small">
+          {{ $t("generic.new") }}
+        </v-chip>
       </v-card-title>
       <v-card-title>
         <tpu-switch
@@ -343,6 +366,11 @@ export default defineComponent({
     },
     setThemeColor(color: string, type: string) {
       if (!this.$user.gold && this.$app.site.officialInstance) return;
+      if (type === "nameColor") {
+        this.$user.user.nameColor = color;
+        this.triggerSave();
+        return;
+      }
       if (color) {
         this.$vuetify.theme.themes.dark.colors[type] = color;
         this.$vuetify.theme.themes.light.colors[type] = color;
@@ -397,8 +425,10 @@ export default defineComponent({
       this.menu.y = event.clientY;
       this.menu.selected = selected;
       this.menu.value = true;
-    },
-    saveShortcut(event: KeyboardEvent) {
+    }
+  },
+  mounted() {
+    document.addEventListener("keydown", (event) => {
       if (
         (event.ctrlKey || event.metaKey) &&
         event.key === "s" &&
@@ -407,13 +437,19 @@ export default defineComponent({
         event.preventDefault();
         this.save();
       }
-    }
-  },
-  mounted() {
-    document.addEventListener("keydown", this.saveShortcut);
+    });
   },
   unmounted() {
-    document.removeEventListener("keydown", this.saveShortcut);
+    document.removeEventListener("keydown", (event) => {
+      if (
+        (event.ctrlKey || event.metaKey) &&
+        event.key === "s" &&
+        this.$app.themeEditor
+      ) {
+        event.preventDefault();
+        this.save();
+      }
+    });
   },
   watch: {
     theme() {

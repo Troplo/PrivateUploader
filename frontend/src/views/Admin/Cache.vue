@@ -8,7 +8,7 @@
         <v-list>
           <v-text-field
             v-model="user"
-            append-outer-icon="close"
+            append-outer-icon="mdi-delete"
             class="mx-4 mb-3"
             hide-details
             label="Purge by UserID"

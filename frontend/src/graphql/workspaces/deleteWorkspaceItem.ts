@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-const DeleteWorkspaceItemMutation = gql`
+export const DeleteWorkspaceItemMutation = gql`
   mutation SaveNote($input: DeleteWorkspaceItemInput!) {
     deleteWorkspaceItem(input: $input)
   }

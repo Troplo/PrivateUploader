@@ -24,7 +24,7 @@
       @click="$emit('delete', $event.shiftKey)"
     >
       <template #prepend>
-        <v-icon>close-line</v-icon>
+        <v-icon>mdi-delete</v-icon>
       </template>
       <v-list-item-title>Delete Message</v-list-item-title>
     </v-list-item>
@@ -44,7 +44,7 @@
     >
       <template #prepend>
         <v-icon>
-          {{ $chat.dialogs.message.message.pinned ? "pushpin-off" : "pushpin" }}
+          {{ $chat.dialogs.message.message.pinned ? "mdi-pin-off" : "mdi-pin" }}
         </v-icon>
       </template>
       <v-list-item-title>
@@ -58,7 +58,7 @@
       "
     >
       <template #prepend>
-        <v-icon>file-copy-line</v-icon>
+        <v-icon>mdi-content-copy</v-icon>
       </template>
       <v-list-item-title>Copy message contents</v-list-item-title>
     </v-list-item>

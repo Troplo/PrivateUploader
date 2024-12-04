@@ -7,7 +7,7 @@
         <v-spacer />
         <v-btn icon @click="create = true">
           <v-tooltip activator="parent" location="bottom">Create app</v-tooltip>
-          <v-icon>add-line</v-icon>
+          <v-icon>mdi-plus</v-icon>
         </v-btn>
       </v-toolbar>
 
@@ -52,8 +52,8 @@
 import { defineComponent } from "vue";
 import CreateAppAuthDialog from "@/components/Admin/AppAuth/CreateAppAuthDialog.vue";
 import { VContainer } from "vuetify/components";
+import { MyAppsQuery } from "@/graphql/developer/myApps.graphql";
 import UserAvatar from "@/components/Users/UserAvatar.vue";
-import { DevAppsDocument } from "@/gql/graphql";
 
 export default defineComponent({
   name: "AdminOAuth",
@@ -82,7 +82,7 @@ export default defineComponent({
       const {
         data: { oauthApps }
       } = await this.$apollo.query({
-        query: DevAppsDocument,
+        query: MyAppsQuery,
         fetchPolicy: "network-only"
       });
       this.apps = oauthApps;

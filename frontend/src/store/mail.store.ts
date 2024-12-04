@@ -1,8 +1,8 @@
 // Utilities
 import { defineStore } from "pinia";
 import axios from "@/plugins/axios";
+import { UnreadMailQuery } from "@/graphql/mail/unreadMail.graphql";
 import { useApolloClient } from "@vue/apollo-composable";
-import { UnreadMailDocument } from "@/gql/graphql";
 
 export interface MailState {
   // temp
@@ -57,7 +57,7 @@ export const useMailStore = defineStore("mail", {
 
       const apolloClient = useApolloClient();
       const { data } = await apolloClient.client.query({
-        query: UnreadMailDocument
+        query: UnreadMailQuery
       });
       this.unread = data.unreadMail;
     },

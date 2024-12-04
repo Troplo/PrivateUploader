@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 220px">
+  <div>
     <v-hover v-if="item.type === 'image'" v-slot="{ isHovering, props }">
       <v-img
         v-if="show || item.fileSize <= 12582912"
@@ -20,7 +20,7 @@
             class="align-center justify-center"
             :contained="true"
           >
-            <v-icon color="white" large size="40">external-link-line</v-icon>
+            <v-icon color="white" large size="40">mdi-open-in-new</v-icon>
           </v-overlay>
         </a>
       </v-img>
@@ -38,11 +38,12 @@
     <video
       v-else-if="item.type === 'video'"
       controls
-      style="width: 100%; height: 220px"
+      height="220"
+      style="width: 100%"
     >
       <source :src="$app.domain + item.attachment" type="video/mp4" />
     </video>
-    <audio style="margin: auto; height: 137px" v-else-if="item.type === 'audio'" controls>
+    <audio v-else-if="item.type === 'audio'" controls>
       <source :src="$app.domain + item.attachment" type="audio/mpeg" />
     </audio>
     <v-card

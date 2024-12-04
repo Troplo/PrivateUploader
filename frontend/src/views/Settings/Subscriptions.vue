@@ -5,7 +5,7 @@
   >
     <div class="d-flex">
       <v-icon v-if="!$user.user.subscription?.cancelled">
-        checkbox-circle-fill
+        mdi-check-circle
       </v-icon>
       <v-icon v-else>mdi-alert-circle</v-icon>
 

@@ -1,6 +1,8 @@
 <template>
   <div class="justify-between superbar flex flex-col h-full overflow-y-auto">
-    <div class="flex flex-col flex-grow overflow-y-auto items-center">
+    <div
+      class="flex flex-col flex-grow overflow-y-auto items-center superbar-content"
+    >
       <div class="flex flex-col gap-y-4">
         <div
           class="flex cursor-pointer select-none pt-0 border-b-2 flowinity-border relative justify-center"
@@ -135,7 +137,7 @@
         />
       </div>
       <template v-if="experimentsStore.experiments.COMMS_SUPERBAR">
-        <div class="divide-outline-dark border flowinity-border w-full" />
+        <div class="border-b-2 w-full flowinity-border" />
         <div class="flex flex-col gap-y-2 my-3">
           <super-bar-item
             v-for="item in chatStore.chats.slice(0, 3)"
@@ -154,12 +156,13 @@
             />
           </super-bar-item>
           <super-bar-item-template
-            v-if="$experiments.experiments.WIDGETS"
             :item="{
-              id: RailMode.HOME,
-              name: 'Create a shortcut',
+              name: 'New Chat',
               icon: RiAddLine,
-              selectedIcon: RiAddLine
+              selectedIcon: RiAddLine,
+              click: () => {
+                appStore.dialogs.createChat = true;
+              }
             }"
             :highlighted="true"
             id="superbar-widgets"
@@ -181,7 +184,7 @@
             {{
               $app.platform === Platform.LINUX
                 ? "Update available in your package manager"
-                : "Update ready to install"
+                : "Update available to install"
             }}
           </v-tooltip>
           <RiDownloadCloud2Fill />
@@ -243,6 +246,20 @@
           :item="item"
           :highlighted="true"
         />
+        <super-bar-item
+          highlighted
+          @click="
+            $ui.appBarReady = false;
+            $ui.loggedInViewReady = false;
+            $experiments.setExperiment('PROGRESSIVE_UI', 0);
+            $app.dialogs.feedback = true;
+          "
+        >
+          <v-tooltip activator="parent" location="right">
+            Restore Old Layout
+          </v-tooltip>
+          <RiLogoutCircleLine />
+        </super-bar-item>
         <super-bar-item highlighted @click="$app.dialogs.feedback = true">
           <v-tooltip activator="parent" location="right">
             Provide Feedback
@@ -271,16 +288,6 @@
               My Profile
             </v-list-item>
             <v-list-item
-              v-if="$app.platform !== Platform.WEB"
-              style="color: rgb(var(--v-theme-error))"
-              @click="resetInstance"
-            >
-              <template #prepend>
-                <RiLogoutCircleLine class="mr-2" style="width: 36px" />
-              </template>
-              Change Instance
-            </v-list-item>
-            <v-list-item
               style="color: rgb(var(--v-theme-error))"
               @click="$user.logout"
             >
@@ -303,8 +310,8 @@ import { useUserStore } from "@/store/user.store";
 import { useChatStore } from "@/store/chat.store";
 import { useRoute } from "vue-router";
 import { useExperimentsStore } from "@/store/experiments.store";
-import SuperBarItem from "@/layouts/default/SuperBarItem.vue";
-import { computed, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
+import SuperBarItem from "@/layouts/progressive/SuperBarItem.vue";
 import {
   RiFeedbackLine,
   RiLogoutCircleLine,
@@ -321,9 +328,10 @@ import FlowinityLogo from "@/components/Brand/FlowinityLogo.vue";
 import StatusSwitcherList from "@/components/Communications/StatusSwitcherList.vue";
 import FlowinityLogoAnimated from "@/components/Brand/FlowinityLogoAnimated.vue";
 import Notifications from "@/components/Core/Notifications.vue";
-import SuperBarItemTemplate from "@/layouts/default/SuperBarItemTemplate.vue";
+import SuperBarItemTemplate from "@/layouts/progressive/SuperBarItemTemplate.vue";
 import { IpcChannels } from "@/electron-types/ipc";
-import functions from "@/plugins/functions";
+import functions from "../../plugins/functions";
+
 const appStore = useAppStore();
 const uiStore = useProgressiveUIStore();
 const props = defineProps({
@@ -351,10 +359,6 @@ watch(
     }
   }
 );
-
-function resetInstance() {
-  window.electron.ipcRenderer.send(IpcChannels.CHANGE_INSTANCE, null);
-}
 
 const updateDesktopApp = () => {
   if (appStore.platform === Platform.WEB) return;

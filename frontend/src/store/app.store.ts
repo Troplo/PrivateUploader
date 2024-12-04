@@ -13,19 +13,15 @@ import vuetify from "@/plugins/vuetify";
 import { useExperimentsStore } from "@/store/experiments.store";
 import i18nObject, { i18n } from "@/plugins/i18n";
 import { SidebarItem } from "@/types/sidebar";
-import {
-  CoreState,
-  CoreStateDocument,
-  Upload,
-  Weather,
-  WeatherDocument
-} from "@/gql/graphql";
+import { WeatherQuery } from "@/graphql/core/weather.graphql";
+import { CoreState, Upload, Weather } from "@/gql/graphql";
 import { useFriendsStore } from "@/store/friends.store";
 import { useMailStore } from "@/store/mail.store";
 import { useApolloClient } from "@vue/apollo-composable";
 import FlowinityLogo from "@/components/Brand/FlowinityLogo.vue";
 import { h } from "vue";
-import { useUserPresenceStore } from "@/store/userPresence.store";
+import { CoreStateQuery } from "@/graphql/core/stateOnly.graphql";
+import { RiNewsFill } from "@remixicon/vue";
 
 export enum Platform {
   WEB = "WEB",
@@ -47,6 +43,9 @@ export const useAppStore = defineStore("app", {
     connected: false,
     token: localStorage.getItem("token") || "",
     _postInitRan: false,
+    quickAction: parseInt(localStorage.getItem("quickAction") || "1"),
+    railMode: "tpu",
+    batterySave: false,
     themeProviderDefaults: {
       theme: {},
       global: {}
@@ -56,6 +55,8 @@ export const useAppStore = defineStore("app", {
     lastRoute: "/",
     domain: "/i/",
     mainDrawer: true,
+    workspaceDrawer: localStorage.getItem("workspaceDrawer") === "true",
+    forcedWorkspaceDrawer: false,
     loading: true,
     /**
      * v4 classic UI:
@@ -132,8 +133,7 @@ export const useAppStore = defineStore("app", {
       actionDialog: false,
       networkInspector: false,
       createChat: false,
-      brandingDebug: false,
-      renderMonitor: false
+      brandingDebug: false
     },
     platform: getPlatform(),
     desktop: {
@@ -168,6 +168,316 @@ export const useAppStore = defineStore("app", {
         offset: Object.keys(nags).filter((key) => nags[key]).length * 40,
         IAF_PROMO: iaf !== 5 && iaf !== 0
       };
+    },
+    sidebar(state): SidebarItem[] {
+      const user = useUserStore();
+      const chat = useChatStore();
+      const experiments = useExperimentsStore();
+      const mail = useMailStore();
+
+      if (!user.user) return [];
+      const items = [
+        {
+          id: 1,
+          externalPath: "",
+          path: "/",
+          name: i18n.t("core.sidebar.home"),
+          icon: "mdi-home",
+          scope: "user.view",
+          exact: true
+        },
+        {
+          separator: true,
+          id: 16,
+          name: i18n.t("core.sidebar.account")
+        },
+        {
+          id: 2,
+          externalPath: "",
+          path: "/settings",
+          name: i18n.t("core.sidebar.settings"),
+          icon: "mdi-account-cog",
+          scope: "user.modify"
+        },
+        {
+          id: 6,
+          externalPath: "",
+          path: "/gallery",
+          exact: false,
+          name: i18n.t("core.sidebar.gallery"),
+          icon: "mdi-image-multiple",
+          scope: "uploads.view"
+        },
+        {
+          id: 10,
+          externalPath: "",
+          name: i18n.t("core.sidebar.starred"),
+          path: "/starred",
+          icon: "mdi-star",
+          scope: ["uploads.view", "starred.view"],
+          new: false
+        },
+        {
+          id: 5,
+          externalPath: "",
+          name: i18n.t("core.sidebar.files"),
+          separator: true
+        },
+        {
+          id: 14,
+          externalPath: "",
+          name: i18n.t("core.sidebar.mail"),
+          path: "/mail",
+          icon: "mdi-email",
+          scope: "mail.view",
+          experimentsRequired: ["WEBMAIL", "OFFICIAL_INSTANCE"],
+          warning: mail.unread > 0 ? mail.unread : false
+        },
+        {
+          id: 13,
+          externalPath: "",
+          path: "/users",
+          name: i18n.t("core.sidebar.users"),
+          icon: "mdi-account-group",
+          scope: "user.view"
+        } /*
+        {
+          id: 29,
+          click() {
+            state.dialogs.feedback = true;
+          },
+          externalPath: "",
+          path: "",
+          name: i18n.t("core.sidebar.feedback"),
+          icon: "mdi-comment-question-outline",
+          scope: ""
+        },
+        {
+          id: 30,
+          externalPath: "",
+          path: "/changelog",
+          name: i18n.t("core.sidebar.changelog"),
+          icon: "mdi-history"
+        },*/,
+        {
+          id: 33,
+          click() {
+            state.dialogs.gold.value = true;
+          },
+          externalPath: "",
+          path: "",
+          name: user.gold
+            ? i18n.t("core.sidebar.newWithGold")
+            : i18n.t("core.sidebar.upgradeToGold"),
+          icon: "mdi-plus",
+          new: false,
+          scope: "user.view",
+          experimentsRequired: ["OFFICIAL_INSTANCE"]
+        },
+        {
+          id: 37,
+          separator: true,
+          name: i18n.t("core.sidebar.adminSeparator"),
+          experimentsRequired: ["ACCOUNT_DEV_ELIGIBLE"]
+        },
+        {
+          id: 38,
+          externalPath: "",
+          path: "/admin",
+          name: i18n.t("core.sidebar.admin"),
+          icon: "mdi-gavel",
+          new: false,
+          scope: "admin.view",
+          experimentsRequired: ["ACCOUNT_DEV_ELIGIBLE"]
+        },
+        {
+          id: 39,
+          name: i18n.t("core.sidebar.secretMenu"),
+          click() {
+            state.dialogs.actionDialog = !state.dialogs.actionDialog;
+          },
+          icon: "mdi-bug",
+          experimentsRequired: ["ACCOUNT_DEV_ELIGIBLE"]
+        }
+      ] as SidebarItem[];
+
+      if (state.platform === Platform.WEB) {
+        items.push({
+          id: 36,
+          externalPath: "",
+          path: "/downloads",
+          name: i18n.t("core.sidebar.download"),
+          icon: "mdi-download",
+          new: true,
+          scope: ""
+        });
+      }
+
+      items.push({
+        id: 30,
+        name: i18n.t("core.sidebar.tryProgressive"),
+        click() {
+          const experiments = useExperimentsStore();
+          experiments.setExperiment("PROGRESSIVE_UI", 1);
+        },
+        warning: i18n.t("generic.beta"),
+        scope: "",
+        icon: "mdi-new-box",
+        experimentsRequired: ["CAN_ENABLE_PROGRESSIVE_UI"]
+      });
+      items.push({
+        id: 31,
+        name: i18n.t("core.sidebar.news"),
+        path: "/news",
+        scope: "",
+        icon: h(RiNewsFill)
+      });
+      /*
+      if (state.site.officialInstance) {
+        items.push(
+          {
+            id: 39,
+            path: "/invite/flowinity",
+            name: i18n.t("core.sidebar.communicationsPublic"),
+            icon: h(FlowinityLogo),
+            new: true,
+            scope: "",
+            externalPath: ""
+          },
+          {
+            id: 39,
+            externalPath: "https://discord.gg/4fB6GCR3Qv",
+            name: i18n.t("core.sidebar.discord"),
+            customIcon: "@/assets/images/discord.svg",
+            new: true,
+            scope: "",
+            path: "",
+            icon: ""
+          }
+        );
+      }*/
+
+      // Server feature options
+      if (
+        state.site.inviteAFriend ||
+        user.user?.moderator ||
+        user.user?.administrator
+      ) {
+        items.push({
+          id: 15,
+          click() {
+            state.dialogs.inviteAFriend = true;
+          },
+          externalPath: "",
+          path: "",
+          name: i18n.t("core.sidebar.inviteAFriend"),
+          icon: "mdi-gift-outline",
+          scope: ""
+        });
+      }
+
+      if (state.site.features?.insights) {
+        items.push({
+          id: 17,
+          externalPath: "",
+          name: i18n.t("core.sidebar.insights"),
+          path: "/insights",
+          scope: "insights.view",
+          icon: "mdi-chart-timeline-variant-shimmer"
+        });
+      }
+
+      items.push({
+        id: 11,
+        externalPath: "",
+        name: i18n.t("core.sidebar.comms"),
+        separator: true
+      });
+
+      if (state.site.features?.communications) {
+        items.push({
+          id: 12,
+          externalPath: "",
+          name: i18n.t("core.sidebar.communications"),
+          path: chat.selectedChatId
+            ? `/communications/${chat.selectedChatId}`
+            : "/communications",
+          icon: "mdi-message-processing",
+          warning: functions.checkScope("chats.view", user.user?.scopes)
+            ? chat.totalUnread
+            : false,
+          scope: "chats.view",
+          experimentsRequired: ["COMMUNICATIONS"]
+        });
+      }
+
+      if (state.site.features?.workspaces) {
+        items.push({
+          id: 10,
+          externalPath: "",
+          name: i18n.t("core.sidebar.workspaces"),
+          path: this.$router.currentRoute.value.name
+            ?.toString()
+            ?.includes("Workspace")
+            ? "/workspaces"
+            : state.lastNote
+            ? `/workspaces/notes/${state.lastNote}`
+            : "/workspaces",
+          icon: "mdi-folder-account",
+          scope: "workspaces.view",
+          experimentsRequired: ["INTERACTIVE_NOTES"]
+        });
+      }
+
+      if (state.site.features?.collections) {
+        items.push({
+          id: 7,
+          externalPath: "",
+          name: i18n.t("core.sidebar.collections"),
+          path: "/collections",
+          icon: "mdi-folder-multiple-image",
+          new: false,
+          scope: "collections.view"
+        });
+      }
+
+      if (state.site.features?.autoCollects) {
+        items.push({
+          id: 9,
+          externalPath: "",
+          name: i18n.t("core.sidebar.autoCollects"),
+          path: "/autoCollect",
+          icon: "mdi-image-auto-adjust",
+          new: false,
+          scope: "collections.modify",
+          warning:
+            user.user.pendingAutoCollects > 0
+              ? user.user.pendingAutoCollects
+              : false
+        });
+      }
+
+      items.sort((a, b) => a.id - b.id);
+
+      return items.filter((item) => {
+        if (item.experimentsRequired) {
+          for (const experiment of item.experimentsRequired) {
+            if (!experiments.experiments[experiment]) {
+              return false;
+            }
+          }
+        }
+        return true;
+      });
+    },
+    rail() {
+      const experiments = useExperimentsStore();
+      return (
+        experiments.experiments.RAIL_SIDEBAR &&
+        !vuetify.display.lgAndUp.value &&
+        !vuetify.display.mobile.value &&
+        !experiments.experiments.PROGRESSIVE_UI
+      );
     },
     weatherTemp(state) {
       const temp = state.weather.data?.temp;
@@ -209,6 +519,18 @@ export const useAppStore = defineStore("app", {
         }
       }
     },
+    toggleWorkspace() {
+      this.workspaceDrawer = !this.workspaceDrawer;
+      if (vuetify.display.mobile.value && this.workspaceDrawer) {
+        this.mainDrawer = false;
+      }
+    },
+    toggleMain() {
+      this.mainDrawer = !this.mainDrawer;
+      if (vuetify.display.mobile.value && this.mainDrawer) {
+        this.workspaceDrawer = false;
+      }
+    },
     async deleteItem(item: Upload | undefined) {
       if (!item) return;
       this.dialogs.deleteItem.item = item;
@@ -221,7 +543,7 @@ export const useAppStore = defineStore("app", {
         const {
           data: { weather }
         } = await useApolloClient().client.query({
-          query: WeatherDocument
+          query: WeatherQuery
         });
         this.weather.data = weather;
         this.weather.loading = false;
@@ -323,7 +645,7 @@ export const useAppStore = defineStore("app", {
         user.user?.username
       }&unread=${chat.totalUnread || 0}&debug=${
         experimentsStore.experiments.DEBUG_FAVICON
-      }&client=Flowinity5`;
+      }&client=TPUvNEXT`;
       document.head.appendChild(link);
     },
     async init() {
@@ -360,7 +682,7 @@ export const useAppStore = defineStore("app", {
       const {
         data: { coreState, experiments }
       } = await useApolloClient().client.query({
-        query: CoreStateDocument,
+        query: CoreStateQuery,
         fetchPolicy: "no-cache"
       });
       this.site = coreState;
@@ -383,7 +705,7 @@ export const useAppStore = defineStore("app", {
       //   })
       //   .sort((a: Chat, b: Chat) => {
       //     return (
-      //       Number(b.sortDate) - Number(a.sortDate) ||
+      //       Number(b._redisSortDate) - Number(a._redisSortDate) ||
       //       Number(b.id) - Number(a.id)
       //     );
       //   });
@@ -407,13 +729,12 @@ export const useAppStore = defineStore("app", {
       useCollectionsStore().init();
       useWorkspacesStore().init();
       useFriendsStore().init();
-      useUserPresenceStore().getTracked();
     },
     async refresh() {
       const {
         data: { coreState }
       } = await useApolloClient().client.query({
-        query: CoreStateDocument,
+        query: CoreStateQuery,
         fetchPolicy: "no-cache"
       });
       this.site = coreState;

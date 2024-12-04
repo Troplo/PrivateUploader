@@ -24,7 +24,7 @@
               <v-text-field
                 :label="$t('settings.slideshows.shareLink')"
                 :model-value="`${$app.site.hostnameWithProtocol}/slideshow/${slideshow.shareLink}`"
-                :readonly="true"
+                disabled
               />
               <v-text-field
                 v-model="slideshow.name"
@@ -53,7 +53,6 @@
 
             <v-sheet class="rounded-xxl mt-3" outlined>
               <v-card
-                class="d-flex justify-center rounded-xxl"
                 color="white"
                 elevation="0"
                 height="50"
@@ -61,7 +60,9 @@
                 variant="outlined"
                 @click="saveSlideshow(slideshow)"
               >
-                <v-icon size="45">save-2-line</v-icon>
+                <v-icon size="30" style="width: 100%; height: 100%">
+                  mdi-content-save
+                </v-icon>
               </v-card>
             </v-sheet>
           </template>
@@ -72,7 +73,6 @@
       </v-card-subtitle>
       <v-sheet class="rounded-xxl mt-3" outlined>
         <v-card
-          class="d-flex justify-center rounded-xxl"
           color="white"
           elevation="0"
           height="50"
@@ -80,7 +80,7 @@
           variant="outlined"
           @click="createSlideshow()"
         >
-          <v-icon size="50">add-line</v-icon>
+          <v-icon size="50" style="width: 100%; height: 100%">mdi-plus</v-icon>
         </v-card>
       </v-sheet>
     </v-container>

@@ -13,7 +13,7 @@
         :small="true"
         class="user-badge"
         color="#0190ea"
-        icon="shield-check-fill"
+        icon="mdi-shield"
         :text="`${$app.site.name} Administrator`"
       />
       <HoverChip
@@ -22,7 +22,7 @@
         :small="true"
         class="user-badge"
         color="success"
-        icon="shield-check-fill"
+        icon="mdi-shield"
         :text="`${$app.site.name} Moderator`"
       />
       <!-- Plan/joke badges -->
@@ -42,7 +42,7 @@
         :small="true"
         class="user-badge"
         color="primary"
-        icon="star-fill"
+        icon="mdi-star"
         :text="'$' + user.xp + ' donated'"
         :short-text="'$' + user.xp"
         text-color="black"
@@ -55,7 +55,7 @@
           :small="true"
           class="user-badge"
           color="primary"
-          icon="vip-crown-fill"
+          icon="mdi-crown"
           :text="`${$app.site.name} God`"
           title="You're Better than the rest™."
         />
@@ -65,7 +65,7 @@
           :small="true"
           class="user-badge"
           color="gold"
-          icon="compass-fill"
+          icon="mdi-compass"
           :text="`${$app.site.name} Champion`"
           title="Champion deez nuts."
         />
@@ -75,7 +75,7 @@
           :small="true"
           class="user-badge"
           color="purple"
-          icon="trophy-fill"
+          icon="mdi-chess-knight"
           title="You're a legend."
           :text="`${$app.site.name} Legend`"
         />
@@ -85,7 +85,7 @@
           :small="true"
           class="user-badge"
           color="#1ac62b"
-          icon="star-half-line"
+          icon="mdi-microsoft-xbox-controller-battery-medium"
           title="You're medium."
           :text="`${$app.site.name} Mediumist`"
         />
@@ -95,7 +95,7 @@
           :small="true"
           class="user-badge"
           color="cyan"
-          icon="focus-2-line"
+          icon="mdi-target-account"
           title="You're getting Better™."
           :text="`${$app.site.name} Intermediate`"
         />
@@ -105,7 +105,7 @@
           :small="true"
           class="user-badge"
           color="grey"
-          icon="slow-down-line"
+          icon="mdi-chess-pawn"
           title="Noob. Get Better™."
           :text="`${$app.site.name} Noob`"
         />
@@ -116,7 +116,7 @@
           :small="true"
           class="user-badge"
           color="#0190ea"
-          icon="time-fill"
+          icon="mdi-clock"
           :text="`Chronic ${$app.site.name} Addiction Condition Disorder (CFACD)`"
           :title="`Have 100h+ in ${$app.site.name}.`"
         />
@@ -126,7 +126,7 @@
           :small="true"
           class="user-badge"
           color="#0190ea"
-          icon="upload-line"
+          icon="mdi-account-arrow-up"
           text="Chronic Screenshot Addiction Condition Disorder (CSACD)"
           title="Upload 100K+ items."
         />
@@ -139,8 +139,8 @@
           :small="true"
           class="user-badge"
           color="#0190ea"
-          icon="sparkling-2-fill"
-          text="Chronic Collectivization Addiction Condition Disorder (CCACD)"
+          icon="mdi-rhombus-split"
+          text="Chronic Kollectivization Addiction Condition Disorder (CKACD)"
           title="Have a collectivized to upload percentage of 100% or more."
         />
         <HoverChip
@@ -149,7 +149,7 @@
           :small="true"
           class="user-badge"
           color="#0190ea"
-          icon="collage-fill"
+          icon="mdi-folder-multiple-image"
           text="Chronic Collection Addiction Condition Disorder (CCACD)"
           title="Have 100+ collections."
         />
@@ -160,7 +160,7 @@
           :small="true"
           class="user-badge"
           color="gold"
-          icon="upload-line"
+          icon="mdi-account-arrow-up"
           text="Champion Uploader"
           title="Upload 50K+ items."
         />
@@ -170,7 +170,7 @@
           :small="true"
           class="user-badge"
           color="gold"
-          icon="time-fill"
+          icon="mdi-clock"
           :text="`${$app.site.name} Addict`"
           :title="`Have 72h+ in ${$app.site.name}.`"
         />
@@ -184,7 +184,7 @@
           :small="true"
           class="user-badge"
           color="gold"
-          icon="sparkling-2-fill"
+          icon="mdi-rhombus-split"
           text="Champion Collectivist"
           title="Have a collectivized to upload percentage of 90% or more."
         />
@@ -194,7 +194,7 @@
           :small="true"
           class="user-badge"
           color="purple"
-          icon="collage-fill"
+          icon="mdi-folder-multiple-image"
           text="Extreme collection creator"
           title="Have 25+ collections."
         />
@@ -205,7 +205,7 @@
           :small="true"
           class="user-badge"
           color="purple"
-          icon="upload-line"
+          icon="mdi-account-arrow-up"
           text="Extreme Uploader"
           title="Upload 10K+ items."
         />
@@ -215,7 +215,7 @@
           :small="true"
           class="user-badge"
           color="purple"
-          icon="time-fill"
+          icon="mdi-clock"
           text="Nice Hours"
           :title="`Have 69h+ in ${$app.site.name}.`"
         />
@@ -230,7 +230,7 @@
           :small="true"
           class="user-badge"
           color="purple"
-          icon="sparkling-2-fill"
+          icon="mdi-rhombus-split"
           text="True Collectivist"
           title="Have a collectivized to upload percentage of 80% or more."
         />
@@ -240,7 +240,7 @@
           :small="true"
           class="user-badge"
           color="purple"
-          icon="collage-fill"
+          icon="mdi-folder-multiple-image"
           text="Extreme collection creator"
           title="Have 20+ collections."
         />
@@ -251,7 +251,7 @@
           :small="true"
           class="user-badge"
           color="#1ac62b"
-          icon="upload-line"
+          icon="mdi-upload"
           text="Pro Uploader"
           title="Upload 4154+ items."
         />
@@ -261,7 +261,7 @@
           :small="true"
           class="user-badge"
           color="#1ac62b"
-          icon="time-fill"
+          icon="mdi-clock-fast"
           :text="`${$app.site.name} All Nighter`"
           :title="`Have 24h+ in ${$app.site.name}.`"
         />
@@ -275,7 +275,7 @@
           :small="true"
           class="user-badge"
           color="#1ac62b"
-          icon="sparkling-2-fill"
+          icon="mdi-rhombus-split"
           text="Nice Collectivist"
           title="Have a collectivized to upload percentage of 69% or more."
         />
@@ -285,7 +285,7 @@
           :small="true"
           class="user-badge"
           color="#1ac62b"
-          icon="collage-fill"
+          icon="mdi-folder-multiple-image"
           text="Pro collection creator"
           title="Have 15+ collections."
         />
@@ -296,7 +296,7 @@
           :small="true"
           class="user-badge"
           color="cyan"
-          icon="upload-line"
+          icon="mdi-upload"
           text="Getting Better™"
           title="Upload 1K+ items."
         />
@@ -306,7 +306,7 @@
           :small="true"
           class="user-badge"
           color="cyan"
-          icon="time-fill"
+          icon="mdi-clock"
           text="Better than Average"
           :title="`Have 12h+ in ${$app.site.name}.`"
         />
@@ -320,7 +320,7 @@
           :small="true"
           class="user-badge"
           color="cyan"
-          icon="sparkling-2-fill"
+          icon="mdi-rhombus-split"
           text="Noob Collectivist"
           title="Have a collectivized to upload percentage of 41.54% or more."
         />
@@ -330,7 +330,7 @@
           :small="true"
           class="user-badge"
           color="cyan"
-          icon="collage-fill"
+          icon="mdi-folder-multiple-image"
           text="Better™ collection creator"
           title="Have 10+ collections."
         />
@@ -341,7 +341,7 @@
           :small="true"
           class="user-badge"
           color="grey"
-          icon="upload-line"
+          icon="mdi-upload"
           text="Getting Started"
           title="Upload 500+ items."
         />
@@ -351,7 +351,7 @@
           :small="true"
           class="user-badge"
           color="grey"
-          icon="time-fill"
+          icon="mdi-clock"
           text="Average User"
           :title="`Have 8h+ in ${$app.site.name}.`"
         />
@@ -361,7 +361,7 @@
           :small="true"
           class="user-badge"
           color="grey"
-          icon="collage-fill"
+          icon="mdi-folder-multiple-image"
           text="Average collection creator"
           title="Have 5+ collections."
         />
@@ -370,7 +370,7 @@
         <HoverChip
           v-if="age >= 1"
           v-ripple
-          :icon="'number-' + age"
+          :icon="'mdi-numeric-' + age"
           :small="true"
           :text="age + ' year old account'"
           :title="`${user.username}'s account is ${age} years old.`"
@@ -384,7 +384,7 @@
           :title="`${user.username}'s account was created this week ${age} years ago.`"
           class="user-badge"
           color="pink lighten-2"
-          icon="cake-2-fill"
+          icon="mdi-cake"
           text="Cake Week"
         />
       </template>
@@ -409,7 +409,7 @@
         :small="true"
         class="user-badge"
         color="silver"
-        icon="user-unfollow-line"
+        icon="mdi-account-multiple-remove"
         text="No friends :("
         title="Get Better ™ 😟"
       />
@@ -422,7 +422,7 @@
         :small="true"
         class="user-badge"
         color="grey"
-        icon="user-unfollow-line"
+        icon="mdi-account-off"
         text="Not friends with user, some information may be unavailable."
       />
       <slot />

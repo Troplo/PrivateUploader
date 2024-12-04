@@ -116,7 +116,7 @@
       <!-- Classic UI Options -->
       <template v-slot:multi-select-actions-length="slotProps: any">
         <v-btn class="rounded-xl ml-2" @click="slotProps.selectAll()">
-          <v-icon>add-line</v-icon>
+          <v-icon>mdi-plus</v-icon>
           &nbsp;Select all
         </v-btn>
         <v-btn class="rounded-xl ml-2" @click="slotProps.deselectAll()">
@@ -162,7 +162,7 @@
         <HoverChip
           class="my-1"
           color="teal"
-          icon="file-copy-line"
+          icon="mdi-content-copy"
           text="Link"
           @click="$functions.copy($app.domain + item.attachment)"
         />

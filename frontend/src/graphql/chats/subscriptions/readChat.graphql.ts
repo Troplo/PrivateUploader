@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-const ReadChatSubscription = gql`
+export const ReadChatSubscription = gql`
   subscription OnReadChat {
     onReadChat
   }

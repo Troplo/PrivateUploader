@@ -1,7 +1,7 @@
 <template>
   <v-img
     v-if="announcement"
-    :src="announcement.image || 'https://assets.flowinity.com/home/8th.png'"
+    :src="announcement.image || 'https://i.flowinity.com/i/d102284d9082.png'"
     :alt="announcement.title"
     max-height="300"
     min-height="300"

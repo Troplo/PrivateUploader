@@ -43,7 +43,7 @@
           </v-list>
         </v-card>
       </v-menu>
-      <v-icon>arrow-down-s</v-icon>
+      <v-icon>mdi-chevron-down</v-icon>
     </v-btn>
   </div>
   <a

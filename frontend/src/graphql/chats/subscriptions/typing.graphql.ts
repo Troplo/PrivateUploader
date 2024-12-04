@@ -1,21 +1,25 @@
 import { gql } from "@apollo/client/core";
 
-const TypingSubscription = gql`
+export const TypingSubscription = gql`
   subscription TypingEvent {
     onTyping {
       chatId
       expires
-      userId
+      user {
+        id
+      }
     }
   }
 `;
 
-const CancelTypingSubscription = gql`
+export const CancelTypingSubscription = gql`
   subscription CancelTypingEvent {
     onCancelTyping {
       chatId
       expires
-      userId
+      user {
+        id
+      }
     }
   }
 `;

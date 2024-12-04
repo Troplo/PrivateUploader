@@ -387,15 +387,6 @@ const routes = [
         component: () => import("@/views/News/NewsItem.vue")
       },
       {
-        // any :value/*****
-        path: "/forms/:pathMatch(.*)?",
-        name: "Forms",
-        component: () => import("@/views/ModuleEntry.vue"),
-        props: {
-          id: "flowforms-app"
-        }
-      },
-      {
         path: "/e/:experiment/:value",
         name: "Experiment Set",
         component: () => import("@/views/Admin/SetExperimentRedirect.vue")

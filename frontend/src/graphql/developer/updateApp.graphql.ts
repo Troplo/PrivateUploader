@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-const AddOauthUserMutation = gql`
+export const AddOauthUserMutation = gql`
   mutation AddOauthUser($input: AddAppUserInput!) {
     addOauthUser(input: $input) {
       id
@@ -8,7 +8,7 @@ const AddOauthUserMutation = gql`
   }
 `;
 
-const UpdateOauthAppMutation = gql`
+export const UpdateOauthAppMutation = gql`
   mutation UpdateOauthApp($input: UpdateAppInput!) {
     updateOauthApp(input: $input) {
       success
@@ -16,7 +16,7 @@ const UpdateOauthAppMutation = gql`
   }
 `;
 
-const DeleteOauthAppMutation = gql`
+export const DeleteOauthAppMutation = gql`
   mutation DeleteOauthApp($input: MyAppInput!) {
     deleteOauthApp(input: $input) {
       success
@@ -24,14 +24,14 @@ const DeleteOauthAppMutation = gql`
   }
 `;
 
-const ResetOauthAppSecretMutation = gql`
+export const ResetOauthAppSecretMutation = gql`
   mutation ResetOauthSecret($input: MyAppInput!) {
     resetOauthSecret(input: $input) {
       success
     }
   }
 `;
-const UpdateOauthUserMutation = gql`
+export const UpdateOauthUserMutation = gql`
   mutation UpdateOauthUser($input: UpdateAppUserInput!) {
     updateOauthUser(input: $input) {
       id

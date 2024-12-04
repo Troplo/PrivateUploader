@@ -45,7 +45,7 @@
         <PromoNoContent
           v-else
           description="Pinned messages will appear here."
-          icon="pushpin-2-line"
+          icon="mdi-pin-outline"
           title="No pins"
         />
         <Paginate

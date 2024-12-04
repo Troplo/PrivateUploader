@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-const CreateOauthAppMutation = gql`
+export const CreateOauthAppMutation = gql`
   mutation CreateOauthApp($input: CreateAppInput!) {
     createOauthApp(input: $input) {
       id
@@ -8,7 +8,7 @@ const CreateOauthAppMutation = gql`
   }
 `;
 
-const CreateBotAccountMutation = gql`
+export const CreateBotAccountMutation = gql`
   mutation CreateBotOauthApp($input: CreateBotInput!) {
     createBotOauthApp(input: $input) {
       id

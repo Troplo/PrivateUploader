@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-const UpdateNoteSubscription = gql`
+export const UpdateNoteSubscription = gql`
   subscription OnUpdateNote($shareLink: String, $onUpdateNoteId: Int) {
     onUpdateNote(shareLink: $shareLink, id: $onUpdateNoteId) {
       type
@@ -13,13 +13,13 @@ const UpdateNoteSubscription = gql`
   }
 `;
 
-const SaveNoteCollabPositionMutation = gql`
+export const SaveNoteCollabPositionMutation = gql`
   mutation SaveNoteCollabPosition($input: NoteCollabPositionInput!) {
     saveNoteCollabPosition(input: $input)
   }
 `;
 
-const NoteCollabPositionSubscription = gql`
+export const NoteCollabPositionSubscription = gql`
   subscription OnNoteCollabPosition($shareLink: String, $noteId: Int) {
     onNoteCollabPosition(shareLink: $shareLink, noteId: $noteId) {
       blockIndex

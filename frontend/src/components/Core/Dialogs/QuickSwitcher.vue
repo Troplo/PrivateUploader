@@ -290,7 +290,7 @@ const results = computed(() => {
             icon: markRaw(
               h(VIcon, {
                 size: 25,
-                icon: "arrow-left-s-line",
+                icon: "mdi-arrow-left",
                 color: dark.value ? "white" : "black"
               })
             ),

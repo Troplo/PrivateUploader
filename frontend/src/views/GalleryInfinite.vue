@@ -66,8 +66,8 @@ import { defineComponent } from "vue";
 import GalleryCore from "@/components/Gallery/GalleryCore.vue";
 import { CollectionCache } from "@/types/collection";
 import GalleryNavigation from "@/components/Gallery/GalleryNavigation.vue";
+import { GalleryQuery } from "@/graphql/gallery/gallery.graphql";
 import {
-  GalleryDocument,
   GalleryFilter,
   GalleryInput,
   GalleryOrder,
@@ -195,7 +195,7 @@ export default defineComponent({
       const {
         data: { gallery }
       } = await this.$apollo.query({
-        query: GalleryDocument,
+        query: GalleryQuery,
         fetchPolicy: "network-only",
         variables: {
           input: {

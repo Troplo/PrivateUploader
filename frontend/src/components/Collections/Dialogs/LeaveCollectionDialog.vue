@@ -34,7 +34,8 @@
 import CoreDialog from "@/components/Core/Dialogs/Dialog.vue";
 import { ref } from "vue";
 import { useMutation } from "@vue/apollo-composable";
-import { Collection, OnLeaveCollectionDocument } from "@/gql/graphql";
+import { Collection } from "@/gql/graphql";
+import { LeaveCollectionMutation } from "@/graphql/collections/leaveCollection.graphql";
 
 const props = defineProps({
   collection: {
@@ -48,7 +49,7 @@ const dialog = ref(false);
 async function leaveCollection() {
   loading.value = true;
   try {
-    const mutate = useMutation(OnLeaveCollectionDocument, {
+    const mutate = useMutation(LeaveCollectionMutation, {
       variables: {
         input: {
           collectionId: props.collection.id

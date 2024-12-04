@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client/core";
 
-const ECoreStateQuery = gql`
-  query ExtraState {
+export const ECoreStateQuery = gql`
+  query ExtraStateQuery {
     friends {
       id
       status
@@ -87,7 +87,7 @@ const ECoreStateQuery = gql`
         lastRead
         ranksMap
       }
-      sortDate
+      _redisSortDate
       recipient {
         id
       }

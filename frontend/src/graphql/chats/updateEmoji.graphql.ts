@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-const UpdateEmojiMutation = gql`
+export const UpdateEmojiMutation = gql`
   mutation UpdateEmoji($input: UpdateEmojiInput!) {
     updateEmoji(input: $input) {
       name

@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-const AuditLogQuery = gql`
+export const AuditLogQuery = gql`
   query ChatAuditLog($input: AuditLogInput!) {
     chatAuditLog(input: $input) {
       items {

@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-const NoteQuery = gql`
+export const NoteQuery = gql`
   query Note($input: NoteInput!) {
     note(input: $input) {
       permissions {

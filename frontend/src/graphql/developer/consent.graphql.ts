@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-const OauthAppConsentQuery = gql`
+export const OauthAppConsentQuery = gql`
   query OauthAppConsent($input: MyAppInput!) {
     availableChatPermissions {
       id
@@ -34,7 +34,7 @@ const OauthAppConsentQuery = gql`
   }
 `;
 
-const AddBotToChat = gql`
+export const AddBotToChat = gql`
   mutation AddBotToChat($input: AddBotToChatInput!) {
     addBotToChat(input: $input) {
       id
@@ -42,7 +42,7 @@ const AddBotToChat = gql`
   }
 `;
 
-const AuthorizeAppMutation = gql`
+export const AuthorizeAppMutation = gql`
   mutation OauthAppAuthorize($input: AuthorizeAppInput!) {
     oauthAppAuthorize(input: $input) {
       token
@@ -50,7 +50,7 @@ const AuthorizeAppMutation = gql`
   }
 `;
 
-const DeauthorizeAppMutation = gql`
+export const DeauthorizeAppMutation = gql`
   mutation OauthAppDeauthorize($input: MyAppInput!) {
     oauthAppDeauthorize(input: $input) {
       success
