@@ -68,38 +68,30 @@ export class FileControllerV3 {
     if (!upload) {
       throw Errors.NOT_FOUND
     }
-    //Acropalypse temporary patch
-    if (
-      (upload.userId === 1 &&
-        upload.name.startsWith("Screenshot_2022") &&
-        user?.id !== 1 &&
-        config.officialInstance) ||
-      upload.user?.banned ||
-      !upload.user
-    ) {
-      const file = path.resolve(appRoot + "/assets/AuthRequired.png")
-      await promisify<string, void>(res.sendFile.bind(res))(file)
-      return res
-    }
 
     const media =
       upload.type === "image" ||
       upload.type === "video" ||
       upload.type === "audio"
     if (upload.location !== "local") {
-      if (!upload.sha256sum) {
-        throw Errors.NOT_FOUND
-      }
       // file = await this.awsService.retrieveFile(upload.sha256sum)
-      // Create a temporary link to the file
-      const link = await this.awsService.getSignedUrl(
-        upload.sha256sum,
-        upload.name,
-        force || !media ? "attachment" : "inline",
-        upload.mimeType
-      )
-      res.redirect(link)
-      return res
+      const path = upload.location.split(":")[0]
+      const version = upload.location.split(":")[1]
+      if (version === "2") {
+        res.redirect(`https://${path}`)
+        return res
+      } else {
+        console.log(upload.location)
+        const link = await this.awsService.getSignedUrl(
+          path.split("/")[1],
+          upload.name,
+          force || !media ? "attachment" : "inline",
+          upload.mimeType,
+          upload.location.split("/")[0]
+        )
+        res.redirect(link)
+        return res
+      }
     }
 
     // We will render in the browser if it's an image, video, or audio

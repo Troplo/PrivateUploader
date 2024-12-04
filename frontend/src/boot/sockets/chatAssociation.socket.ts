@@ -1,28 +1,40 @@
 import { useChatStore } from "@/store/chat.store";
 import { useMessagesStore } from "@/store/message.store";
-import { useSubscription } from "@vue/apollo-composable";
-import { ReadChatSubscription } from "@/graphql/chats/subscriptions/readChat.graphql";
-import { ReadReceiptSubscription } from "@/graphql/chats/subscriptions/readReceipt.graphql";
+import { useApolloClient, useSubscription } from "@vue/apollo-composable";
+import { OnReadChatDocument, OnReadReceiptDocument } from "@/gql/graphql";
+import { gql } from "@apollo/client/core";
 
 export default function setup() {
   const chatStore = useChatStore();
   const messagesStore = useMessagesStore();
+  const apolloClient = useApolloClient();
+  const cache = apolloClient.client.cache;
 
-  useSubscription(ReadChatSubscription).onResult(({ data: { onReadChat } }) => {
+  useSubscription(OnReadChatDocument).onResult(({ data: { onReadChat } }) => {
     console.log(`ReadChatSubscription: `, onReadChat);
-    chatStore.chats = chatStore.chats.map((c) => {
-      if (c.association?.id === onReadChat) {
-        return {
-          ...c,
-          unread: 0
-        };
-      } else {
-        return c;
+    // get the chat from the cache
+    const chat = cache.readFragment({
+      // Find the Chat with the association: ChatAssociation:{onReadChat}
+      id: `Chat:${onReadChat}`,
+      fragment: gql`
+        fragment ReadChat on Chat {
+          id
+          unread
+        }
+      `
+    });
+    console.log(`ReadChatSubscription: `, chat, onReadChat);
+    if (!chat || !chat.unread) return;
+    cache.modify({
+      id: `Chat:${chat.id}`,
+      fields: {
+        unread: () => 0
       }
     });
+    chatStore.getChats();
   });
 
-  useSubscription(ReadReceiptSubscription).onResult(
+  useSubscription(OnReadReceiptDocument).onResult(
     ({ data: { onReadReceipt } }) => {
       //    const chat1 = chat.chats.find((c: Chat) => c.id === data.chatId);
       //     if (!chat1) return;
@@ -40,20 +52,36 @@ export default function setup() {
       //     messages.messages[assocId][messageIndex].readReceipts.push(data);
       // That's the original code, but it's immutable now
       console.log(`ReadReceiptSubscription: `, onReadReceipt);
-      const assocId = onReadReceipt.associationId;
-      if (!messagesStore.messages[assocId]?.length) return;
-      const messageIndex = messagesStore.messages[assocId].findIndex(
-        (m) => m.id === onReadReceipt.messageId
-      );
-      if (messageIndex === -1) return;
-      messagesStore.messages[assocId].forEach((message) => {
-        message.readReceipts = message.readReceipts.filter(
-          (r) => r.user!.id !== onReadReceipt.user.id
-        );
+      const message = cache.readFragment({
+        id: `Message:${onReadReceipt.messageId}`,
+        fragment: gql`
+          fragment ReadReceipt on Message {
+            id
+            readReceipts {
+              associationId
+              user {
+                id
+                avatar
+                username
+              }
+              messageId
+            }
+          }
+        `
+      }) as any;
+      console.log(`ReadReceiptSubscription: `, message);
+      messagesStore.updateMessage({
+        id: onReadReceipt.messageId,
+        chatId: onReadReceipt.chatId,
+        readReceipts: [
+          ...(message.readReceipts || []),
+          {
+            associationId: onReadReceipt.associationId,
+            user: onReadReceipt.user,
+            messageId: onReadReceipt.messageId
+          }
+        ]
       });
-      messagesStore.messages[assocId][messageIndex].readReceipts.push(
-        onReadReceipt
-      );
     }
   );
 }

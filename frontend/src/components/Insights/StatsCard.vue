@@ -55,34 +55,34 @@ export default defineComponent({
       if (!reverse) {
         if (diff > 0) {
           return {
-            icon: "mdi-arrow-up-circle",
+            icon: "arrow-up-line",
             color: "success"
           };
         } else if (diff < 0) {
           return {
-            icon: "mdi-arrow-down-circle",
+            icon: "arrow-down-line",
             color: "red"
           };
         } else {
           return {
-            icon: "mdi-minus-circle",
+            icon: "subtract-line",
             color: "warning"
           };
         }
       } else {
         if (diff > 0) {
           return {
-            icon: "mdi-arrow-up-circle",
+            icon: "arrow-up-line",
             color: "red"
           };
         } else if (diff < 0) {
           return {
-            icon: "mdi-arrow-down-circle",
+            icon: "arrow-down-line",
             color: "success"
           };
         } else {
           return {
-            icon: "mdi-minus-circle",
+            icon: "subtract-line",
             color: "warning"
           };
         }

@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-export const FriendsQuery = gql`
+const Friends = gql`
   query Friends {
     friends {
       id
@@ -16,34 +16,6 @@ export const FriendsQuery = gql`
         moderator
         avatar
         status
-      }
-    }
-    trackedUsers {
-      username
-      id
-      createdAt
-      administrator
-      moderator
-      avatar
-      blocked
-      status
-      nameColor
-      bot
-      nickname {
-        nickname
-      }
-    }
-    blockedUsers {
-      id
-      userId
-      createdAt
-      updatedAt
-      blockedUserId
-      silent
-      blockedUser {
-        id
-        avatar
-        username
       }
     }
   }

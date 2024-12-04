@@ -39,12 +39,42 @@ type JitsiSpeakers = {
   totalDominantSpeakerTime: number
 }
 
+type JitsiUser = {
+  id: number
+  names: string[]
+  giveGold?: boolean
+}
+
+const USERS: JitsiUser[] = [
+  {
+    id: 1,
+    names: ["Troplo"]
+  },
+  {
+    id: 6,
+    names: [
+      "Jolt",
+      "Dhease",
+      "Dhease Nheeights",
+      "Jolt707",
+      "Jensen",
+      "Nesy",
+      "JJS707"
+    ],
+    giveGold: true
+  },
+  {
+    id: 7,
+    names: ["ElectricS01", "Tropolo", "Electric"]
+  }
+]
+
 @Service()
 export class OfficialInstJolt707 {
   constructor(private readonly adminService: AdminService) {}
 
   async createSubscription(id: number) {
-    return await Subscription.create({
+    const subscription = await Subscription.create({
       planId: 6,
       userId: id,
       price: 0,
@@ -52,6 +82,17 @@ export class OfficialInstJolt707 {
       paymentId: 0,
       expiredAt: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 14)
     })
+    await User.update(
+      {
+        subscriptionId: subscription.id
+      },
+      {
+        where: {
+          id: id
+        }
+      }
+    )
+    return subscription
   }
 
   async checkJitsiGold() {
@@ -64,210 +105,220 @@ export class OfficialInstJolt707 {
       })
       .then(async (res) => {
         // get Jitsi's created in the last 14d
-        const filtered = res.data.filter((jitsi: Jitsi) => {
-          return (
-            new Date(jitsi.createdAt).getTime() >
-              new Date().getTime() - 1000 * 60 * 60 * 24 * 14 &&
-            jitsi.jid === "objective@muc.meet.jitsi" && // jitsi.speakerStats must contain Troplo with a dominant speaker time of 1h
-            jitsi.speakerStats.some(
-              (speaker: JitsiSpeakers) =>
-                speaker.username === "Troplo" &&
-                speaker.totalDominantSpeakerTime > 1000 * 60 * 60
-            ) &&
-            jitsi.speakerStats.some((speaker: JitsiSpeakers) =>
-              [
-                "Jolt",
-                "Dhease",
-                "Dhease Nheeights",
-                "Jolt707",
-                "Jensen",
-                "Nesy",
-                "JJS707"
-              ].includes(speaker.username)
+        for (const user of USERS) {
+          let valid = false
+          const filtered = res.data.filter((jitsi: Jitsi) => {
+            return (
+              new Date(jitsi.createdAt).getTime() >
+                new Date().getTime() - 1000 * 60 * 60 * 24 * 14 &&
+              jitsi.jid === "objective@muc.meet.jitsi" && // jitsi.speakerStats must contain Troplo with a dominant speaker time of 1h
+              jitsi.speakerStats.some(
+                (speaker: JitsiSpeakers) =>
+                  speaker.username === "Troplo" &&
+                  speaker.totalDominantSpeakerTime > 1000 * 60 * 20
+              ) &&
+              jitsi.speakerStats.some((speaker: JitsiSpeakers) =>
+                user.names.includes(speaker.username)
+              )
             )
+          })
+          console.log(
+            "[BILLING] " +
+              filtered.length +
+              " Jitsi rooms created in the last 14d"
           )
-        })
-        console.log(
-          "[BILLING] " +
-            filtered.length +
-            " Jitsi rooms created in the last 14d"
-        )
-        let nesyLength = 0
-        for (const jitsi of filtered) {
-          for (const speaker of jitsi.speakerStats) {
-            if (
-              speaker.username === "Jolt" ||
-              speaker.username === "Dhease" ||
-              speaker.username === "Dhease Nheeights" ||
-              speaker.username === "Jolt707" ||
-              speaker.username === "Jensen" ||
-              speaker.username === "Nesy" ||
-              speaker.username === "JJS707"
-            ) {
-              nesyLength += speaker.totalDominantSpeakerTime
+          let nesyLength = 0
+          for (const jitsi of filtered) {
+            for (const speaker of jitsi.speakerStats) {
+              if (user.names.includes(speaker.username)) {
+                nesyLength += speaker.totalDominantSpeakerTime
+              }
             }
           }
-        }
-        // from ms to hours
-        nesyLength = nesyLength / 1000 / 60 / 60
-        console.log(
-          "[BILLING] " +
-            nesyLength +
-            "h of dominant speaker time in the last 14d (Jolt707)"
-        )
-        if (nesyLength < 8) {
+          // from ms to hours
+          nesyLength = nesyLength / 1000 / 60 / 60
+          console.log(
+            "[BILLING] " +
+              nesyLength +
+              `h of dominant speaker time in the last 14d (${user.id})`
+          )
           const subscription = await Subscription.findOne({
             where: {
-              userId: 6
+              userId: user.id
             }
           })
+          console.log(user.id)
           if (!subscription) {
-            console.log("[BILLING] Creating subscription for Jolt707")
-            await this.createSubscription(6)
+            console.log(`[BILLING] Creating subscription for ${user.id}`)
+            await this.createSubscription(user.id)
           }
-          if (!subscription) return
-          // @ts-ignore
-          const meta = subscription.metadata?.active
-          const hasExpired =
-            new Date(subscription.expiredAt).getTime() < new Date().getTime() &&
-            subscription.expiredAt
-          if (!hasExpired) {
-            await Subscription.update(
-              {
-                cancelled: true,
-                // expire in 24h
-                cancelledAt: new Date(),
-                expiredAt: new Date(new Date().getTime() + 1000 * 60 * 60 * 24)
-              },
-              {
-                where: {
-                  userId: 6,
-                  cancelled: false
-                }
-              }
-            )
-          }
-          await Subscription.update(
-            {
-              metadata: {
-                message: `You don't have 14 hours of Speaker Stats in the past 14 days, your TPU Gold will expire in 1 day. You only have ${Math.round(
-                  nesyLength
-                )} hours.`,
-                hours: nesyLength,
-                active: !hasExpired
-              }
-            },
-            {
-              where: {
-                userId: 6
-              }
-            }
-          )
-          if (!subscription) return
-          if (hasExpired) {
-            const user = await User.findOne({
-              where: {
-                id: 6
-              },
-              attributes: ["username", "email", "id"]
-            })
-            console.log("[BILLING] Jolt707's subscription expired")
+          if (nesyLength < 8) {
+            if (!subscription) return
             // @ts-ignore
-            if (meta && user) {
-              this.adminService.sendEmail(
+            const meta = subscription.metadata?.active
+            const hasExpired =
+              new Date(subscription.expiredAt).getTime() <
+                new Date().getTime() && subscription.expiredAt
+            if (!hasExpired) {
+              await Subscription.update(
                 {
-                  body: {
-                    intro: `Your ${config.siteName} Gold has expired!`,
-                    title: `Hello ${user.username}.`,
-                    action: [
-                      {
-                        instructions: `Your ${
-                          config.siteName
-                        } Gold has expired. You only have ${Math.round(
-                          nesyLength
-                        )} hours of Speaker Stats in the past 14 days. You need 8 hours to keep your ${
-                          config.siteName
-                        } Gold.`,
-                        button: {
-                          color: "#0190ea", // Optional action button color
-                          text: "Go to TPU",
-                          link: config.hostnameWithProtocol + "/"
-                        }
-                      }
-                    ]
-                  }
+                  cancelled: true,
+                  // expire in 24h
+                  cancelledAt: new Date(),
+                  expiredAt: new Date(
+                    new Date().getTime() + 1000 * 60 * 60 * 24
+                  )
                 },
-                user.email,
-                `Your ${config.siteName} Gold has expired!`
+                {
+                  where: {
+                    userId: user.id,
+                    cancelled: false
+                  }
+                }
               )
+              valid = false
             }
             await Subscription.update(
               {
-                cancelled: true,
                 metadata: {
-                  active: false,
-                  hours: nesyLength,
                   message: `You don't have 14 hours of Speaker Stats in the past 14 days, your TPU Gold will expire in 1 day. You only have ${Math.round(
                     nesyLength
-                  )} hours.`
+                  )} hours.`,
+                  hours: nesyLength,
+                  active: !hasExpired
                 }
               },
               {
                 where: {
-                  userId: 6
+                  userId: user.id
                 }
               }
             )
+            valid = true
+            if (!subscription) return
+            if (hasExpired) {
+              const dbUser = await User.findOne({
+                where: {
+                  id: user.id
+                },
+                attributes: ["username", "email", "id"]
+              })
+              console.log("[BILLING] Jolt707's subscription expired")
+              valid = false
+              // @ts-ignore
+              if (meta && dbUser) {
+                this.adminService.sendEmail(
+                  {
+                    body: {
+                      intro: `Your ${config.siteName} Gold has expired!`,
+                      title: `Hello ${dbUser.username}.`,
+                      action: [
+                        {
+                          instructions: `Your ${
+                            config.siteName
+                          } Gold has expired. You only have ${Math.round(
+                            nesyLength
+                          )} hours of Speaker Stats in the past 14 days. You need 8 hours to keep your ${
+                            config.siteName
+                          } Gold.`,
+                          button: {
+                            color: "#0190ea", // Optional action button color
+                            text: "Go to TPU",
+                            link: config.hostnameWithProtocol + "/"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  dbUser.email,
+                  `Your ${config.siteName} Gold has expired!`
+                )
+              }
+              await Subscription.update(
+                {
+                  cancelled: user.giveGold ? subscription.cancelled : true,
+                  metadata: {
+                    active: false,
+                    hours: nesyLength,
+                    message: `You don't have 14 hours of Speaker Stats in the past 14 days, your TPU Gold will expire in 1 day. You only have ${Math.round(
+                      nesyLength
+                    )} hours.`
+                  }
+                },
+                {
+                  where: {
+                    userId: user.id
+                  }
+                }
+              )
+
+              if (user.giveGold)
+                await User.update(
+                  {
+                    planId: 1
+                  },
+                  {
+                    where: {
+                      id: user.id
+                    }
+                  }
+                )
+            }
+          } else if (user.giveGold) {
+            const subscription = await Subscription.findOne({
+              where: {
+                userId: user.id
+              }
+            })
+            if (!subscription) {
+              console.log("[BILLING] Creating subscription for Jolt707")
+              await this.createSubscription(user.id)
+            }
             await User.update(
               {
-                planId: 1
+                planId: 6
               },
               {
                 where: {
-                  id: 6
+                  id: user.id
                 }
               }
             )
-          }
-        } else {
-          const subscription = await Subscription.findOne({
-            where: {
-              userId: 6
-            }
-          })
-          if (!subscription) {
-            console.log("[BILLING] Creating subscription for Jolt707")
-            await this.createSubscription(6)
-          }
-          await User.update(
-            {
-              planId: 6
-            },
-            {
-              where: {
-                id: 6
+            valid = true
+            await Subscription.update(
+              {
+                cancelled: false,
+                cancelledAt: null,
+                expiredAt: new Date(
+                  new Date().getTime() + 1000 * 60 * 60 * 24 * 14
+                ),
+                metadata: {
+                  hours: nesyLength,
+                  active: true
+                }
+              },
+              {
+                where: {
+                  userId: user.id
+                }
               }
-            }
-          )
+            )
+            console.log("[BILLING] Jolt707's subscription is valid")
+          }
+
           await Subscription.update(
             {
-              cancelled: false,
-              cancelledAt: null,
-              expiredAt: new Date(
-                new Date().getTime() + 1000 * 60 * 60 * 24 * 14
-              ),
               metadata: {
                 hours: nesyLength,
-                active: true
+                active: valid
               }
             },
             {
               where: {
-                userId: 6
+                userId: user.id
               }
             }
           )
-          console.log("[BILLING] Jolt707's subscription is valid")
         }
       })
       .catch(() => {})
@@ -289,7 +340,7 @@ export class OfficialInstJolt707 {
     })
 
     for (const user of users) {
-      if (user.id === 6 || !user.subscription) continue
+      if (!user.subscription || USERS.some((u) => u.id === user.id)) continue
       if (
         dayjs(user.subscription.expiredAt).isBefore(dayjs().subtract(3, "day"))
       ) {

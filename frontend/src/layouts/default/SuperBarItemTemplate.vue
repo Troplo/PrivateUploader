@@ -49,7 +49,7 @@
 </template>
 
 <script lang="ts" setup>
-import SuperBarItem from "@/layouts/progressive/SuperBarItem.vue";
+import SuperBarItem from "@/layouts/default/SuperBarItem.vue";
 import { RiLockLine } from "@remixicon/vue";
 import functions from "@/plugins/functions";
 import {

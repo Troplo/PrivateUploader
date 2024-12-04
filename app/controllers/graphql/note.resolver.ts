@@ -28,6 +28,7 @@ import {
   UpdateNoteEvent,
   UpdateNoteEventInput
 } from "@app/classes/graphql/workspaces/note"
+import { Experiments } from "@app/lib/experiments"
 
 @Resolver(Note)
 @Service()
@@ -155,7 +156,7 @@ export class NoteResolver {
 
   @Authorization({
     scopes: ["workspaces.modify"],
-    requiredExperiments: ["NOTE_COLLAB"]
+    requiredExperiments: [Experiments.NOTE_COLLAB]
   })
   @Mutation(() => Boolean)
   async saveNoteBlock(
@@ -177,7 +178,7 @@ export class NoteResolver {
 
   @Authorization({
     scopes: ["workspaces.modify"],
-    requiredExperiments: ["NOTE_COLLAB"]
+    requiredExperiments: [Experiments.NOTE_COLLAB]
   })
   @Mutation(() => Boolean)
   async saveNoteCollabPosition(

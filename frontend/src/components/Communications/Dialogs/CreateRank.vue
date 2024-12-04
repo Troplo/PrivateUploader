@@ -27,7 +27,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import CoreDialog from "@/components/Core/Dialogs/Dialog.vue";
-import { CreateRankMutation } from "@/graphql/chats/createRank.graphql";
+import { CreateChatRankDocument } from "@/gql/graphql";
 
 export default defineComponent({
   components: { CoreDialog },
@@ -43,7 +43,7 @@ export default defineComponent({
     async create() {
       this.loading = true;
       await this.$apollo.mutate({
-        mutation: CreateRankMutation,
+        mutation: CreateChatRankDocument,
         variables: {
           input: { associationId: this.associationId, name: this.name }
         }

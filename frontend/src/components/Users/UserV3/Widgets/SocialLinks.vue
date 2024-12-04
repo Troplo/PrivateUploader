@@ -67,7 +67,7 @@
         class="unselectable"
         @click="dialog = true"
       >
-        <v-icon class="mr-1">mdi-plus</v-icon>
+        <v-icon class="mr-1">add-line</v-icon>
         Add Link
       </v-chip>
     </v-container>

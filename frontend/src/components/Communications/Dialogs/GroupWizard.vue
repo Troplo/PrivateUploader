@@ -13,7 +13,7 @@
             v-if="selection"
             @click="selection = null"
           >
-            <v-icon>mdi-arrow-left</v-icon>
+            <v-icon>arrow-left-s-line</v-icon>
           </v-btn>
           <div v-else />
           <v-btn class="mr-4" icon size="small" @click="model = false">
@@ -77,9 +77,7 @@
               >
                 <div class="d-flex flex-column align-center">
                   <v-btn variant="outlined" icon size="96" :ripple="false">
-                    <v-icon class="mr-1" size="48">
-                      mdi-account-multiple-plus
-                    </v-icon>
+                    <v-icon class="mr-1" size="48">chat-new-line</v-icon>
                   </v-btn>
                   <v-card-title class="text-h6">
                     Create a new group
@@ -101,7 +99,7 @@
               >
                 <div class="d-flex flex-column align-center">
                   <v-btn variant="outlined" icon size="96" :ripple="false">
-                    <v-icon class="mr-1" size="48">mdi-account-multiple</v-icon>
+                    <v-icon class="mr-1" size="48">group-line</v-icon>
                   </v-btn>
                   <v-card-title class="text-h6">Have an invite?</v-card-title>
                   <v-card-subtitle class="text-caption">
@@ -121,7 +119,7 @@
               "
             >
               <div class="d-flex align-center justify-center">
-                <v-icon>mdi-account</v-icon>
+                <v-icon>user-add-line</v-icon>
                 <v-card-title>Start a direct message</v-card-title>
               </div>
             </v-card>
@@ -145,7 +143,7 @@
             class="blur-hover my-4 mx-4"
             color="white"
             :model-value="`${$app.site.hostnameWithProtocol}/invite/${generatedInvite}`"
-            append-icon="mdi-content-copy"
+            append-icon="file-copy-line"
             @click:append="
               $functions.copy(
                 `${$app.site.hostnameWithProtocol}/invite/${generatedInvite}`
@@ -197,8 +195,7 @@
 import CoreDialog from "@/components/Core/Dialogs/Dialog.vue";
 import { ref, watch } from "vue";
 import CreateChatWizard from "@/components/Communications/Dialogs/GroupWizard/CreateChatWizard.vue";
-import { Chat, ChatType } from "@/gql/graphql";
-import { CreateChatInviteMutation } from "@/graphql/chats/invite.graphql";
+import { Chat, ChatType, CreateChatInviteDocument } from "@/gql/graphql";
 import { useApolloClient } from "@vue/apollo-composable";
 import { useChatStore } from "@/store/chat.store";
 import { useRouter } from "vue-router";
@@ -247,7 +244,7 @@ async function generateInvite() {
     const {
       data: { createChatInvite }
     } = await apolloClient.client.mutate({
-      mutation: CreateChatInviteMutation,
+      mutation: CreateChatInviteDocument,
       variables: {
         input: {
           associationId: createdChat.value.association.id

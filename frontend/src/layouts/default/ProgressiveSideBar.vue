@@ -2,28 +2,19 @@
   <v-navigation-drawer
     id="sidebar"
     v-model="$app.mainDrawer"
-    style="min-width: 328px; max-width: 328px; z-index: 2000"
+    style="min-width: 256px; max-width: 256px; z-index: 2000"
     :class="{ 'sidebar-patch': !$vuetify.display.mobile }"
+    :style="{ left: !$app.mainDrawer ? '0' : '72px' }"
     color="dark"
     elevation="0"
     class="no-scroll"
-    width="328"
   >
-    <div class="flex h-full">
-      <ProgressiveSuperBarContent
-        style="min-width: 72px; max-width: 72px"
-        class="overflow-y-auto"
-      />
-      <div class="overflow-y-auto">
-        <ProgressiveSideBarContent />
-      </div>
-    </div>
+    <ProgressiveSideBarContent />
   </v-navigation-drawer>
 </template>
 
 <script setup lang="ts">
-import ProgressiveSideBarContent from "@/layouts/progressive/ProgressiveSideBarContent.vue";
-import ProgressiveSuperBarContent from "@/layouts/progressive/ProgressiveSuperBarContent.vue";
+import ProgressiveSideBarContent from "@/layouts/default/ProgressiveSideBarContent.vue";
 </script>
 
 <style>

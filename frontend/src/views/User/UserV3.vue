@@ -83,7 +83,7 @@
                       >
                         Settings
                       </v-tooltip>
-                      <v-icon>mdi-cog</v-icon>
+                      <v-icon>settings-5-line</v-icon>
                     </v-btn>
                     <v-btn
                       v-if="
@@ -92,10 +92,7 @@
                       "
                       icon
                       size="small"
-                      @click="
-                        config.editMode = !config.editMode;
-                        updateLayout();
-                      "
+                      @click="config.editMode = !config.editMode"
                     >
                       <v-tooltip
                         :eager="false"
@@ -713,6 +710,12 @@ export default defineComponent({
       if (!val) return;
       this.config.editMode = false;
       this.getUser();
+    },
+    layout: {
+      handler: function (val) {
+        if (this.user?.id !== this.$user.user?.id) return;
+      },
+      deep: true
     }
   },
   mounted() {
@@ -723,10 +726,6 @@ export default defineComponent({
     this.setTheme(true);
   },
   methods: {
-    updateLayout() {
-      this.$user.user.profileLayout = this.layout;
-      this.$user.save();
-    },
     calculatePercentage(value) {
       const rounded = Math.ceil(value / 50) * 50;
       return (rounded / 100) * 100;

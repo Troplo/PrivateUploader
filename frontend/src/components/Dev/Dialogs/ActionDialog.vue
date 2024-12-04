@@ -92,19 +92,6 @@
       </v-btn>
       <overline>UI Options</overline>
       <v-btn
-        :color="$experiments.experiments.PROGRESSIVE_UI ? 'red' : 'blue'"
-        variant="tonal"
-        @click="
-          $experiments.setExperiment(
-            'PROGRESSIVE_UI',
-            $experiments.experiments.PROGRESSIVE_UI ? 0 : 1
-          )
-        "
-      >
-        {{ $experiments.experiments.PROGRESSIVE_UI ? "Disable" : "Enable" }}
-        New UI (v5in4)
-      </v-btn>
-      <v-btn
         @click="
           $experiments.setExperiment(
             'DISABLE_ANIMATIONS',
@@ -126,6 +113,12 @@
         @keydown.enter="goToRoute"
         label="Go to route"
       ></v-text-field>
+      <v-select
+        :items="Object.keys(moduleStore.modules)"
+        v-model="moduleToLoad"
+        label="Load Module"
+      />
+      <v-btn @click="moduleStore.mount(moduleToLoad as any)">Mount</v-btn>
     </v-container>
   </DevDialog>
 </template>
@@ -137,23 +130,26 @@ import Overline from "@/components/Core/Typography/Overline.vue";
 import { Platform } from "@/store/app.store";
 import { IpcChannels } from "@/electron-types/ipc";
 import { RiCodeFill, RiSettings5Fill, RiSettings5Line } from "@remixicon/vue";
+import { useModulesStore } from "@/store/modules.store";
 
 export default defineComponent({
   name: "ActionDialog",
   components: {
     RiCodeFill,
-    RiSettings5Fill,
-    RiSettings5Line,
     Overline,
     DevDialog
   },
   data() {
     return {
       usage: [],
-      route: ""
+      route: "",
+      moduleToLoad: ""
     };
   },
   computed: {
+    moduleStore() {
+      return useModulesStore();
+    },
     IpcChannels() {
       return IpcChannels;
     },

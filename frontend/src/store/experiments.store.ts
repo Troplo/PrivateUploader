@@ -1,31 +1,170 @@
 // Utilities
 import { defineStore } from "pinia";
-import {
-  ExperimentsQuery,
-  SetExperimentMutation
-} from "@/graphql/core/experiments.graphql";
 import { useApolloClient } from "@vue/apollo-composable";
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { gql } from "@apollo/client/core";
-import { ExperimentOverrideInput } from "@/gql/graphql";
-
-export interface ExperimentsState {
-  experiments: Record<string, string | number | boolean | object>;
-  experimentsInherit: Record<string, string | number | boolean | object>;
-}
+import {
+  ExperimentOverrideInput,
+  Experiments,
+  ExperimentsDocument,
+  SetExperimentDocument,
+  ExperimentsQuery
+} from "@/gql/graphql";
 
 export const useExperimentsStore = defineStore("experiments", () => {
-  const experiments = ref<Record<string, number | boolean | object>>({
-    API_VERSION: 3,
-    FLOWINITY: 1,
-    DISABLE_ANIMATIONS: 0
+  const experimentsConfig = ref<ExperimentsQuery["experiments"]>([
+    {
+      id: Experiments.NEW_BRANDING,
+      value: 1
+    },
+    {
+      id: Experiments.EDITOR_V2,
+      value: 0
+    },
+    {
+      id: Experiments.WIDGETS,
+      value: 0
+    },
+    {
+      id: Experiments.BADGES,
+      value: 0
+    },
+    {
+      id: Experiments.NATIVE_BADGES,
+      value: 1
+    },
+    {
+      id: Experiments.REMOVE_LEGACY_SOCKET,
+      value: 1
+    },
+    {
+      id: Experiments.CHAT_CACHING,
+      value: 10
+    },
+    {
+      id: Experiments.COPY_MSG_ID,
+      value: 0
+    },
+    {
+      id: Experiments.WEATHER,
+      value: 1
+    },
+    {
+      id: Experiments.BREADCRUMB_SHOW_PARENT,
+      value: 0
+    },
+    {
+      id: Experiments.COMMS_SUPERBAR,
+      value: 1
+    },
+    {
+      id: Experiments.PROGRESSIVE_HOME,
+      value: 0
+    },
+    {
+      id: Experiments.DISABLE_ANIMATIONS,
+      value: 0
+    },
+    {
+      id: Experiments.PROGRESSIVE_UI,
+      value: 1
+    },
+    {
+      id: Experiments.CHAT_GUIDED_WIZARD,
+      value: 1
+    },
+    {
+      id: Experiments.NOTE_COLLAB,
+      value: 0
+    },
+    {
+      id: Experiments.IAF_NAG,
+      value: 0
+    },
+    {
+      id: Experiments.DOWNLOAD_THE_APP_NAG,
+      value: 0
+    },
+    {
+      id: Experiments.ENABLE_AUTOSTART_APP_NAG,
+      value: 0
+    },
+    {
+      id: Experiments.DEBUG_FAVICON,
+      value: 0
+    },
+    {
+      id: Experiments.FLOWINITY,
+      value: 1
+    },
+    {
+      id: Experiments.PRIDE,
+      value: 0
+    },
+    {
+      id: Experiments.NOTIFICATION_SOUND,
+      value: 1
+    },
+    {
+      id: Experiments.RESIZABLE_SIDEBARS,
+      value: 0
+    },
+    {
+      id: Experiments.OFFICIAL_INSTANCE,
+      value: 1
+    },
+    {
+      id: Experiments.USER_V3_EDITOR,
+      value: 0
+    },
+    {
+      id: Experiments.USER_V3_MODIFY,
+      value: 1
+    },
+    {
+      id: Experiments.PINNED_MESSAGES,
+      value: 1
+    },
+    {
+      id: Experiments.COMMUNICATIONS,
+      value: 1
+    },
+    {
+      id: Experiments.WEBMAIL,
+      value: 0
+    },
+    {
+      id: Experiments.ACCOUNT_DEV_ELIGIBLE,
+      value: 0
+    },
+    {
+      id: Experiments.SFX_KFX,
+      value: 0
+    },
+    {
+      id: Experiments.SFX_KOLF,
+      value: 0
+    }
+  ]);
+  const experiments = computed<Record<Experiments, number>>(() => {
+    return experimentsConfig.value.reduce((acc, cur) => {
+      acc[cur.id] = cur.value;
+      return acc;
+    }, []) as unknown as Record<Experiments, number>;
   });
   const experimentsInherit = ref<Record<string, number | boolean | object>>({});
 
-  async function setExperiment(key: string, value: number, userId?: number) {
-    this.experiments[key] = value;
+  async function setExperiment(
+    key: Experiments,
+    value: number,
+    userId?: number
+  ) {
+    if (!experimentsConfig.value.find((e) => e.id === key)) {
+      throw new Error("Invalid experiment key or it is not loaded.");
+    }
+    experimentsConfig.value.find((e) => e.id === key)!.value = value;
     await useApolloClient().client.mutate({
-      mutation: SetExperimentMutation,
+      mutation: SetExperimentDocument,
       variables: {
         input: {
           key,
@@ -73,21 +212,18 @@ export const useExperimentsStore = defineStore("experiments", () => {
     const {
       data: { experiments: getExperiments }
     } = await useApolloClient().client.query({
-      query: ExperimentsQuery,
+      query: ExperimentsDocument,
       variables:
         version !== undefined
           ? {
               version
             }
-          : undefined,
+          : {
+              experiments: experimentsConfig.value.map((e) => e.id)
+            },
       fetchPolicy: "network-only"
     });
-    for (const experiment of getExperiments) {
-      console.log(`Loaded: ${experiment.id}`);
-      experiments.value[experiment.id] = experiment.value;
-      if (!experiments.value["meta"]) experiments.value.meta = {};
-      experiments.value["meta"][experiment.id] = experiment;
-    }
+    experimentsConfig.value = getExperiments;
     localStorage.setItem("experimentsStore", JSON.stringify(experiments.value));
   }
 

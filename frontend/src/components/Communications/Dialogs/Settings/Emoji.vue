@@ -27,7 +27,7 @@
         </template>
         <template #append>
           <v-btn icon size="small" @click="deleteEmoji(emoji.id)">
-            <v-icon>mdi-delete</v-icon>
+            <v-icon>close-line</v-icon>
           </v-btn>
         </template>
         <v-list-item-title
@@ -74,8 +74,7 @@ import { defineComponent } from "vue";
 import Overline from "@/components/Core/Typography/Overline.vue";
 import UploadCropper from "@/components/Core/Dialogs/UploadCropper.vue";
 import UserAvatar from "@/components/Users/UserAvatar.vue";
-import { UpdateEmojiMutation } from "@/graphql/chats/updateEmoji.graphql";
-import { DeleteEmojiMutation } from "@/graphql/chats/deleteEmoji.graphql";
+import { DeleteEmojiDocument, UpdateEmojiDocument } from "@/gql/graphql";
 
 export default defineComponent({
   name: "ChatSettingsEmoji",
@@ -97,7 +96,7 @@ export default defineComponent({
   methods: {
     async deleteEmoji(id: string) {
       await this.$apollo.mutate({
-        mutation: DeleteEmojiMutation,
+        mutation: DeleteEmojiDocument,
         variables: {
           input: {
             associationId: this.$chat.editingChat.association.id,
@@ -111,7 +110,7 @@ export default defineComponent({
       this.editing = "";
       try {
         await this.$apollo.mutate({
-          mutation: UpdateEmojiMutation,
+          mutation: UpdateEmojiDocument,
           variables: {
             input: {
               associationId: this.$chat.editingChat.association.id,

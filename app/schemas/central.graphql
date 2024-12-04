@@ -1,0 +1,2391 @@
+"""
+Indicates exactly one field must be supplied and this field must not be `null`.
+"""
+directive @oneOf on INPUT_OBJECT
+
+type Query {
+    currentUser: User
+    user(input: UserProfileInput!): PartialUserPublic
+    trackedUsers: [PartialUserFriend!]!
+    trackedUserIds: [Float!]!
+    coreState: CoreState!
+    setupStep: Int!
+    experiments(version: Int): [ExperimentType!]!
+    weather: Weather!
+    collections(input: UserCollectionsInput): PaginatedCollectionResponse!
+    collection(input: CollectionInput!): Collection
+
+    """
+    Return the number of pending invitations for collections for the current user
+    """
+    collectionInvitesCount: Int!
+    domains: [Domain!]!
+    gallery(input: GalleryInput!): PaginatedUploadResponse!
+    chats(input: ChatsInput): [Chat!]!
+    chat(input: ChatInput!): Chat!
+    availableChatPermissions: [ChatPermission!]!
+    lookupBotPrefix(input: LookupPrefixInput!): Prefix!
+    workspaces: [Workspace!]!
+    note(input: NoteInput!): Note
+    friends(input: FriendsInput): [Friend!]!
+    messages(input: InfiniteMessagesInput!): [Message!]!
+    messagesPaged(input: PagedMessagesInput!): PaginatedMessageResponse!
+    autoCollects(input: UserCollectionsInput!): PaginatedCollectionResponse!
+    adminPlans: [Plan!]!
+    adminGetExperimentOverrides: [ExperimentOverride!]!
+    blockedUsers: [BlockedUser!]!
+    chatInvite(input: InviteInput!): ChatInvite
+    mailboxes: [ListResponse!]!
+    unreadMail: Int!
+    getMail(input: GetMailInput!): JSON!
+    oauthApps: [OauthApp!]!
+    oauthApp(input: MyAppInput!): OauthApp!
+    oauthAppConsent(input: MyAppInput!): OauthConsentApp!
+    getAuthorizedApps: [OauthApp!]!
+    userEmoji: [ChatEmoji!]!
+    chatAuditLog(input: AuditLogInput!): PaginatedChatAuditLogResponse!
+    autoCollectRules: [AutoCollectRule!]!
+    autoCollectRule(input: AutoCollectRuleQueryInput!): AutoCollectRule!
+}
+
+type User {
+    id: Int!
+    createdAt: Date!
+    updatedAt: Date!
+    username: String!
+    email: String!
+    description: String
+    administrator: Boolean!
+    darkTheme: Boolean!
+    emailVerified: Boolean!
+    banned: Boolean!
+    inviteId: Float
+    discordPrecache: Boolean!
+    avatar: String
+    subdomainId: Float @deprecated(reason: "Subdomains are no longer available as of TPUv2/NEXT.")
+    domainId: Float!
+    totpEnable: Boolean!
+
+    """How much the user has uploaded in bytes."""
+    quota: Float!
+    uploadNameHidden: Boolean! @deprecated(reason: "Hidden upload usernames are no longer available as of TPUv2/NEXT.")
+    invisibleURLs: Boolean! @deprecated(reason: "Invisible URLs are no longer available as of TPUv2/NEXT.")
+    moderator: Boolean!
+
+    """
+    Subscriptions are no longer used as they were in TPUv1, and are now used to store metadata for permanent Gold subscriptions.
+    """
+    subscriptionId: Float
+    fakePath: String @deprecated(reason: "Fake paths are no longer available as of TPUv2/NEXT.")
+    themeId: Float! @deprecated(reason: "Replaced with `themeEngine`, used in legacy clients such as legacy.privateuploader.com.")
+    itemsPerPage: Float!
+
+    """UserV2 banner."""
+    banner: String
+
+    """Ability to login with more then 1 password with different scopes."""
+    alternatePasswords: [AlternatePassword!]
+
+    """User status/presence shown to other users."""
+    status: UserStatus!
+
+    """
+    User status/presence that has `invisible` and is shown to the current user.
+    """
+    storedStatus: UserStoredStatus!
+    weatherUnit: String!
+    themeEngine: JSON
+    insights: UserInsights!
+    profileLayout: JSON
+
+    """Collections that are excluded from the Collections filter in Gallery."""
+    excludedCollections: [Float!]
+    language: String!
+    publicProfile: Boolean!
+
+    """
+    How much the user has donated to PrivateUploader. (Likely unused in unofficial instances.)
+    """
+    xp: Float!
+    privacyPolicyAccepted: Boolean
+
+    """The user's name color in Communications."""
+    nameColor: String @deprecated(reason: "Replaced by ranks")
+
+    """Whether the user has TPU Pulse Telemetry enabled."""
+    pulse: Boolean!
+
+    """Whether the user can be added directly into groups."""
+    groupPrivacy: UserGroupPrivacy!
+
+    """Whether the user can be sent a friend request."""
+    friendRequests: UserFriendRequestPrivacy!
+
+    """Whether the user is a bot user."""
+    bot: Boolean!
+    homeWidgets: HomeWidgets
+    dateOfBirth: Date
+    pendingDeletionDate: Date
+    banReasonType: BanReason
+    banReason: String
+    plan: Plan
+    planId: Int
+    domain: Domain
+    subscription: TPUSubscription
+    experiments: [Experiment!]
+    badges: [Badge!]!
+    autoCollectRules: [AutoCollectRule!]!
+
+    """
+    The user's scopes assigned to the API key used. In format like `user.view,user.modify` which belong to `Scope`.
+    """
+    scopes: String
+    stats: Stats
+    oauthAppId: String
+    nickname: [FriendNickname!]
+    integrations: [Integration!]!
+    notifications: [Notification!]!
+    sessions(input: SessionInput): [Session!]!
+
+    """How many AutoCollect approvals the user needs to approve/reject."""
+    pendingAutoCollects: Float
+    legacy: Boolean!
+    forceAgeVerification: Boolean!
+    canAccessRestrictedContent: Boolean!
+    friends: [Friend!]!
+    mutualCollections: [Collection!]!
+    friend: FriendStatus!
+}
+
+scalar Date
+
+type AlternatePassword {
+    scopes: String!
+    totp: Boolean!
+    name: String!
+}
+
+"""User status/presence shown to other users."""
+enum UserStatus {
+    ONLINE
+    IDLE
+    OFFLINE
+    BUSY
+}
+
+"""
+User status/presence that has `invisible` and is shown to the current user.
+"""
+enum UserStoredStatus {
+    ONLINE
+    IDLE
+    BUSY
+    INVISIBLE
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+"""Insights privacy preference."""
+enum UserInsights {
+    EVERYONE
+    FRIENDS
+    NOBODY
+}
+
+"""Preference of who can add them directly into groups."""
+enum UserGroupPrivacy {
+    FRIENDS
+    NOBODY
+}
+
+"""Preference of who can send them friend requests."""
+enum UserFriendRequestPrivacy {
+    EVERYONE
+    NOBODY
+}
+
+type HomeWidgets {
+    rows: [HomeRow!]!
+    default: Boolean
+}
+
+type HomeRow {
+    widgets: [HomeWidget!]!
+
+    """In UUID format."""
+    id: String!
+}
+
+type HomeWidget {
+    type: HomeWidgetType!
+    props: JSON
+
+    """In UUID format."""
+    id: String!
+}
+
+"""The type of home widget"""
+enum HomeWidgetType {
+    SITE_STATS
+    RECENT_NOTES
+    RECENT_COLLECTIONS
+    RECENT_UPLOADS
+    RECENT_CHATS
+    AT_A_GLANCE
+    SITE_STATS_GRAPH
+    USER_STATS_GRAPH
+    USER_STATS
+    ANNOUNCEMENTS
+}
+
+"""Reasons for banning a user."""
+enum BanReason {
+    OTHER
+    PENDING_MANUAL_ACCOUNT_DELETION
+    ILLEGAL_CONTENT
+    SPAM
+    HARASSMENT
+    UNDER_AGE
+}
+
+type Plan {
+    id: Int!
+    name: String!
+    quotaMax: Float!
+    price: Float! @deprecated(reason: "Plans are unused in TPUv2+.")
+    features: String @deprecated(reason: "Plans are unused in TPUv2+.")
+    color: String
+    internalName: String!
+    purchasable: Boolean! @deprecated(reason: "Plans are unused in TPUv2+.")
+    internalFeatures: String @deprecated(reason: "Plans are unused in TPUv2+.")
+    icon: String!
+}
+
+type Domain {
+    id: Int!
+    domain: String!
+    userId: Int
+    DNSProvisioned: Boolean! @deprecated(reason: "Use `active` instead.")
+    active: Boolean!
+    zone: String @deprecated(reason: "Cloudflare integration was removed in TPUv2.")
+    advanced: Float @deprecated(reason: "Cloudflare integration was removed in TPUv2.")
+    subdomains: Boolean! @deprecated(reason: "Subdomains were removed in TPUv2.")
+    subdomainsCreate: Boolean! @deprecated(reason: "Subdomains were removed in TPUv2.")
+    customUserEligibility: [Int!] @deprecated(reason: "Granular user control was removed in TPUv2.")
+    restricted: String! @deprecated(reason: "Granular user control was removed in TPUv2.")
+    user: PartialUserBase
+
+    """Only populated in some admin contexts"""
+    users: [PartialUserBase!]
+}
+
+type PartialUserBase {
+    username: String!
+    id: Int!
+    createdAt: Date!
+    administrator: Boolean!
+    moderator: Boolean!
+    avatar: String
+    bot: Boolean!
+    legacy: Boolean!
+    badges: [Badge!]!
+    notifications: [Notification!]!
+    integrations: [Integration!]!
+    domain: [Domain!]!
+    subscription: [TPUSubscription!]!
+    plan: Plan!
+    autoCollectRules: AutoCollectRule!
+    stats: Stats!
+    friends: [Friend!]!
+    mutualCollections: [Collection!]!
+    friend: FriendStatus!
+}
+
+type Badge {
+    id: Int!
+    name: String!
+    description: String
+    tooltip: String
+    image: String
+    icon: String
+    color: String
+    unlocked: Boolean!
+    priority: Float
+    plan: Plan!
+    users: [PartialUserBase!]!
+}
+
+type Notification {
+    id: Int!
+    message: String!
+    userId: Float!
+    dismissed: Boolean!
+    route: String
+    createdAt: Date!
+    updatedAt: Date!
+    user: PartialUserBase
+}
+
+type Integration {
+    id: Int!
+    userId: Float!
+    type: String!
+    expiresAt: DateTimeISO
+    createdAt: Date!
+    updatedAt: Date!
+    providerUserId: Float
+    providerUsername: String
+    providerUserCache: JSON
+    error: String
+    user: PartialUserBase
+}
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.This scalar is serialized to a string in ISO 8601 format and parsed from a string in ISO 8601 format.
+"""
+scalar DateTimeISO
+
+type TPUSubscription {
+    planId: Int!
+    userId: Int!
+    price: Int
+    cancelled: Boolean!
+    paymentId: Int!
+    expiredAt: DateTimeISO
+    cancelledAt: DateTimeISO
+    metadata: SubscriptionMetadata
+    createdAt: Date!
+    updatedAt: Date!
+    user: PartialUserBase
+}
+
+type SubscriptionMetadata {
+    hours: Float!
+}
+
+type AutoCollectRule {
+    id: Int!
+    name: String!
+    enabled: Boolean!
+    collectionId: Float!
+    requireApproval: Boolean!
+    rules: [AutoCollectParentRule!]!
+}
+
+type AutoCollectParentRule {
+    id: Float!
+    rules: [SubRule!]!
+}
+
+type SubRule {
+    id: Float!
+    type: String!
+    value: String!
+    operator: String!
+}
+
+type Stats {
+    users: Int!
+    announcements: Int!
+    usage: BigInt
+    collections: Int!
+    collectionItems: Int!
+    uploadGraph: DataLabelsGraph
+    messageGraph: DataLabelsGraph
+    pulseGraph: DataLabelsGraph
+    uploads: Int!
+    pulse: Int!
+    pulses: Int!
+    docs: Int!
+    hours: JSON
+    messages: Int!
+}
+
+"""
+The `BigInt` scalar type represents non-fractional signed whole numeric values.
+"""
+scalar BigInt
+
+type DataLabelsGraph {
+    data: [Float!]!
+    labels: [String!]!
+}
+
+type Friend {
+    id: Int!
+    createdAt: Date!
+    updatedAt: Date!
+    status: FriendStatus!
+    userId: Int
+    friendId: Int!
+    user: PartialUserFriend!
+    otherUser: PartialUserFriend!
+}
+
+"""Friend request status."""
+enum FriendStatus {
+    NONE
+    INCOMING
+    OUTGOING
+    ACCEPTED
+}
+
+type PartialUserFriend {
+    username: String!
+    id: Int!
+    createdAt: Date!
+    administrator: Boolean!
+    moderator: Boolean!
+    avatar: String
+    bot: Boolean!
+    legacy: Boolean!
+    badges: [Badge!]!
+    notifications: [Notification!]!
+    integrations: [Integration!]!
+    domain: [Domain!]!
+    subscription: [TPUSubscription!]!
+    plan: Plan!
+    autoCollectRules: AutoCollectRule!
+    stats: Stats!
+    friends: [Friend!]!
+    mutualCollections: [Collection!]!
+    friend: FriendStatus!
+    status: UserStatus!
+    nameColor: String
+    nickname: FriendNickname
+    blocked: Boolean
+    platforms: [Platform!]
+}
+
+type Collection {
+    id: Int!
+    createdAt: Date!
+    updatedAt: Date!
+    name: String!
+
+    """
+    Please use field `banner` instead if you want to obtain the banner for a collection.
+    """
+    image: String
+    userId: Float!
+    shareLink: String
+    avatar: String
+
+    """
+    The recommended way to obtain the banner for a collection, it uses field `image`, and if null, falls back to the last added image preview.
+    """
+    banner: String
+    user: PartialUserBase
+    preview: CollectionItem
+    users: [CollectionUser!]!
+    recipient: CollectionUser
+    autoCollectApprovals: [AutoCollectApproval!]!
+    shared: Boolean
+    itemCount: Int
+    attachments: [Upload!]!
+    permissionsMetadata: PermissionsMetadata!
+
+    """Used for the frontend for new collections on WebSocket event."""
+    new: Boolean
+}
+
+type CollectionItem {
+    id: Int!
+    collectionId: Float!
+    attachmentId: Float!
+    userId: Float!
+
+    """
+    Used to prevent duplicates by forming `uploadId-collectionId`. Can be null for items created before October 2022.
+    """
+    identifier: String
+    createdAt: Date!
+    updatedAt: Date!
+    pinned: Boolean!
+    user: PartialUserBase
+    collection: Collection!
+    attachment: Upload!
+}
+
+type Upload {
+    id: Int!
+    createdAt: Date!
+    updatedAt: Date!
+    attachment: String!
+    userId: Float!
+    name: String
+    originalFilename: String
+    type: String!
+    urlRedirect: String @deprecated(reason: "URL redirects were removed in TPUv2/NEXT.")
+    fileSize: Float!
+
+    """
+    Non-deletable items are used for profile pictures, banners, etc and are not visible in the Gallery page by default, and cannot be deleted.
+    """
+    deletable: Boolean!
+
+    """This is used for OCR scanned text from images."""
+    textMetadata: String
+    user: PartialUserBase
+    item: CollectionItem
+    collections: [Collection!]!
+    items: [CollectionItem!]!
+    starred: Star
+    autoCollectApproval: AutoCollectApproval
+}
+
+type Star {
+    id: Int!
+    userId: Float!
+    attachmentId: Float!
+    createdAt: Date!
+    updatedAt: Date!
+    user: PartialUserBase
+    attachment: Upload!
+}
+
+type AutoCollectApproval {
+    id: Int!
+    autoCollectRuleId: Int!
+    uploadId: Float!
+    collectionId: Int!
+    userId: Int
+    approved: Boolean!
+    user: PartialUserBase
+    collection: Collection
+    autoCollectRule: AutoCollectRule
+    attachment: Upload
+}
+
+type CollectionUser {
+    id: Int!
+    createdAt: Date!
+    updatedAt: Date!
+    collectionId: Float!
+    read: Boolean!
+    write: Boolean!
+    configure: Boolean!
+    accepted: Boolean!
+    recipientId: Float
+    senderId: Float
+    identifier: String
+    collection: Collection
+    user: PartialUserBase
+    sender: PartialUserBase
+}
+
+type PermissionsMetadata {
+    write: Boolean!
+    read: Boolean!
+    configure: Boolean!
+}
+
+type FriendNickname {
+    id: Int!
+    userId: Float!
+    createdAt: Date!
+    updatedAt: Date!
+    friendId: Float!
+    nickname: String!
+    user: PartialUserBase
+    friend: PartialUserBase
+}
+
+type Platform {
+    platform: PlatformType!
+    id: String!
+    lastSeen: String!
+    status: UserStatus!
+}
+
+"""Platform type of user device."""
+enum PlatformType {
+    DESKTOP
+    WEB
+    MOBILE
+}
+
+type Experiment {
+    key: String!
+    value: String!
+    userId: Float!
+    user: PartialUserBase
+}
+
+type Session {
+    id: Int!
+
+    """Only populated for `API` type sessions on `currentUser`."""
+    token: String
+    createdAt: Date
+    updatedAt: Date
+    userId: Float!
+    scopes: String!
+    type: SessionType!
+    expiredAt: DateTimeISO
+    name: String
+    info: SessionInfo
+    oauthAppId: String
+}
+
+enum SessionType {
+    API
+    WEB_SESSION
+    OAUTH
+}
+
+type SessionInfo {
+    accessedFrom: [AccessedFrom!]!
+}
+
+type AccessedFrom {
+    ip: String!
+    userAgent: String
+    isp: String
+    location: String
+    date: String!
+    asn: Float
+}
+
+input SessionInput {
+    type: SessionType!
+}
+
+type PartialUserPublic {
+    bot: Boolean!
+    username: String!
+    id: Int!
+    createdAt: Date!
+    administrator: Boolean!
+    moderator: Boolean!
+    avatar: String
+    badges: [Badge!]!
+    banned: Boolean!
+    banner: String
+    description: String
+    friend: FriendStatus
+    friends: [Friend!]
+    insights: UserInsights!
+    plan: Plan!
+    platforms: [Platform!]
+    profileLayout: ProfileLayout
+    publicProfile: Boolean!
+    quota: Float!
+    stats: Stats
+    themeEngine: JSON
+    xp: Float
+    mutualCollections: [Collection!]!
+    notifications: [Notification!]!
+    integrations: [Integration!]!
+    domain: [Domain!]!
+    subscription: [TPUSubscription!]!
+    autoCollectRules: AutoCollectRule!
+}
+
+type ProfileLayout {
+    layout: ProfileLayoutObject!
+    config: ProfileLayoutConfig!
+    version: Float!
+}
+
+type ProfileLayoutObject {
+    columns: [ProfileLayoutColumn!]!
+}
+
+type ProfileLayoutColumn {
+    rows: [ProfileLayoutComponent!]!
+}
+
+type ProfileLayoutComponent {
+    name: String!
+    id: String!
+    props: ProfileLayoutProps
+}
+
+type ProfileLayoutProps {
+    height: Float
+    children: [ProfileLayoutComponent!]
+    friendsOnly: Boolean
+    display: Float
+    type: String
+    links: [ProfileLayoutPropLink!]
+}
+
+type ProfileLayoutPropLink {
+    name: String!
+    url: String!
+    color: String!
+}
+
+type ProfileLayoutConfig {
+    containerMargin: Float
+    showStatsSidebar: Boolean!
+}
+
+input UserProfileInput {
+    id: Float
+    username: String
+}
+
+type CoreState {
+    connection: Connection!
+    name: String!
+
+    """Whether the app is running in production mode."""
+    release: String!
+    hostname: String!
+    hostnameWithProtocol: String!
+    announcements: [Announcement!]!
+    stats: CoreStats!
+    maintenance: Maintenance!
+    registrations: Boolean!
+
+    """
+    Whether the TPU instance is the officially run instance on privateuploader.com. This can be enabled on any instance but can enable unwanted features.
+    """
+    officialInstance: Boolean!
+    providers: Providers!
+
+    """Workspaces Note ID for the Terms of Service."""
+    termsNoteId: String
+
+    """Workspaces Note ID for the Privacy Policy."""
+    privacyNoteId: String
+
+    """List of enabled features for TPU instance"""
+    features: Features!
+    inviteAFriend: Boolean!
+
+    """
+    List of domains that are pre-trusted for user-generated hyperlinks such as Communications messages which don't require a confirmation to proceed.
+    """
+    preTrustedDomains: [String!]!
+    hostnames: [String!]!
+    _redis: String!
+    server: String!
+    finishedSetup: Boolean!
+    domain: String!
+
+    """Uptime of the TPU Server in seconds."""
+    uptime: Float!
+
+    """Uptime of the system in seconds."""
+    uptimeSys: Float!
+    commitVersion: String!
+
+    """
+    If finishedSetup is false, this will be the step the setup is on. If the setup is completed, it will return `-1`
+    """
+    step: Int!
+    weather: Weather!
+}
+
+type Connection {
+    ip: String!
+    whitelist: Boolean! @deprecated(reason: "No longer used in v4.")
+}
+
+type Announcement {
+    id: Int!
+    userId: Float
+    content: String!
+    type: String
+    createdAt: Date
+    updatedAt: Date
+    user: PartialUserBase
+}
+
+type CoreStats {
+    users: Int!
+    announcements: Int!
+    usage: BigInt
+    collections: Int!
+    collectionItems: Int!
+    uploadGraph: DataLabelsGraph
+    messageGraph: DataLabelsGraph
+    pulseGraph: DataLabelsGraph
+    uploads: Int!
+    pulse: Int!
+    pulses: Int!
+    docs: Int!
+    hours: JSON
+    messages: Int!
+    invites: Int!
+    inviteMilestone: Int!
+    chats: Int!
+}
+
+type Maintenance {
+    enabled: Boolean!
+    message: String
+    statusPage: String
+}
+
+type Providers {
+    anilist: Boolean!
+    lastfm: Boolean!
+    mal: Boolean!
+}
+
+type Features {
+    communications: Boolean!
+    collections: Boolean!
+    autoCollects: Boolean!
+    workspaces: Boolean!
+    insights: Boolean!
+}
+
+type Weather {
+    icon: String
+    temp: Float
+    feels_like: Float
+    temp_min: Float
+    temp_max: Float
+    pressure: Float
+    humidity: Float
+    wind_speed: Float
+    wind_deg: Float
+    clouds: Float
+    visibility: Float
+    error: Boolean
+    cached: Boolean
+    description: String
+    main: String
+    location: String
+    wind_gust: Float
+    sunrise: Float
+    sunset: Float
+    rain_1h: Float
+    rain_3h: Float
+}
+
+type ExperimentType {
+    id: Experiments!
+    value: Int!
+    description: String
+    createdAt: Date
+    refresh: Boolean
+    versions: [Int!]!
+    override: Boolean!
+    force: Boolean!
+}
+
+"""Available experiments"""
+enum Experiments {
+    NEW_BRANDING
+    CAN_ENABLE_PROGRESSIVE_UI
+    EDITOR_V2
+    WIDGETS
+    BADGES
+    NATIVE_BADGES
+    REMOVE_LEGACY_SOCKET
+    CHAT_CACHING
+    FAB
+    ENABLE_PULSE_TAB
+    LEGACY_FLOWINITY_SSO
+    CLASSIC_MIGRATE
+    EXPAND_APP_BAR_IMAGE
+    COPY_MSG_ID
+    WEATHER
+    BREADCRUMB_SHOW_PARENT
+    MEET
+    COMMS_SUPERBAR
+    PROGRESSIVE_HOME
+    DISABLE_ANIMATIONS
+    PROGRESSIVE_UI
+    CHAT_GUIDED_WIZARD
+    NOTE_AI_ASSIST
+    NOTE_COLLAB
+    V5_FLOAT
+    IAF_NAG
+    GALLERY_INFINITE_SCROLL
+    DOWNLOAD_THE_APP_NAG
+    ENABLE_AUTOSTART_APP_NAG
+    DEBUG_FAVICON
+    FLOWINITY
+    PRIDE
+    THEME
+    NOTIFICATION_SOUND
+    RESIZABLE_SIDEBARS
+    LEGACY_MOBILE_NAV
+    OFFICIAL_INSTANCE
+    API_FALLBACK_ON_ERROR
+    API_VERSION
+    USER_V3_EDITOR
+    RAIL_SIDEBAR
+    USER_V3_MODIFY
+    USER_V3
+    EARLY_ACCESS
+    PINNED_MESSAGES
+    COMMUNICATIONS_KEEP_LOADED
+    COMMUNICATIONS_INLINE_SIDEBAR_HIRES
+    COMMUNICATIONS_QUAD_SIDEBAR_LOWRES
+    COMMUNICATIONS
+    WEBMAIL
+    SURVEYS
+    PROJECT_MERGE
+    WORKSPACES_SIDEBAR
+    LEGACY_CUSTOMIZATION
+    ACCOUNT_DEV_ELIGIBLE
+    QUICK_NOTES
+    INTERACTIVE_NOTES
+    CREEPY_SFX_BUTTON
+    PROFILE_BANNER
+    PROJECT_CENTRAL
+    DESIGN_V2
+    API_VERSION_V2
+    MEME_GEN
+    INSTANT_UPLOAD
+    USER_V2
+    SFX_KFX
+    SFX_KOLF
+    HOVER_CHIP_CLOSE_DELAY
+    HOVER_CHIP_OPEN_DELAY
+    HOVER_CHIP_HOVER
+    EXPERIENCE_FLUID
+    EXPERIENCE_ITEMS_PER_PAGE
+    EXPERIENCE_GALLERY_ITEM_WIDTH
+    ANDROID_CONFIG
+    LEGACY_ATTRIBUTES_UI
+    meta
+}
+
+type PaginatedCollectionResponse {
+    items: [Collection!]!
+    pager: Pager!
+}
+
+type Pager {
+    totalItems: Int!
+    currentPage: Int!
+    pageSize: Int!
+    totalPages: Int!
+    startPage: Int!
+    endPage: Int!
+    startIndex: Int!
+    endIndex: Int!
+    pages: [Float!]!
+}
+
+input UserCollectionsInput {
+    filter: [CollectionFilter!]! = [ALL]
+    search: String
+    limit: Float
+    page: Float! = 1
+    onlyInvited: Boolean! = false
+}
+
+"""The type of collection"""
+enum CollectionFilter {
+    ALL
+    WRITE
+    READ
+    CONFIGURE
+    SHARED
+    OWNED
+}
+
+input CollectionInput {
+    id: Int
+    shareLink: String
+}
+
+type PaginatedUploadResponse {
+    items: [Upload!]!
+    pager: Pager!
+}
+
+input GalleryInput {
+    search: String = ""
+    page: Int = 1
+    limit: Int
+    filters: [GalleryFilter!] = [ALL]
+    sort: GallerySort = CREATED_AT
+    order: GalleryOrder = DESC
+    type: GalleryType = PERSONAL
+
+    """Requires Type to be COLLECTION"""
+    collectionId: Int
+
+    """Requires Type to be COLLECTION"""
+    shareLink: String
+    advanced: [SearchModeInput!]
+}
+
+"""The filter to apply to the gallery request"""
+enum GalleryFilter {
+    ALL
+    OWNED
+    SHARED
+    NO_COLLECTION
+    IMAGES
+    VIDEOS
+    GIFS
+    AUDIO
+    TEXT
+    OTHER
+    PASTE
+    INCLUDE_METADATA
+    INCLUDE_UNDELETABLE
+    ONLY_UNDELETABLE
+}
+
+"""The sort to apply to the gallery request"""
+enum GallerySort {
+    CREATED_AT
+    UPDATED_AT
+    ADDED_AT
+    NAME
+    SIZE
+}
+
+"""The order to apply to the gallery request"""
+enum GalleryOrder {
+    ASC
+    DESC
+    RANDOM
+}
+
+"""
+The type of gallery request, for example if it's the personal gallery page, or a Collection
+"""
+enum GalleryType {
+    PERSONAL
+    STARRED
+    COLLECTION
+    AUTO_COLLECT
+}
+
+input SearchModeInput {
+    mode: GallerySearchMode!
+    value: String
+}
+
+"""The advanced search mode."""
+enum GallerySearchMode {
+    AFTER
+    DURING
+    USER
+    SIZE
+    NAME
+    META
+    TYPE
+    COLLECTION
+    BEFORE
+    ORDER
+}
+
+type Chat {
+    id: Int!
+    type: String!
+    name: String!
+
+    """
+    Null if the chat is owned by a Colubrina legacy user, or the account was deleted.
+    """
+    userId: Float
+    icon: String
+    createdAt: DateTimeISO!
+    updatedAt: DateTimeISO!
+
+    """
+    Null if the chat is owned by a Colubrina legacy user, or the account was deleted.
+    """
+    user: PartialUserBase
+    association: ChatAssociation
+    users: [ChatAssociation!]!
+    description: String
+    background: String
+    unread: Int
+    _redisSortDate: String
+    ranks: [ChatRank!]!
+    messages: [Message!]!
+
+    """
+    Array is empty if you don't have the `OVERVIEW` permission in the chat.
+    """
+    invites: [ChatInvite!]!
+    emoji: [ChatEmoji!]
+    usersCount: Int!
+    onlineCount: Int!
+    recipient: PartialUserBase
+}
+
+type ChatAssociation {
+    id: Int!
+    chatId: Int!
+    userId: Int
+    rank: String! @deprecated(reason: "`ChatRank` has replaced legacy rank for granular permission control.")
+    lastRead: Int
+    createdAt: Date!
+    notifications: String!
+
+    """
+    Only true/false for current user, null for other ChatAssociations. This determines whether the chat is visible in the sidebar (open or closed).
+    """
+    hidden: Boolean
+    inviteUsed: String
+    invite: ChatInvite
+    user: PartialUserBase
+    ranks: [ChatRank!]!
+    ranksMap: [String!]!
+    permissions: [String!]!
+}
+
+type ChatInvite {
+    id: String!
+    userId: Int
+    chatId: Int!
+
+    """
+    Automatically assigns rank to user when joining. If unset the backend will set the `managed` Members role.
+    """
+    rankId: String
+    createdAt: Date!
+    updatedAt: Date!
+    expiredAt: Date
+    invalidated: Boolean!
+    user: PartialUserBase
+    chat: Chat!
+    rank: ChatRank
+}
+
+type ChatRank {
+    id: String!
+    color: String
+    name: String!
+    userId: Int
+    createdAt: Date
+    chatId: Int!
+    updatedAt: Date
+    managed: Boolean!
+    index: Int!
+    permissions: [ChatPermission!]!
+    permissionsMap: [String!]!
+    associations: [ChatAssociation!]!
+}
+
+type ChatPermission {
+    id: String!
+    description: String!
+    name: String!
+    createdAt: Date
+    updatedAt: Date
+    group: RankPermissionGroup!
+}
+
+"""
+The category that the permission is categorized into for Communications ranks.
+"""
+enum RankPermissionGroup {
+    ADMIN
+    MANAGE
+    GENERAL
+    OPTIONS
+}
+
+type Message {
+    id: Int!
+    createdAt: Date!
+    updatedAt: Date!
+    chatId: Int!
+    userId: Int
+    content: String
+    type: MessageType
+    embeds: [EmbedDataV2!]!
+    edited: Boolean!
+    editedAt: Date
+    replyId: Int
+    pinned: Boolean!
+    user: PartialUserBase
+    reply: Message
+    pending: Boolean!
+    error: Boolean!
+    readReceipts: [ReadReceipt!]!
+    chat: Chat!
+    emoji: [ChatEmoji!]
+}
+
+"""
+The type of message. Can be null for legacy (Colubrina) messages where `MESSAGE` should be inferred.
+"""
+enum MessageType {
+    MESSAGE
+    LEAVE
+    JOIN
+    PIN
+    ADMINISTRATOR
+    RENAME
+    SYSTEM
+}
+
+type EmbedDataV2 {
+    media: [EmbedMedia!]
+    text: [EmbedText!]
+    metadata: EmbedMetadata!
+    version: EmbedVersion!
+}
+
+type EmbedMedia {
+    url: String
+    proxyUrl: String
+    attachment: String
+    width: Float
+    height: Float
+    isInternal: Boolean!
+    upload: Upload
+    mimeType: String
+    type: EmbedMediaType!
+
+    """Used for trusted video embed sources, such as YouTube."""
+    videoEmbedUrl: String
+}
+
+enum EmbedMediaType {
+    IMAGE
+    VIDEO
+    AUDIO
+    FILE
+}
+
+type EmbedText {
+    imageProxyUrl: String
+    text: String!
+    heading: Boolean
+    imageUrl: String
+}
+
+type EmbedMetadata {
+    url: String
+    siteName: String
+    siteIcon: String
+    footer: String
+    type: EmbedType!
+
+    """Used for chat invites, and other embeds."""
+    id: String
+
+    """Used for NSFW embeds and content."""
+    restricted: Boolean
+}
+
+enum EmbedType {
+    REGULAR
+    CHAT_INVITE
+    DIRECT
+}
+
+enum EmbedVersion {
+    COLUBRINA
+    V1
+    V2
+}
+
+type ReadReceipt {
+    chatId: Int!
+    associationId: Int!
+    messageId: Int!
+    user: PartialUserBase
+}
+
+type ChatEmoji {
+    id: String!
+    userId: Int
+    chatId: Int!
+    icon: String
+    name: String
+    deleted: Boolean!
+    createdAt: Date!
+    updatedAt: Date!
+}
+
+input ChatsInput {
+    hidden: Boolean! = false
+}
+
+input ChatInput {
+    associationId: Int
+    chatId: Int
+}
+
+type Prefix {
+    prefix: String!
+    commands: [LookupPrefix!]!
+}
+
+type LookupPrefix {
+    command: String!
+    description: String!
+    botId: Float!
+}
+
+input LookupPrefixInput {
+    chatAssociationId: Int!
+    prefix: String!
+}
+
+type Workspace {
+    id: Int!
+    name: String!
+    userId: Int
+    createdAt: Date!
+    updatedAt: Date!
+    icon: String
+    user: PartialUserBase
+    folders: [WorkspaceFolder!]!
+    users: [WorkspaceUser!]!
+}
+
+type WorkspaceFolder {
+    id: Int!
+    createdAt: Date!
+    updatedAt: Date!
+    name: String!
+    workspaceId: Float!
+    folderId: Float
+    children: [Note!]!
+    workspace: Workspace!
+}
+
+type Note {
+    id: Int!
+    createdAt: Date!
+    updatedAt: Date!
+    name: String!
+    data: WorkspaceNote
+    metadata: WorkspaceNoteMetadata
+    workspaceFolderId: Float!
+    shareLink: String
+    versions: [NoteVersion!]!
+    permissions: NotePermissionsMetadata
+}
+
+type WorkspaceNote {
+    version: String
+    blocks: JSON
+    time: Float
+}
+
+type WorkspaceNoteMetadata {
+    version: String
+}
+
+type NoteVersion {
+    id: String!
+    noteId: Int!
+    userId: Int
+    data: WorkspaceNote
+    createdAt: Date!
+    updatedAt: Date!
+}
+
+type NotePermissionsMetadata {
+    modify: Boolean!
+    read: Boolean!
+    configure: Boolean!
+}
+
+type WorkspaceUser {
+    id: Int!
+    createdAt: Date!
+    updatedAt: Date!
+    workspaceId: Float!
+    read: Boolean!
+    write: Boolean!
+    configure: Boolean!
+    accepted: Boolean!
+    recipientId: Int!
+    senderId: Int!
+
+    """The unique identifier between the User and the Workspace."""
+    identifier: String
+    workspace: Workspace!
+    user: PartialUserBase
+    sender: PartialUserBase
+}
+
+input NoteInput {
+    id: Float
+    shareLink: String
+}
+
+input FriendsInput {
+    status: FriendStatus
+}
+
+input InfiniteMessagesInput {
+    associationId: Int!
+    position: ScrollPosition
+    search: MessagesSearch
+    limit: Int! = 50
+    offset: Int
+}
+
+"""The position to retrieve messages from based on the `offset`."""
+enum ScrollPosition {
+    TOP
+    BOTTOM
+}
+
+input MessagesSearch {
+    query: String
+    userId: Int
+    before: Date
+    after: Date
+    pins: Boolean
+}
+
+type PaginatedMessageResponse {
+    items: [Message!]!
+    pager: Pager!
+}
+
+input PagedMessagesInput {
+    associationId: Int!
+    position: ScrollPosition
+    search: MessagesSearch
+    limit: Int! = 50
+    page: Int! = 1
+}
+
+type ExperimentOverride {
+    id: String!
+    value: Int!
+    force: Boolean!
+    userId: Int
+}
+
+type BlockedUser {
+    id: String!
+    userId: Int
+    createdAt: Date!
+    updatedAt: Date!
+    blockedUserId: Int!
+
+    """
+    To the blocked user it appears as though they're unblocked, however the blocker will not receive any messages from them, and their messages will be hidden inside of group chats.
+    """
+    silent: Boolean!
+    user: PartialUserBase
+    blockedUser: PartialUserBase
+}
+
+input InviteInput {
+    inviteId: String!
+}
+
+type ListResponse {
+    path: String!
+    name: String!
+    delimiter: String!
+    flags: [String!]!
+    specialUse: String
+    listed: Boolean!
+    subscribed: Boolean
+}
+
+input GetMailInput {
+    userId: Float!
+    mailbox: String!
+    page: Float
+}
+
+type OauthApp {
+    id: String!
+    name: String!
+    icon: String
+    shortCode: String
+    verified: Boolean!
+    redirectUri: String
+    secret: String
+    description: String
+    scopes: String!
+    userId: Float!
+    botId: Float
+    private: Boolean!
+    user: PartialUserBase
+    bot: PartialUserBase
+    oauthUsers: [OauthUser!]!
+    oauthUser: OauthUser!
+    token: String
+}
+
+type OauthUser {
+    id: String!
+    userId: Float!
+    oauthAppId: String!
+    active: Boolean!
+    createdAt: Date!
+    updatedAt: Date!
+    manage: Boolean!
+    user: PartialUserBase
+}
+
+input MyAppInput {
+    id: String!
+}
+
+type OauthConsentApp {
+    id: String!
+    name: String!
+    icon: String
+    shortCode: String
+    verified: Boolean!
+    redirectUri: String
+    description: String
+    scopes: String!
+    userId: Float!
+    botId: Float
+    private: Boolean!
+    user: PartialUserBase
+    bot: PartialUserBase
+    token: String
+}
+
+type PaginatedChatAuditLogResponse {
+    items: [ChatAuditLog!]!
+    pager: Pager!
+}
+
+type ChatAuditLog {
+    id: String!
+    userId: Int
+    chatId: Int!
+    category: AuditLogCategory!
+    actionType: AuditLogActionType!
+    message: String!
+    createdAt: Date!
+    updatedAt: Date!
+}
+
+"""Used for chat audit log."""
+enum AuditLogCategory {
+    USER
+    RANK
+    MESSAGE
+    INVITE
+    PIN_MESSAGE
+    BOT
+    SETTINGS
+    EMOJI
+}
+
+"""
+Used for chat audit log to determine what type of action was performed.
+"""
+enum AuditLogActionType {
+    MODIFY
+    ADD
+    REMOVE
+}
+
+input AuditLogInput {
+    associationId: Int!
+    page: Float! = 1
+    limit: Float! = 24
+}
+
+input AutoCollectRuleQueryInput {
+    id: Int!
+}
+
+type Mutation {
+    updateUser(input: UpdateUserInput!): Boolean!
+    updateStatus(input: UpdateUserStatusInput!): UserStoredStatus
+    changeUserPassword(input: ChangePasswordInput!): Boolean!
+    changeUsername(input: ChangeUsernameInput!): Boolean!
+    changeUserEmail(input: ChangeEmailInput!): Boolean!
+    verifyEmail(token: String!): Boolean!
+    resendVerificationEmail: Boolean!
+    confirmDateOfBirth(dateOfBirth: String!): Boolean!
+    deleteAccount(input: DangerZoneInput!): Boolean!
+    deleteGallery(input: DangerZoneInput!): Boolean!
+    login(input: LoginInput!): LoginResponse!
+    logout: Boolean!
+    register(input: RegisterInput!): LoginResponse!
+    reactivateAccount: Boolean!
+    setExperiment(input: SetExperimentInput!): Experiment!
+    createCollection(input: CreateCollectionInput!): Collection!
+    updateCollection(input: UpdateCollectionInput!): Collection!
+    updateCollectionUserPermissions(input: UpdateCollectionUserPermissionsInput!): CollectionUser!
+    addCollectionUser(input: UpdateCollectionUserPermissionsInput!): CollectionUser!
+    removeCollectionUser(input: RemoveCollectionUserInput!): GenericSuccessObject!
+    transferCollectionOwnership(input: TransferCollectionOwnershipInput!): GenericSuccessObject!
+    actOnCollectionInvite(input: AcceptCollectionInviteInput!): GenericSuccessObject!
+    leaveCollection(input: LeaveCollectionInput!): GenericSuccessObject!
+    applyDomain(domainId: Int!): Domain!
+    deleteUploads(input: DeleteUploadInput!): GenericSuccessObject!
+    updateUpload(input: UpdateUploadInput!): Upload!
+    starUpload(input: StarUploadInput!): StarUploadResponse!
+    createChat(input: CreateChatInput!): Chat!
+    updateChat(input: UpdateChatInput!): Chat!
+    deleteGroup(input: DangerZoneChatInput!): GenericSuccessObject!
+    transferGroupOwnership(input: TransferOwnershipInput!): Chat!
+    typing(input: Float!): Boolean!
+    cancelTyping(input: Float!): Boolean!
+    addChatUsers(input: AddChatUser!): GenericSuccessObject!
+    toggleUserRank(input: AddRank!): GenericSuccessObject!
+    leaveChat(input: LeaveChatInput!): GenericSuccessObject!
+    joinChatFromInvite(input: JoinChatFromInviteInput!): ChatAssociation!
+    addBotToChat(input: AddBotToChatInput!): ChatAssociation!
+    readChat(input: ReadChatInput!): GenericSuccessObject!
+
+    """Create a new Workspace Folder."""
+    createWorkspaceFolder(input: CreateWorkspaceFolderInput!): WorkspaceFolder!
+
+    """Create workspace"""
+    createWorkspace(
+        """Name of workspace"""
+        input: String!
+    ): Workspace!
+
+    """Delete a Note."""
+    deleteWorkspaceItem(input: DeleteWorkspaceItemInput!): Boolean!
+    saveNote(input: SaveNoteInput!): Note! @deprecated(reason: "Use `saveNoteBlock` instead to support collaborative editing.")
+    createNote(input: CreateNoteInput!): Note!
+
+    """Toggle the ShareLink for a Note."""
+    toggleNoteShare(
+        """ID of Note"""
+        input: Int!
+    ): Note!
+    saveNoteBlock(input: UpdateNoteEventInput!): Boolean!
+    saveNoteCollabPosition(input: NoteCollabPositionInput!): Boolean!
+    friend(input: AddFriendInput!): Boolean!
+    sendMessage(input: SendMessageInput!): Message!
+    editMessage(input: EditMessageInput!): Message
+    deleteMessage(input: DeleteMessageInput!): Boolean!
+    updateChatRank(input: UpdateRank!): ChatRank!
+    addChatRank(input: CreateRank!): ChatRank!
+    updateChatRankOrder(input: UpdateRankOrder!): [ChatRank!]!
+    deleteChatRank(input: DeleteRank!): GenericSuccessObject!
+    actOnAutoCollects(input: ActOnAutoCollectsInput!): GenericSuccessObject!
+    addToCollection(input: AddToCollectionInput!): [CollectionItem!]!
+    removeFromCollection(input: AddToCollectionInput!): Int!
+    adminMigrateLegacyRanksForChat: GenericSuccessObject!
+    adminSendEmailForUnverifiedUsers: GenericSuccessObject!
+    adminClearCache(input: ClearCacheInput!): GenericSuccessObject!
+    adminDebugBatch: GenericSuccessObject!
+    adminGenerateInsights(customGte: String, type: String!, userId: Float!): GenericSuccessObject!
+    adminSetExperimentOverride(input: ExperimentOverrideInput!): ExperimentOverride!
+    adminDeleteExperimentOverride(id: String!): GenericSuccessObject!
+    blockUser(input: BlockUserInput!): GenericSuccessObject!
+    createChatInvite(input: CreateInviteInput!): ChatInvite!
+    invalidateChatInvite(input: InvalidateInviteInput!): GenericSuccessObject!
+    oauthAppAuthorize(input: AuthorizeAppInput!): AuthorizeAppResponse!
+    oauthAppDeauthorize(input: MyAppInput!): GenericSuccessObject!
+    createOauthApp(input: CreateAppInput!): OauthApp!
+    deleteOauthApp(input: MyAppInput!): GenericSuccessObject!
+    resetOauthSecret(input: MyAppInput!): GenericSuccessObject!
+    updateOauthApp(input: UpdateAppInput!): GenericSuccessObject!
+    createBotOauthApp(input: CreateBotInput!): PartialUserBase!
+    updateOauthUser(input: UpdateAppUserInput!): OauthUser!
+    addOauthUser(input: AddAppUserInput!): OauthUser!
+    registerBotPrefix(input: RegisterPrefix!): GenericSuccessObject!
+    registerBotCommands(input: RegisterCommands!): GenericSuccessObject!
+    updateEmoji(input: UpdateEmojiInput!): ChatEmoji!
+    deleteEmoji(input: DeleteEmojiInput!): GenericSuccessObject!
+    createPulse(input: PulseInput!): String!
+    createSinglePulse(input: SinglePulseInput!): String!
+    updatePulse(input: PulseUpdateInput!): String!
+    embedResolutionPrecache(input: EmbedPrecacheInput!): EmbedDataV2
+
+    """Currently in beta and only available to people with experiment opt-in."""
+    addWorkspaceUser(input: WorkspaceUserInput!): WorkspaceUser!
+}
+
+input UpdateUserInput {
+    username: String
+    email: String
+    discordPrecache: Boolean
+    darkTheme: Boolean
+    description: String
+    itemsPerPage: Float
+    storedStatus: String
+    weatherUnit: String
+    themeEngine: JSON
+    insights: String
+    profileLayout: JSON
+    language: String
+    excludedCollections: [Float!]
+    publicProfile: Boolean
+    privacyPolicyAccepted: Boolean
+    nameColor: String
+    groupPrivacy: UserGroupPrivacy
+    pulse: Boolean
+    friendRequests: UserFriendRequestPrivacy
+}
+
+input UpdateUserStatusInput {
+    """Permanent status change."""
+    storedStatus: UserStoredStatus
+
+    """Temporary status change, for IDLE status."""
+    status: String
+}
+
+input ChangePasswordInput {
+    totp: String
+    currentPassword: String!
+    newPassword: String!
+}
+
+input ChangeUsernameInput {
+    """You may use either 2FA token or password to delete the chat."""
+    password: String
+
+    """
+    TOTP/2FA code if enabled. You may use either 2FA token or password to delete the chat.
+    """
+    totp: String
+    username: String!
+}
+
+input ChangeEmailInput {
+    """You may use either 2FA token or password to delete the chat."""
+    password: String
+
+    """
+    TOTP/2FA code if enabled. You may use either 2FA token or password to delete the chat.
+    """
+    totp: String
+    email: String!
+}
+
+"""Used for dangerous operations."""
+input DangerZoneInput {
+    """You may use either 2FA token or password to delete the chat."""
+    password: String
+
+    """
+    TOTP/2FA code if enabled. You may use either 2FA token or password to delete the chat.
+    """
+    totp: String
+}
+
+type LoginResponse {
+    token: String!
+    user: LoginUser!
+    ban: BanResponse
+}
+
+type LoginUser {
+    id: Float!
+    username: String!
+    email: String!
+    banned: Boolean!
+}
+
+type BanResponse {
+    message: String
+    type: String!
+    pendingDeletionDate: Date
+}
+
+input LoginInput {
+    """Username or email"""
+    username: String!
+    password: String!
+
+    """TOTP/2FA code if enabled."""
+    totp: String
+}
+
+input RegisterInput {
+    username: String!
+    password: String!
+    email: String!
+    inviteKey: String
+}
+
+input SetExperimentInput {
+    key: Experiments!
+    value: Int!
+
+    """Admin only."""
+    userId: Int
+}
+
+input CreateCollectionInput {
+    name: String!
+}
+
+input UpdateCollectionInput {
+    collectionId: Int!
+    name: String
+    shareLink: Boolean
+}
+
+input UpdateCollectionUserPermissionsInput {
+    userId: Int!
+    collectionId: Int!
+    read: Boolean!
+    write: Boolean!
+    configure: Boolean!
+}
+
+type GenericSuccessObject {
+    success: Boolean!
+}
+
+input RemoveCollectionUserInput {
+    userId: Int!
+    collectionId: Int!
+}
+
+input TransferCollectionOwnershipInput {
+    """You may use either 2FA token or password to delete the chat."""
+    password: String
+
+    """
+    TOTP/2FA code if enabled. You may use either 2FA token or password to delete the chat.
+    """
+    totp: String
+    userId: Int!
+    collectionId: Int!
+}
+
+input AcceptCollectionInviteInput {
+    collectionId: Int!
+    accept: Boolean!
+}
+
+input LeaveCollectionInput {
+    collectionId: Int!
+}
+
+input DeleteUploadInput {
+    items: [Float!]!
+}
+
+input UpdateUploadInput {
+    uploadId: Int!
+    name: String!
+}
+
+type StarUploadResponse {
+    status: Boolean!
+    star: Star
+}
+
+input StarUploadInput {
+    """The upload's attachment ID, not numerical ID, such as 1d7fe21g3jd1.png"""
+    attachment: String!
+}
+
+input CreateChatInput {
+    users: [Float!]!
+    name: String
+    type: ChatType
+}
+
+enum ChatType {
+    GROUP
+    DIRECT
+}
+
+input UpdateChatInput {
+    name: String
+    associationId: Int!
+
+    """
+    Can only be null or undefined to unset or do not modify the group icon respectively. Use the REST API to set one.
+    """
+    icon: String
+
+    """
+    Can only be null or undefined to unset or do not modify the group background respectively. Use the REST API to set one.
+    """
+    background: String
+    description: String
+}
+
+"""Used for deleting chats and transferring ownership."""
+input DangerZoneChatInput {
+    """You may use either 2FA token or password to delete the chat."""
+    password: String
+
+    """
+    TOTP/2FA code if enabled. You may use either 2FA token or password to delete the chat.
+    """
+    totp: String
+    associationId: Int!
+}
+
+input TransferOwnershipInput {
+    """You may use either 2FA token or password to delete the chat."""
+    password: String
+
+    """
+    TOTP/2FA code if enabled. You may use either 2FA token or password to delete the chat.
+    """
+    totp: String
+    associationId: Int!
+
+    """User to transfer to."""
+    userId: Int!
+}
+
+input AddChatUser {
+    chatAssociationId: Int!
+    users: [Float!]!
+    action: ToggleUser!
+}
+
+"""Whether the user should be added, or removed from the group."""
+enum ToggleUser {
+    ADD
+    REMOVE
+}
+
+input AddRank {
+    chatAssociationId: Int!
+    updatingChatAssociationId: Int!
+    rankId: String!
+}
+
+input LeaveChatInput {
+    associationId: Int!
+}
+
+input JoinChatFromInviteInput {
+    inviteId: String!
+}
+
+input AddBotToChatInput {
+    associationId: Int!
+    botAppId: String!
+    permissions: [String!]!
+}
+
+input ReadChatInput {
+    associationId: Int!
+}
+
+input CreateWorkspaceFolderInput {
+    name: String!
+    workspaceId: Float!
+}
+
+input DeleteWorkspaceItemInput {
+    id: Float!
+    type: WorkspaceItemType!
+}
+
+"""The type of workspace item"""
+enum WorkspaceItemType {
+    NOTE
+    FOLDER
+    WORKSPACE
+}
+
+input SaveNoteInput {
+    id: Float!
+    data: WorkspaceNoteInput!
+    manualSave: Boolean
+    name: String
+}
+
+input WorkspaceNoteInput {
+    version: String
+    blocks: JSON
+    time: Float
+}
+
+input CreateNoteInput {
+    workspaceFolderId: Float!
+    name: String!
+}
+
+input UpdateNoteEventInput {
+    type: UpdateNoteEventType!
+    data: JSON
+    blockId: String
+    id: Int!
+}
+
+enum UpdateNoteEventType {
+    INSERT
+    UPDATE
+    DELETE
+}
+
+input NoteCollabPositionInput {
+    blockIndex: Int!
+    position: Int!
+    noteId: Int!
+}
+
+input AddFriendInput {
+    """Can use `userId` or `username`"""
+    userId: Int
+
+    """Can use `userId` or `username`"""
+    username: String
+
+    """If null, it works as a toggle. This is for explicit actions."""
+    action: FriendAction
+}
+
+enum FriendAction {
+    SEND
+    REMOVE
+    ACCEPT
+}
+
+input SendMessageInput {
+    content: String!
+    associationId: Int!
+    attachments: [String!]! = []
+    replyId: Int
+    embeds: [EmbedInput!]
+}
+
+input EmbedInput {
+    url: String
+    title: String
+    description: String
+    siteName: String
+    type: String
+    image: String
+    color: String
+    graph: InteractiveGraphInput
+}
+
+input InteractiveGraphInput {
+    type: String!
+}
+
+input EditMessageInput {
+    content: String
+    attachments: [String!]! = []
+    messageId: Int!
+    embeds: [EmbedInput!]
+    associationId: Int!
+    pinned: Boolean
+}
+
+input DeleteMessageInput {
+    messageId: Int!
+    associationId: Int!
+}
+
+input UpdateRank {
+    associationId: Int!
+    rankId: String!
+    permissionsMap: [String!]!
+    name: String
+    color: String
+}
+
+input CreateRank {
+    associationId: Int!
+    name: String
+    color: String
+}
+
+input UpdateRankOrder {
+    associationId: Int!
+
+    """
+    Order if the rank, this is actually reversed from expected index value, so rankIds[0] is the highest priority rank.
+    """
+    rankIds: [String!]!
+}
+
+input DeleteRank {
+    associationId: Int!
+    rankId: String!
+}
+
+input ActOnAutoCollectsInput {
+    items: [Int!]!
+    action: AutoCollectAction!
+}
+
+enum AutoCollectAction {
+    APPROVE
+    REJECT
+}
+
+input AddToCollectionInput {
+    collectionId: Float!
+    items: [Float!]!
+}
+
+input ClearCacheInput {
+    userId: Int
+    type: AdminCacheType!
+    await: Boolean = false
+}
+
+"""The type of cache to clear"""
+enum AdminCacheType {
+    everything
+    state
+    collections
+    sharelinks
+    autocollects
+    invites
+    chats
+    insights
+    userstats
+    lastfm
+    mal
+    trackedUsers
+    users
+    sessions
+}
+
+input ExperimentOverrideInput {
+    id: String!
+    value: Int!
+    force: Boolean! = false
+    userId: Int
+}
+
+input BlockUserInput {
+    userId: Int!
+    silent: Boolean!
+}
+
+input CreateInviteInput {
+    """In hours."""
+    expiry: Int
+
+    """Auto assign rank on join."""
+    rankId: String
+    associationId: Int!
+}
+
+input InvalidateInviteInput {
+    associationId: Int!
+    inviteId: String!
+}
+
+type AuthorizeAppResponse {
+    token: String
+}
+
+input AuthorizeAppInput {
+    id: String!
+    scopes: String!
+
+    """Used for bots."""
+    permissions: [String!]
+}
+
+input CreateAppInput {
+    name: String!
+    description: String
+    redirectUri: String
+    private: Boolean!
+    verified: Boolean!
+}
+
+input UpdateAppInput {
+    name: String!
+    description: String
+    redirectUri: String
+    private: Boolean!
+    verified: Boolean!
+    id: String!
+    scopes: [String!]
+}
+
+input CreateBotInput {
+    id: String!
+    username: String!
+}
+
+input UpdateAppUserInput {
+    id: String!
+    oauthAppId: String!
+    manage: Boolean!
+}
+
+input AddAppUserInput {
+    username: String!
+    oauthAppId: String!
+    manage: Boolean
+}
+
+input RegisterPrefix {
+    prefix: String!
+}
+
+input RegisterCommands {
+    commands: [RegisterCommand!]!
+}
+
+input RegisterCommand {
+    command: String!
+    description: String!
+}
+
+input UpdateEmojiInput {
+    id: String!
+    name: String!
+    associationId: Int!
+}
+
+input DeleteEmojiInput {
+    id: String!
+    associationId: Int!
+}
+
+input PulseInput {
+    type: String!
+    id: String
+    action: String!
+    route: String!
+    device: String!
+    sysInfo: PulseUserAgent!
+    name: String
+    other: JSON
+}
+
+input PulseUserAgent {
+    ua: String!
+}
+
+input SinglePulseInput {
+    type: String!
+    id: String
+    action: String!
+    route: String!
+    device: String!
+    sysInfo: PulseUserAgent!
+    name: String
+    other: JSON
+    timeSpent: Float!
+}
+
+input PulseUpdateInput {
+    id: String!
+    timeSpent: Float!
+}
+
+input EmbedPrecacheInput {
+    url: String
+    attachment: String
+}
+
+input WorkspaceUserInput {
+    workspaceId: Int!
+    userId: Int!
+    read: Boolean!
+    write: Boolean!
+    configure: Boolean!
+}
+
+type Subscription {
+    onUserStatus: StatusEvent!
+    onCollectionUserAdded(input: FilterCollectionInput): CollectionUser!
+    onCollectionUpdated(input: FilterCollectionInput): Collection!
+    onCollectionRemoved(input: FilterCollectionInput): Int!
+    onCollectionCreated: Collection!
+    onCollectionUserRemoved(input: FilterCollectionInput): CollectionUser!
+    onCollectionUserUpdated(input: FilterCollectionInput): CollectionUser!
+    onCollectionInviteCount: Int!
+    onDeleteUpload: Int!
+    onUpdateUploads: [Upload!]!
+    onCreateUpload(input: GalleryInput): CreateUploadEvent!
+    onTyping: ChatTypingEvent!
+    onCancelTyping: ChatTypingEvent!
+
+    """Returns the chat association ID"""
+    onReadChat: Int!
+
+    """Subscribe to Note updates."""
+    onUpdateNote(shareLink: String, id: Int): UpdateNoteEvent!
+
+    """Subscribe to Note collaborative user positions."""
+    onNoteCollabPosition(shareLink: String, noteId: Int): NoteCollabPosition!
+    onMessage(input: SubscriptionMessageInput): MessageSubscription!
+    onEditMessage(input: SubscriptionMessageInput): EditMessageEvent!
+    onReadReceipt: ReadReceipt!
+    onDeleteMessage(input: SubscriptionMessageInput): DeleteMessage!
+    onAutoCollectApproval: AutoCollectApprovalEvent!
+}
+
+type StatusEvent {
+    id: Int!
+    status: UserStatus!
+    platforms: [Platform!]
+}
+
+input FilterCollectionInput {
+    collectionId: Int
+}
+
+type CreateUploadEvent {
+    url: String!
+    upload: Upload!
+}
+
+type ChatTypingEvent {
+    chatId: Float!
+    user: PartialUserFriend!
+    expires: Float
+}
+
+type UpdateNoteEvent {
+    type: UpdateNoteEventType!
+    data: JSON
+    blockId: String
+    id: Int!
+    userId: Int!
+    shareLink: String
+}
+
+type NoteCollabPosition {
+    blockIndex: Int!
+    position: Int!
+    userId: Int!
+    noteId: Int!
+    shareLink: String
+    type: CollabEventType!
+}
+
+enum CollabEventType {
+    JOIN
+    LEAVE
+}
+
+type MessageSubscription {
+    message: Message!
+    associationId: Int!
+    mention: Boolean!
+    chat: Chat!
+}
+
+input SubscriptionMessageInput {
+    associationId: Int
+    chatId: Int
+}
+
+type EditMessageEvent {
+    associationId: Int!
+    message: Message!
+}
+
+type DeleteMessage {
+    id: Int!
+    associationId: Int!
+    chatId: Int!
+}
+
+type AutoCollectApprovalEvent {
+    type: AutoCollectApprovalType!
+    autoCollectApproval: AutoCollectApproval!
+}
+
+enum AutoCollectApprovalType {
+    NEW
+    APPROVED
+    DENIED
+}

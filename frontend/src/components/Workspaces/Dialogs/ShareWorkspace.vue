@@ -84,8 +84,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import CoreDialog from "@/components/Core/Dialogs/Dialog.vue";
-import { UpdateCollectionMutation } from "@/graphql/collections/updateCollection.graphql";
-import { AddWorkspaceUserMutation } from "@/graphql/workspaces/user.graphql";
+import { AddWorkspaceUserDocument } from "@/gql/graphql";
 
 export default defineComponent({
   components: { CoreDialog },
@@ -152,7 +151,7 @@ export default defineComponent({
   methods: {
     async addUser() {
       const { data } = await this.$apollo.mutate({
-        mutation: AddWorkspaceUserMutation,
+        mutation: AddWorkspaceUserDocument,
         variables: {
           input: {
             userId: this.sharing.id,

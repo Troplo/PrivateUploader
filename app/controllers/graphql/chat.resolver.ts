@@ -129,7 +129,14 @@ export class ChatResolver {
 
   @FieldResolver(() => String)
   async _redisSortDate(@Root() chat: Chat) {
-    return (await redis.get(`chat:${chat.id}:sortDate`)) || "0"
+    if (!chat._redisSortDate)
+      return (await redis.get(`chat:${chat.id}:sortDate`)) || "0"
+    return chat._redisSortDate
+  }
+
+  @FieldResolver(() => String)
+  sortDate(@Root() chat: Chat) {
+    return this._redisSortDate(chat)
   }
 
   @FieldResolver(() => PartialUserBase || null, {
@@ -365,6 +372,7 @@ export class ChatResolver {
   }
 
   @FieldResolver(() => String)
+  @FieldResolver(() => String)
   async name(@Root() chat: Chat, @Ctx() ctx: Context) {
     if (chat.name === "Unnamed Group") {
       const users = chat.users || (await chat.$get("users"))
@@ -563,5 +571,13 @@ export class ChatResolver {
     @Root() data: ChatTypingEvent
   ): Promise<ChatTypingEvent> {
     return data
+  }
+
+  // TODO: Implement this field resolver
+  @FieldResolver(() => [ChatTypingEvent], {
+    name: "typing"
+  })
+  async typers(@Root() chat: Chat, @Ctx() ctx: Context) {
+    return []
   }
 }

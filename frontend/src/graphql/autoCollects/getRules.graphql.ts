@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-export const AutoCollectRulesQuery = gql`
+const AutoCollectRulesQuery = gql`
   query AutoCollectRules {
     autoCollectRules {
       id
@@ -11,7 +11,7 @@ export const AutoCollectRulesQuery = gql`
   }
 `;
 
-export const AutoCollectRuleQuery = gql`
+const AutoCollectRuleQuery = gql`
   query AutoCollectRule($input: AutoCollectRuleQueryInput!) {
     autoCollectRule(input: $input) {
       id

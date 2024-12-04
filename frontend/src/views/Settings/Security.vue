@@ -7,7 +7,7 @@
       </v-toolbar-title>
       <v-spacer />
       <v-btn color="primary" @click="dialogs.key = true">
-        <v-icon left>mdi-plus</v-icon>
+        <v-icon left>add-line</v-icon>
         {{ $t("settings.security.addAPIKey") }}
       </v-btn>
     </v-toolbar>
@@ -29,13 +29,13 @@
               {{ $t("settings.security.noIPHistory") }}
             </span>
           </v-tooltip>
-          mdi-web
+          global-line
         </v-icon>
         <v-icon class="mr-2" small @click="$functions.copy(item.token)">
-          mdi-content-copy
+          file-copy-line
         </v-icon>
         <v-icon class="mr-2" small @click="deleteApiKey(item.id)">
-          mdi-delete
+          close-line
         </v-icon>
       </template>
     </v-data-table>
@@ -50,14 +50,14 @@
       </v-toolbar-title>
       <v-spacer />
       <v-btn color="primary" @click="dialogs.password = true">
-        <v-icon left>mdi-plus</v-icon>
+        <v-icon left>add-line</v-icon>
         {{ $t("settings.security.addAlternatePassword") }}
       </v-btn>
     </v-toolbar>
     <v-data-table :headers="headers" :items="alternatePasswords.items">
       <template #[`item.actions`]="{ item }: any">
         <v-icon class="mr-2" small @click="deleteAlternatePassword(item.name)">
-          mdi-delete
+          close-line
         </v-icon>
       </template>
     </v-data-table>
@@ -123,7 +123,7 @@
             <v-tooltip activator="parent" location="top">
               {{ $t("settings.security.deleteSession") }}
             </v-tooltip>
-            <v-icon>mdi-delete</v-icon>
+            <v-icon>close-line</v-icon>
           </v-btn>
           <v-btn
             :disabled="!login.info?.accessedFrom?.length"
@@ -142,7 +142,7 @@
                 {{ $t("settings.security.noIPHistory") }}
               </span>
             </v-tooltip>
-            <v-icon>mdi-web</v-icon>
+            <v-icon>global-line</v-icon>
           </v-btn>
         </template>
       </v-list-item>

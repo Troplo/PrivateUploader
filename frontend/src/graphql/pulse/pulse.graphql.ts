@@ -1,18 +1,18 @@
 import { gql } from "@apollo/client/core";
 
-export const PulseMutation = gql`
+const PulseMutation = gql`
   mutation CreatePulse($input: PulseInput!) {
     createPulse(input: $input)
   }
 `;
 
-export const SinglePulseMutation = gql`
+const SinglePulseMutation = gql`
   mutation CreateSinglePulse($input: SinglePulseInput!) {
     createSinglePulse(input: $input)
   }
 `;
 
-export const UpdatePulseMutation = gql`
+const UpdatePulseMutation = gql`
   mutation UpdatePulse($input: PulseUpdateInput!) {
     updatePulse(input: $input)
   }

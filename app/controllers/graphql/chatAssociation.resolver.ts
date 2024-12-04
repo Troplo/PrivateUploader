@@ -657,9 +657,9 @@ export class ChatAssociationResolver {
     topics: ({ context }) => {
       return `READ_CHAT:${context.user?.id}`
     },
-    description: "Returns the chat association ID"
+    description: "Returns the chat ID"
   })
-  async onReadChat(@Root() associationId: number) {
-    return associationId
+  async onReadChat(@Root() chatId: number) {
+    return chatId
   }
 }

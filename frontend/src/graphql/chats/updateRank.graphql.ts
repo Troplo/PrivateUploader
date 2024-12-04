@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-export const UpdateRankMutation = gql`
+const UpdateRankMutation = gql`
   mutation UpdateChatRank($input: UpdateRank!) {
     updateChatRank(input: $input) {
       id
@@ -8,7 +8,7 @@ export const UpdateRankMutation = gql`
   }
 `;
 
-export const UpdateRankOrderMutation = gql`
+const UpdateRankOrderMutation = gql`
   mutation UpdateChatRankOrder($input: UpdateRankOrder!) {
     updateChatRankOrder(input: $input) {
       id

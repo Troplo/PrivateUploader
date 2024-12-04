@@ -10,7 +10,7 @@
       {{ components.find((c) => c.id === component.name)?.name }}
     </v-toolbar-title>
     <v-btn icon @click="$emit('delete', component)">
-      <v-icon>mdi-delete</v-icon>
+      <v-icon>close-line</v-icon>
     </v-btn>
     <v-btn
       v-if="
@@ -20,15 +20,15 @@
       icon
       @click="$emit('settings', component.id)"
     >
-      <v-icon>mdi-cog</v-icon>
+      <v-icon>settings-5-line</v-icon>
     </v-btn>
     <v-btn icon @click="$emit('moveUp', component)">
-      <v-icon>mdi-arrow-up</v-icon>
+      <v-icon>arrow-up-s-line</v-icon>
     </v-btn>
     <v-btn icon @click="$emit('moveDown', component)">
-      <v-icon>mdi-arrow-down</v-icon>
+      <v-icon>arrow-down-s-line</v-icon>
     </v-btn>
-    <v-icon class="drag-handle mr-3 ml-1">mdi-drag</v-icon>
+    <v-icon class="drag-handle mr-3 ml-1">draggable</v-icon>
   </v-toolbar>
   <div
     v-if="willShow(component, 'parent')"

@@ -1,19 +1,19 @@
 import { useSubscription } from "@vue/apollo-composable";
-import {
-  CollectionCreatedSubscription,
-  CollectionRemovedSubscription,
-  CollectionUpdatedSubscription
-} from "@/graphql/collections/subscriptions/updateCollection.graphql";
 import { useRoute, useRouter } from "vue-router";
 import { useCollectionsStore } from "@/store/collections.store";
 import { gql } from "@apollo/client/core";
 import { App } from "vue";
+import {
+  OnCollectionCreatedDocument,
+  OnCollectionRemovedDocument,
+  OnCollectionUpdatedDocument
+} from "@/gql/graphql";
 
 export default function setup(app: App) {
   const collectionsStore = useCollectionsStore();
 
   useSubscription(
-    CollectionRemovedSubscription,
+    OnCollectionRemovedDocument,
     {},
     {
       context: {
@@ -30,7 +30,7 @@ export default function setup(app: App) {
   });
 
   useSubscription(
-    CollectionCreatedSubscription,
+    OnCollectionCreatedDocument,
     {},
     {
       context: {
@@ -48,7 +48,7 @@ export default function setup(app: App) {
   });
 
   useSubscription(
-    CollectionUpdatedSubscription,
+    OnCollectionUpdatedDocument,
     {},
     {
       context: {

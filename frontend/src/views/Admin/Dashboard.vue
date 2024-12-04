@@ -118,7 +118,7 @@ export default defineComponent({
   async mounted() {
     this.getDashboard();
     this.getConfig();
-    const experiments = await this.$experiments.getEmergencyOverrides();
+    const experiments = await this.$experiments.getEmergencyOverrides(0);
     this.newUI = experiments.find((k) => k.id === "PROGRESSIVE_UI")?.value;
     this.newUISwitch = experiments.find(
       (k) => k.id === "CAN_ENABLE_PROGRESSIVE_UI"

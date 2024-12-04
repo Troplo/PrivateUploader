@@ -5,6 +5,7 @@ import { User } from "@app/models/user.model"
 import Errors from "@app/lib/errors"
 import { MailService } from "@app/services/mail.service"
 import { CoreService } from "@app/services/core.service"
+import { Experiments } from "@app/lib/experiments"
 
 @Service()
 @JsonController("/mail")
@@ -14,7 +15,7 @@ export class MailControllerV3 {
     private readonly coreService: CoreService
   ) {}
 
-  async checkExperiment(user: User, experiment: string) {
+  async checkExperiment(user: User, experiment: Experiments) {
     if (
       !user ||
       !(await this.coreService.checkExperiment(
@@ -30,7 +31,7 @@ export class MailControllerV3 {
 
   @Get("/mailboxes")
   async getMailboxes(@Auth("mail.view") user: User) {
-    await this.checkExperiment(user, "WEBMAIL")
+    await this.checkExperiment(user, Experiments.WEBMAIL)
     return await this.mailService.getMailboxes(user.id)
   }
 
@@ -39,7 +40,7 @@ export class MailControllerV3 {
     @Auth("mail.view") user: User,
     @Params() { mailbox }: { mailbox: string; page?: number }
   ) {
-    await this.checkExperiment(user, "WEBMAIL")
+    await this.checkExperiment(user, Experiments.WEBMAIL)
     return await this.mailService.getMessages(user.id, mailbox)
   }
 
@@ -48,7 +49,7 @@ export class MailControllerV3 {
     @Auth("mail.view") user: User,
     @Params() { mailbox, uid }: { mailbox: string; uid: string }
   ) {
-    await this.checkExperiment(user, "WEBMAIL")
+    await this.checkExperiment(user, Experiments.WEBMAIL)
     return await this.mailService.getMessage(user.id, mailbox, uid)
   }
 }

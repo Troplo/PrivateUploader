@@ -20,7 +20,7 @@
             class="align-center justify-center"
             :contained="true"
           >
-            <v-icon color="white" large size="40">mdi-open-in-new</v-icon>
+            <v-icon color="white" large size="40">external-link-line</v-icon>
           </v-overlay>
         </a>
       </v-img>

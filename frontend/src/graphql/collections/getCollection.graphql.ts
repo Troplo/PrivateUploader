@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-export const CollectionQuery = gql`
+const CollectionQuery = gql`
   query Collection($input: CollectionInput!) {
     collection(input: $input) {
       id

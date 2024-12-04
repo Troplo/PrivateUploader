@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import ProgressiveSuperBarContent from "@/layouts/progressive/ProgressiveSuperBarContent.vue";
+import ProgressiveSuperBarContent from "@/layouts/default/ProgressiveSuperBarContent.vue";
 </script>
 
 <style>

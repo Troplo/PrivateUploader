@@ -80,7 +80,7 @@
             <v-list-item-title>
               <v-icon class="mr-1">mdi-bell-outline</v-icon>
               {{ $t("chats.notifications") }}
-              <v-icon class="ml-5">mdi-arrow-right</v-icon>
+              <v-icon class="ml-5">arrow-right-s-line</v-icon>
             </v-list-item-title>
           </v-list-item>
           <v-list-item
@@ -108,7 +108,7 @@
               $chat.dialogs.groupSettings.value = true;
             "
           >
-            <v-icon class="mr-1">mdi-cog-outline</v-icon>
+            <v-icon class="mr-1">settings-5-line-outline</v-icon>
             Group Settings
           </v-list-item>
           <UserSidebarOptions
@@ -161,7 +161,7 @@
         v-if="$experiments.experiments.CHAT_GUIDED_WIZARD"
         @click="$app.dialogs.createChat = !$app.dialogs.createChat"
       >
-        <v-icon class="mr-1">mdi-plus</v-icon>
+        <v-icon class="mr-1">add-line</v-icon>
         {{ $t("chats.join.title") }}
       </v-btn>
     </div>
@@ -176,7 +176,7 @@
         type="create"
       >
         <v-btn class="mr-1" icon size="xsmall" v-bind="props">
-          <v-icon>mdi-plus</v-icon>
+          <v-icon>add-line</v-icon>
         </v-btn>
       </CreateChat>
       {{ $t("chats.chats") }}
@@ -218,9 +218,8 @@
               chat.recipient
                 ? chat.typers?.find(
                     (typer) => typer.userId === chat.recipient.id
-                  )
-                : // exclude the current user from the typers list
-                  chat.typers?.find((typer) => typer.userId !== $user.user?.id)
+                  ) // exclude the current user from the typers list
+                : chat.typers?.find((typer) => typer.userId !== $user.user?.id)
             "
             :emulated-status="
               chat.type === 'group' && chat.onlineCount > 1

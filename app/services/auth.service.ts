@@ -27,6 +27,7 @@ import { BanReason } from "@app/classes/graphql/user/ban"
 import { Invite } from "@app/models/invite.model"
 import { CoreService } from "@app/services/core.service"
 import { OfficialInstJolt707 } from "@app/services/officialInst.jolt707"
+import { Experiments } from "@app/lib/experiments"
 
 @Service()
 export class AuthService {
@@ -296,14 +297,14 @@ export class AuthService {
         const coreService = Container.get(CoreService)
         const experiment = await coreService.checkExperiment(
           invite.userId,
-          "IAF_NAG",
+          Experiments.IAF_NAG,
           false,
           false
         )
         const eligible = experiment !== 4 && experiment !== 0
         if (eligible) {
           const billingService = Container.get(OfficialInstJolt707)
-          await coreService.setExperiment(invite.userId, "IAF_NAG", 4)
+          await coreService.setExperiment(invite.userId, Experiments.IAF_NAG, 4)
           await billingService.grantMonth(invite.userId)
           await billingService.grantMonth(user.id)
         }

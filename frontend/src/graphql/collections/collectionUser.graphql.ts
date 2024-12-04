@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-export const UpdateCollectionUserPermissionsMutation = gql`
+const UpdateCollectionUserPermissionsMutation = gql`
   mutation UpdateCollectionUserPermissions(
     $input: UpdateCollectionUserPermissionsInput!
   ) {
@@ -14,7 +14,7 @@ export const UpdateCollectionUserPermissionsMutation = gql`
   }
 `;
 
-export const AddCollectionUserMutation = gql`
+const AddCollectionUserMutation = gql`
   mutation AddCollectionUser($input: UpdateCollectionUserPermissionsInput!) {
     addCollectionUser(input: $input) {
       id
@@ -22,7 +22,7 @@ export const AddCollectionUserMutation = gql`
   }
 `;
 
-export const RemoveCollectionUser = gql`
+const RemoveCollectionUser = gql`
   mutation RemoveCollectionUser($input: RemoveCollectionUserInput!) {
     removeCollectionUser(input: $input) {
       success

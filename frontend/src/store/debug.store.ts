@@ -18,9 +18,27 @@ type Dialog = {
   lastInteracted: number;
 };
 
+type Component = {
+  id: string;
+  name: string;
+  renders: number;
+  el: HTMLElement;
+  stateA: any;
+  stateB: any;
+};
+
 export const useDebugStore = defineStore("debug", () => {
   const recentOperations = ref<Operation[]>([]);
   const dialogs = ref<Dialog[]>([]);
+  const rerenders = ref<Component[]>([]);
+  const renderMonitor = ref(localStorage.getItem("renderMonitor") !== "false");
+
+  watch(
+    () => renderMonitor.value,
+    (value) => {
+      localStorage.setItem("renderMonitor", value.toString());
+    }
+  );
 
   watch(recentOperations, (value) => {
     if (value.length > 100) {
@@ -49,6 +67,8 @@ export const useDebugStore = defineStore("debug", () => {
 
   return {
     recentOperations,
-    dialogs
+    dialogs,
+    rerenders,
+    renderMonitor
   };
 });

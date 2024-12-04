@@ -1,0 +1,429 @@
+"""
+Indicates exactly one field must be supplied and this field must not be `null`.
+"""
+directive @oneOf on INPUT_OBJECT
+
+type Query {
+    forms: [Form!]!
+    form(input: FormInput!): Form!
+
+    """Start or resume a form response session."""
+    startFormResponse(input: StartSessionInput!): FormResponse!
+    nextFormQuestion(input: NextQuestionInput!): FormQuestion
+    formResponses(input: FormResponsesInput!): FormResponses!
+    formResponse(input: FormResponseInput!): FormResponse
+    formSummary(input: FormSummaryInput!): [FormSummary!]!
+    exportAsCSV(formId: String!): String!
+}
+
+type Form {
+    id: String!
+    createdAt: Date!
+    updatedAt: Date!
+    expiredAt: Date
+    name: String!
+    description: String
+    userId: String!
+    shareLink: String
+    quiz: Boolean!
+    requestEmail: QuestionRequest!
+    sendEmailCopy: Boolean!
+    requestName: QuestionRequest!
+    user: FormUser!
+    questions: [FormQuestion!]!
+    editorState: [EditorStateEntry!]
+}
+
+scalar Date
+
+"""The request status of built in form questions."""
+enum QuestionRequest {
+    REQUIRED
+    OPTIONAL
+    DISABLED
+}
+
+type FormUser {
+    id: String!
+    createdAt: Date!
+    updatedAt: Date!
+    username: String!
+    email: String!
+}
+
+type FormQuestion {
+    id: String!
+    createdAt: Date!
+    updatedAt: Date!
+    formId: String!
+    type: QuestionType!
+    name: String!
+    description: String
+    index: Int!
+
+    """
+    Conditions for the next question. If empty, the next question in the index will be shown. However, you can send users to different parts of the form flow based on their answers.
+    """
+    afterConditions: [QuestionCondition!]!
+    required: Boolean!
+    options: QuestionOptions
+    choices: [FormQuestionChoice!]!
+}
+
+"""The type of question added to a form."""
+enum QuestionType {
+    TEXT
+    TEXTAREA
+    NUMBER
+    STAR_RATING
+    MULTI_CHOICE
+    SINGLE_CHOICE
+    DATE
+    TIME
+    LIKERT
+    FILE_UPLOAD
+    SEPARATOR
+    HEADER
+    SECTION
+}
+
+type QuestionCondition {
+    questionId: String!
+    value: String!
+    operator: QuestionConditionOperator!
+    id: String!
+}
+
+enum QuestionConditionOperator {
+    """Equal"""
+    EQ
+
+    """Not equal"""
+    NE
+
+    """Greater than (int only)"""
+    GT
+
+    """Greater than or equal (int only)"""
+    GE
+
+    """Less than (int only)"""
+    LT
+
+    """Less than or equal (int only)"""
+    LE
+
+    """In/Contains (string only)"""
+    IN
+
+    """Not in/Does not contain (string only)"""
+    NOT_IN
+
+    """Always run after question. Lowest priority."""
+    ALWAYS
+}
+
+type QuestionOptions {
+    min: Int
+    max: Int
+    step: Int
+    multiple: Boolean
+    other: QuestionOther
+}
+
+type QuestionOther {
+    label: String
+    enabled: Boolean!
+}
+
+type FormQuestionChoice {
+    id: String!
+    createdAt: Date!
+    updatedAt: Date!
+    value: String!
+    formQuestionId: String!
+}
+
+type EditorStateEntry {
+    id: String!
+    x: Int!
+    y: Int!
+}
+
+input FormInput {
+    id: String
+    shareLink: String
+}
+
+type FormResponse {
+    id: String!
+    createdAt: Date!
+    updatedAt: Date!
+    formId: String!
+
+    """The email of the user if applicable."""
+    email: String
+
+    """The actual name of the user who filled out the form."""
+    givenName: String
+
+    """
+    The nickname you can give in the management panel to identify a responder.
+    """
+    internalName: String
+
+    """
+    The name of the user if applicable. Prioritizes internalName, givenName, email, then id.
+    """
+    name: String
+
+    """If the user is logged in, this will be the FlowForms user ID."""
+    userId: String
+    completed: Boolean!
+    currentQuestionId: String
+
+    """
+    Gets the total amount of questions based on previous response flow, total if at beginning.
+    """
+    totalQuestionCount: Int!
+    answers: [FormResponseAnswer!]!
+    formSummary(input: FormSummaryInput!): Form!
+}
+
+type FormResponseAnswer {
+    id: String!
+    createdAt: Date!
+    updatedAt: Date!
+    formResponseId: String!
+    formQuestionId: String!
+    value: QuestionAnswerValue
+
+    """The number of seconds it took to fill out the question if enabled."""
+    timeTaken: Float
+    completed: Boolean!
+    formQuestion: FormQuestion!
+}
+
+type QuestionAnswerValue {
+    """
+    The text content if it's a text type, or the Other value if it's a multiple choice type.
+    """
+    content: String
+
+    """The number or float value if it's a number type."""
+    number: Float
+    choiceIds: [String!]
+}
+
+input FormSummaryInput {
+    formId: String!
+}
+
+input StartSessionInput {
+    formId: String
+    shareLink: String
+    email: String
+    givenName: String
+    editor: Boolean!
+    resumeSessionId: String
+}
+
+input NextQuestionInput {
+    formResponseId: String!
+}
+
+type FormResponses {
+    items: [FormResponse!]!
+    pager: FormPager!
+}
+
+type FormPager {
+    totalItems: Int!
+    totalPages: Int!
+}
+
+input FormResponsesInput {
+    formId: String!
+    page: Int
+}
+
+input FormResponseInput {
+    formId: String!
+    formResponseId: String!
+}
+
+type FormSummary {
+    questionId: String!
+    values: [FormSummaryValue!]!
+}
+
+type FormSummaryValue {
+    """
+    The text content if it's a text type, or the Other value if it's a multiple choice type.
+    """
+    content: String
+
+    """The number or float value if it's a number type."""
+    number: Float
+    choiceIds: [String!]
+    count: Int!
+}
+
+type Mutation {
+    createFormQuestion(input: CreateQuestionInput!): FormQuestion!
+    createCondition(input: QuestionConditionInput!): FormQuestion!
+    deleteCondition(input: DeleteQuestionConditionInput!): FormQuestion!
+    deleteFormQuestion(input: DeleteQuestionInput!): [FormQuestion!]!
+    updateFormQuestion(input: UpdateQuestionInput!): FormQuestion!
+    updateFormQuestionIndices(input: UpdateQuestionIndicesInput!): [FormQuestion!]!
+    createForm(input: CreateFormInput!): Form!
+    updateForm(input: UpdateFormInput!): Form!
+    deleteForm(input: DeleteFormInput!): Boolean!
+    saveFormEditorState(input: EditorStateInput!): FormEditorState!
+    finalizeFormResponse(input: NextQuestionInput!): Boolean
+    updateFormResponse(input: UpdateFormResponseInput!): FormResponse!
+
+    """Update a form response answer."""
+    updateFormResponseAnswer(input: UpdateAnswerInput!): FormResponseAnswer!
+    createChoice(input: CreateChoiceInput!): FormQuestionChoice!
+    updateChoice(input: UpdateChoiceInput!): FormQuestionChoice!
+    deleteChoice(input: DeleteChoiceInput!): Boolean!
+}
+
+input CreateQuestionInput {
+    formId: String!
+    name: String!
+    type: QuestionType!
+}
+
+input QuestionConditionInput {
+    toQuestionId: String!
+    fromQuestionId: String!
+    value: String!
+    operator: QuestionConditionOperator!
+}
+
+input DeleteQuestionConditionInput {
+    fromQuestionId: String!
+    id: String!
+}
+
+input DeleteQuestionInput {
+    formId: String!
+    formQuestionId: String!
+}
+
+input UpdateQuestionInput {
+    formId: String!
+    formQuestionId: String!
+    required: Boolean
+    options: QuestionOptionsInput
+    name: String
+    description: String
+    type: QuestionType
+}
+
+input QuestionOptionsInput {
+    min: Int
+    max: Int
+    step: Int
+    multiple: Boolean
+    other: QuestionOtherInput
+}
+
+input QuestionOtherInput {
+    label: String
+    enabled: Boolean!
+}
+
+input UpdateQuestionIndicesInput {
+    formId: String!
+    questions: [QuestionIndex!]!
+}
+
+input QuestionIndex {
+    id: String!
+    index: Int!
+}
+
+input CreateFormInput {
+    name: String!
+    description: String
+}
+
+input UpdateFormInput {
+    id: String!
+    name: String
+    description: String
+    shareLink: Boolean
+    requestEmail: QuestionRequest
+    requestName: QuestionRequest
+    sendEmailCopy: Boolean
+}
+
+input DeleteFormInput {
+    id: String
+}
+
+type FormEditorState {
+    id: String!
+    createdAt: Date!
+    updatedAt: Date!
+    userId: String!
+    formId: String!
+    editorState: [EditorStateEntry!]
+}
+
+input EditorStateInput {
+    editorState: [EditorStateEntryInput!]!
+    formId: String!
+}
+
+input EditorStateEntryInput {
+    id: String!
+    x: Int!
+    y: Int!
+}
+
+input UpdateFormResponseInput {
+    formResponseId: String!
+    email: String
+    name: String
+}
+
+input UpdateAnswerInput {
+    formResponseAnswerId: String!
+    value: QuestionAnswerValueInput
+    completed: Boolean
+}
+
+input QuestionAnswerValueInput {
+    """
+    The text content if it's a text type, or the Other value if it's a multiple choice type.
+    """
+    content: String
+
+    """The number or float value if it's a number type."""
+    number: Float
+    choiceIds: [String!]
+}
+
+input CreateChoiceInput {
+    formId: String!
+    formQuestionId: String!
+    value: String!
+}
+
+input UpdateChoiceInput {
+    formId: String!
+    formQuestionChoiceId: String!
+    formQuestionId: String!
+    value: String!
+}
+
+input DeleteChoiceInput {
+    formId: String!
+    formQuestionChoiceId: String!
+    formQuestionId: String!
+}
+

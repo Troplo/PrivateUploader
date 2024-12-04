@@ -486,9 +486,6 @@ export class CacheService {
         this.generateInsightsCache()
       })
 
-      cron.schedule("0 4 * * *", () => {
-        this.generateCollectionCache()
-      })
       this.refreshState().then(() => {})
 
       return true

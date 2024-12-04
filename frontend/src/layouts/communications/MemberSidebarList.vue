@@ -63,7 +63,7 @@
               </v-list-item>
             </v-list>
           </v-menu>
-          <v-icon class="mr-1">mdi-arrow-left</v-icon>
+          <v-icon class="mr-1">arrow-left-s-line</v-icon>
           Roles
         </v-list-item>
         <UserSidebarOptions
@@ -100,7 +100,7 @@
           class="mr-2"
           icon
         >
-          <v-icon>mdi-pin</v-icon>
+          <v-icon>pushpin</v-icon>
         </v-btn>
         <v-btn
           aria-label="Toggle Communications Search"
@@ -108,7 +108,7 @@
           icon
           @click="$chat.search.value = !$chat.search.value"
         >
-          <v-icon>mdi-magnify</v-icon>
+          <v-icon>search-line</v-icon>
         </v-btn>
         <v-btn
           aria-label="Toggle Communications Settings"
@@ -119,12 +119,12 @@
             chat ? ($chat.dialogs.groupSettings.itemId = chat.id) : '';
           "
         >
-          <v-icon>mdi-cog</v-icon>
+          <v-icon>settings-5-line</v-icon>
         </v-btn>
         <v-spacer />
       </v-card-actions>
     </div>
-    <div v-if="!$chat.search.value" class="mt-n2">
+    <div v-show="!$chat.search.value" class="mt-n2">
       <v-list v-for="group in ranks" :key="group.name" class="mb-n4" nav>
         <template v-if="group.users.length">
           <overline position="start">
@@ -173,7 +173,7 @@
         </template>
       </v-list>
     </div>
-    <template v-else>
+    <div v-show="$chat.search.value">
       <overline position="start" class="ml-3 mb-n1">
         {{ $t("generic.search") }}
         <v-progress-circular
@@ -191,6 +191,7 @@
       </overline>
       <v-container class="mb-8">
         <GalleryTextField
+          ref="searchInput"
           v-model="$chat.search.query"
           :autofocus="true"
           @submit="$chat.doSearch(sort)"
@@ -230,7 +231,7 @@
         class="mb-2"
         @update:model-value="$chat.doSearch(sort)"
       />
-    </template>
+    </div>
   </template>
   <template v-else>
     <MessageSkeleton

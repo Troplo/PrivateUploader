@@ -37,6 +37,7 @@
       <p>unread: {{ $chat.totalUnread }}</p>
       <p>group type: {{ $chat.selectedChat.type }}</p>
       <p v-if="realUsers.length">users: {{ realUsers.length }}</p>
+      <p>sort date: {{ $chat.selectedChat.sortDate }}</p>
       <p
         v-if="$messages.messages[$chat.selectedChat.association.id]?.length"
         style="color: rgb(var(--v-theme-success))"

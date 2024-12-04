@@ -10,13 +10,14 @@ import { CoreService } from "@app/services/core.service"
 
 // Import Types
 import { RequestAuth } from "@app/types/express"
+import { Experiments } from "@app/lib/experiments"
 
 @Service()
 @Middleware({ type: "before" })
 export default class ExperimentValidator implements ExpressMiddlewareInterface {
-  private readonly experiment: string
+  private readonly experiment: Experiments
 
-  constructor(experiment: string) {
+  constructor(experiment: Experiments) {
     this.experiment = experiment
   }
 

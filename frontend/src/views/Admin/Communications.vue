@@ -20,7 +20,7 @@
           variant="outlined"
           @click="deleteCommunicationsMessage"
         >
-          <v-icon>mdi-delete</v-icon>
+          <v-icon>close-line</v-icon>
           Delete Communications Message
         </v-btn>
       </v-container>

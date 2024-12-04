@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client/core";
 
-export const LeaveCollectionMutation = gql`
-  mutation LeaveCollection($input: LeaveCollectionInput!) {
+const LeaveCollectionMutation = gql`
+  mutation OnLeaveCollection($input: LeaveCollectionInput!) {
     leaveCollection(input: $input) {
       success
     }

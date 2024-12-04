@@ -48,9 +48,9 @@ import Overline from "@/components/Core/Typography/Overline.vue";
 import {
   AuditLogActionType,
   AuditLogCategory,
+  ChatAuditLogDocument,
   PaginatedChatAuditLogResponse
 } from "@/gql/graphql";
-import { AuditLogQuery } from "@/graphql/chats/auditLog.graphql";
 import { defineComponent } from "vue";
 
 export default defineComponent({
@@ -86,7 +86,7 @@ export default defineComponent({
           res.icon = "mdi-message";
           break;
         case AuditLogCategory.PinMessage:
-          res.icon = "mdi-pin";
+          res.icon = "pushpin";
           break;
         case AuditLogCategory.Rank:
           res.icon = "mdi-lock";
@@ -101,7 +101,7 @@ export default defineComponent({
       switch (action) {
         case AuditLogActionType.Add:
           res.color = "success";
-          res.smallIcon = "mdi-plus";
+          res.smallIcon = "plus";
           break;
         case AuditLogActionType.Modify:
           res.color = "warning";
@@ -119,7 +119,7 @@ export default defineComponent({
       const {
         data: { chatAuditLog }
       } = await this.$apollo.query({
-        query: AuditLogQuery,
+        query: ChatAuditLogDocument,
         fetchPolicy: "network-only",
         variables: {
           input: {

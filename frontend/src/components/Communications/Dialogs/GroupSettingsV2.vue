@@ -138,7 +138,7 @@
             $chat.dialogs.leave.value = true;
           "
         >
-          <v-icon class="mr-2">mdi-delete</v-icon>
+          <v-icon class="mr-2">close-line</v-icon>
           {{ $t("chats.leave.delete.title") }}
         </v-btn>
       </v-tabs>

@@ -2,18 +2,7 @@
   <DevDialog @close="$app.dialogs.networkInspector = false">
     <template #header>Network Inspector</template>
     <v-container>
-      <small>
-        Changing of transport and inspection settings require a refresh.
-      </small>
-      <v-select
-        id="transport-selector"
-        v-model="selectedTransport"
-        :items="[
-          { value: 'ws', title: 'WebSocket' },
-          { value: 'http', title: 'HTTP' }
-        ]"
-        color="primary"
-      ></v-select>
+      <small>Changing of inspection settings require a refresh.</small>
       <tpu-switch
         v-model="networkInspectionEnabled"
         label="Network Inspection Enabled (increased RAM usage)"
@@ -39,8 +28,8 @@
                     operation.type === 'mutation'
                       ? 'green'
                       : operation.type === 'query'
-                        ? 'blue'
-                        : 'yellow'
+                      ? 'blue'
+                      : 'yellow'
                   "
                   style="font-size: 8px"
                   variant="tonal"
@@ -52,8 +41,8 @@
                     Math.round(operation.time) > 500
                       ? 'red'
                       : Math.round(operation.time) > 300
-                        ? 'yellow'
-                        : 'green'
+                      ? 'yellow'
+                      : 'green'
                   "
                   :no-ripple="true"
                   style="font-size: 14px"
@@ -109,16 +98,10 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useApolloClient } from "@vue/apollo-composable";
 import { useDebugStore } from "@/store/debug.store";
 
-const selectedTransport = ref(localStorage.getItem("tpuTransport") || "ws");
-
 const args = ref<any>({});
 const dialog = ref(false);
 const result = ref<any>({});
 const operationName = ref("");
-
-watch(selectedTransport, (value) => {
-  localStorage.setItem("tpuTransport", value);
-});
 
 const networkInspectionEnabled = ref(
   localStorage.getItem("tpuNetworkInspection") === "true" || import.meta.env.DEV

@@ -7,7 +7,7 @@
       variant="text"
       @click="$emit('update:modelValue', modelValue - 1)"
     >
-      <v-icon>mdi-chevron-left</v-icon>
+      <v-icon>arrow-left-s-line</v-icon>
     </v-chip>
     <template v-if="totalPages">
       <template v-if="!pages.includes(1)">
@@ -91,7 +91,7 @@
       variant="text"
       @click="$emit('update:modelValue', modelValue + 1)"
     >
-      <v-icon>mdi-chevron-right</v-icon>
+      <v-icon>arrow-right-s-line</v-icon>
     </v-chip>
   </div>
 </template>

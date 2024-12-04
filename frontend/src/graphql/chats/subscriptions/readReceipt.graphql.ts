@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-export const ReadReceiptSubscription = gql`
+const ReadReceiptSubscription = gql`
   subscription OnReadReceipt {
     onReadReceipt {
       chatId

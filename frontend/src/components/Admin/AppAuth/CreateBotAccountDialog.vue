@@ -35,7 +35,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import CoreDialog from "@/components/Core/Dialogs/Dialog.vue";
-import { CreateBotAccountMutation } from "@/graphql/developer/createApp.graphql";
+import { CreateBotOauthAppDocument } from "@/gql/graphql";
 
 export default defineComponent({
   name: "CreateBotAccountDialog",
@@ -56,7 +56,7 @@ export default defineComponent({
       try {
         this.loading = true;
         await this.$apollo.mutate({
-          mutation: CreateBotAccountMutation,
+          mutation: CreateBotOauthAppDocument,
           variables: {
             input: {
               username: this.username,

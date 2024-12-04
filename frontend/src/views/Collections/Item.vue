@@ -35,7 +35,7 @@
           "
           @click="settings = true"
         >
-          <v-icon class="mr-1" style="font-size: 20px">mdi-cog</v-icon>
+          <v-icon class="mr-1" style="font-size: 20px">settings-5-line</v-icon>
           Settings
         </v-btn>
         <v-btn

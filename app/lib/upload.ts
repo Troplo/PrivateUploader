@@ -14,11 +14,8 @@ const storage: multer.StorageEngine = multer.diskStorage({
       : process.env.STORAGE_ROOT,
 
   filename: (req, file: Express.Multer.File, cb): void => {
-    console.log(file)
-    cb(
-      null,
-      cryptoRandomString({ length: 12 }) + path.extname(file.originalname)
-    )
+    const ext = path.extname(file.originalname).replace(/[^a-zA-Z0-9]/g, "")
+    cb(null, `${cryptoRandomString({ length: 12 })}${ext ? `.${ext}` : ""}`)
   }
 })
 //

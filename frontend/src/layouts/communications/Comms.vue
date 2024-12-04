@@ -17,12 +17,7 @@
     <user-menu />
   </v-menu>
   <Chat />
-  <member-sidebar
-    v-if="
-      (!$vuetify.display.mobile || $experiments.experiments.PROGRESSIVE_UI) &&
-      $chat.commsSidebar
-    "
-  />
+  <member-sidebar v-if="!$vuetify.display.mobile && $chat.commsSidebar" />
 </template>
 
 <script lang="ts">

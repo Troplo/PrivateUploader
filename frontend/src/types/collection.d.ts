@@ -1,4 +1,4 @@
-import { Collection } from "@/models/collection";
+import { Collection } from "@/gql/graphql";
 
 type CollectionCache = Collection & {
   permissionsMetadata: {

@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-export const SessionsQuery = gql`
+const SessionsQuery = gql`
   query Sessions($input: SessionInput) {
     currentUser {
       sessions(input: $input) {

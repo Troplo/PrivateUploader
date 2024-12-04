@@ -13,7 +13,7 @@
           class="ml-1"
           @click="newAnnouncement"
         >
-          <v-icon>mdi-plus</v-icon>
+          <v-icon>add-line</v-icon>
         </v-btn>
       </span>
       <v-card
@@ -112,7 +112,7 @@
               :loading="loading"
               @click="deleteAnnouncement(announcement)"
             >
-              <v-icon>mdi-delete</v-icon>
+              <v-icon>close-line</v-icon>
             </v-btn>
           </template>
         </v-card-text>

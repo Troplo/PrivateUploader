@@ -387,7 +387,11 @@ async function processFile(
   } catch (err) {
     console.log("Error processing file", err)
   }
-  if (config.aws?.enabled)
+  if (
+    config.aws &&
+    (("length" in config.aws && config.aws.length) ||
+      (!("length" in config.aws) && config.aws?.enabled))
+  ) {
     await queue.awsQueue.add(
       upload.attachment,
       {
@@ -401,6 +405,7 @@ async function processFile(
         }
       }
     )
+  }
 }
 
 async function postUpload(upload: Upload): Promise<void> {

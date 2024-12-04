@@ -130,7 +130,7 @@
 
 <script setup lang="ts">
 import UserAvatar from "@/components/Users/UserAvatar.vue";
-import SideBarItem from "@/layouts/progressive/SideBarItem.vue";
+import SideBarItem from "@/layouts/default/SideBarItem.vue";
 import {
   RiAddLine,
   RiSettings5Line,

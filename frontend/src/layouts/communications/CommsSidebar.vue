@@ -14,7 +14,7 @@
       class="text-blue mt-4 ml-4 text-small pointer unselectable"
       @click="$app.railMode = 'tpu'"
     >
-      <v-icon>mdi-arrow-left</v-icon>
+      <v-icon>arrow-left-s-line</v-icon>
       {{ $t("core.sidebar.backToTPU") }}
     </p>
     <SidebarList />

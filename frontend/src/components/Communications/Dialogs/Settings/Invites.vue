@@ -12,7 +12,7 @@
           $functions.copy(`${$app.site.hostnameWithProtocol}/invite/${item.id}`)
         "
       >
-        <v-icon>mdi-content-copy</v-icon>
+        <v-icon>file-copy-line</v-icon>
       </v-btn>
     </template>
     <template #[`item.userId`]="{ item }: any">
@@ -45,8 +45,10 @@
 import { defineComponent } from "vue";
 import Overline from "@/components/Core/Typography/Overline.vue";
 import UserAvatar from "@/components/Users/UserAvatar.vue";
-import { DeleteInviteMutation } from "@/graphql/chats/deleteInvite.graphql";
-import { GetInvitesForChatQuery } from "@/graphql/chats/invite.graphql";
+import {
+  GetInvitesForChatDocument,
+  InvalidateChatInviteDocument
+} from "@/gql/graphql";
 
 export default defineComponent({
   name: "ChatSettingsInvites",
@@ -83,7 +85,7 @@ export default defineComponent({
   methods: {
     async invalidate(id: string) {
       await this.$apollo.mutate({
-        mutation: DeleteInviteMutation,
+        mutation: InvalidateChatInviteDocument,
         variables: {
           input: {
             inviteId: id,
@@ -99,7 +101,7 @@ export default defineComponent({
           chat: { invites }
         }
       } = await this.$apollo.query({
-        query: GetInvitesForChatQuery,
+        query: GetInvitesForChatDocument,
         fetchPolicy: "network-only",
         variables: {
           input: {

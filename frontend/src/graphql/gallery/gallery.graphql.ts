@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-export const GalleryQuery = gql`
+const GalleryQuery = gql`
   query Gallery($input: GalleryInput!) {
     gallery(input: $input) {
       pager {
@@ -20,6 +20,7 @@ export const GalleryQuery = gql`
         }
         id
         createdAt
+        location
         updatedAt
         attachment
         userId
@@ -53,7 +54,7 @@ export const GalleryQuery = gql`
   }
 `;
 
-export const DeleteUploadMutation = gql`
+const DeleteUploadMutation = gql`
   mutation DeleteUploads($input: DeleteUploadInput!) {
     deleteUploads(input: $input) {
       success
@@ -61,7 +62,7 @@ export const DeleteUploadMutation = gql`
   }
 `;
 
-export const UpdateUploadMutation = gql`
+const UpdateUploadMutation = gql`
   mutation UpdateUpload($input: UpdateUploadInput!) {
     updateUpload(input: $input) {
       id

@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client/core";
 
-export const GetUserQuery = gql`
-  query GetUserQuery {
+const GetUserQuery = gql`
+  query CurrentUser {
     currentUser {
       username
       email

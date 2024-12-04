@@ -29,7 +29,7 @@
             <v-spacer />
             <v-btn :loading="loading" color="primary" @click="step++">
               {{ $t("generic.next") }}
-              <v-icon class="ml-1">mdi-arrow-right</v-icon>
+              <v-icon class="ml-1">arrow-right-s-line</v-icon>
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -90,7 +90,7 @@
               @click="testMariaDBConnection"
             >
               {{ $t("generic.next") }}
-              <v-icon class="ml-1">mdi-arrow-right</v-icon>
+              <v-icon class="ml-1">arrow-right-s-line</v-icon>
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -131,7 +131,7 @@
               @click="createDefaultPlan"
             >
               {{ $t("generic.next") }}
-              <v-icon class="ml-1">mdi-arrow-right</v-icon>
+              <v-icon class="ml-1">arrow-right-s-line</v-icon>
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -184,7 +184,7 @@
               @click="createAdminAccount"
             >
               {{ $t("generic.next") }}
-              <v-icon class="ml-1">mdi-arrow-right</v-icon>
+              <v-icon class="ml-1">arrow-right-s-line</v-icon>
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -253,7 +253,7 @@
             <v-spacer />
             <v-btn :loading="loading" color="primary" @click="step++">
               {{ $t("generic.next") }}
-              <v-icon class="ml-1">mdi-arrow-right</v-icon>
+              <v-icon class="ml-1">arrow-right-s-line</v-icon>
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -341,7 +341,7 @@
               @click="configureInstance"
             >
               {{ $t("generic.next") }}
-              <v-icon class="ml-1">mdi-arrow-right</v-icon>
+              <v-icon class="ml-1">arrow-right-s-line</v-icon>
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -412,7 +412,7 @@
             </v-btn>
             <v-btn :loading="loading" color="primary" @click="configureMail">
               {{ $t("generic.next") }}
-              <v-icon class="ml-1">mdi-arrow-right</v-icon>
+              <v-icon class="ml-1">arrow-right-s-line</v-icon>
             </v-btn>
           </v-card-actions>
         </v-card>

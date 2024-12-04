@@ -134,7 +134,7 @@
                 mdi-account-minus
               </v-icon>
               <v-icon v-else-if="message.type === MessageType.Pin" size="32">
-                mdi-pin
+                pushpin
               </v-icon>
               <v-icon v-else class="mr-1" size="32">mdi-information</v-icon>
             </div>
@@ -261,7 +261,7 @@
               :key="readReceipt.id"
             >
               <ReadReceipt
-                v-if="index < $chat.renderableReadReceipts"
+                v-if="index < 3"
                 :message="message"
                 :read-receipt="readReceipt"
                 :class="{ 'ml-1': message.readReceipts.length <= 3 }"
@@ -345,8 +345,14 @@
     </div>
   </li>
 </template>
-<script lang="ts">
-import { defineComponent } from "vue";
+<script lang="ts" setup>
+import {
+  computed,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  getCurrentInstance
+} from "vue";
 import CommunicationsInput from "@/components/Communications/Input.vue";
 import MessageActions from "@/components/Communications/MessageActions.vue";
 import Embed from "@/components/Communications/Embed.vue";
@@ -355,112 +361,89 @@ import ReadReceipt from "@/components/Communications/ReadReceipt.vue";
 import { Message, MessageType } from "@/gql/graphql";
 import ReplyLine from "@/components/Communications/ReplyLine.vue";
 import Overline from "@/components/Core/Typography/Overline.vue";
+import { useUserStore } from "@/store/user.store";
+import { useChatStore } from "@/store/chat.store";
 
-export default defineComponent({
-  components: {
-    Overline,
-    ReplyLine,
-    ReadReceipt,
-    UserAvatar,
-    Embed,
-    MessageActions,
-    CommunicationsInput
-  },
-  props: [
-    "resizeObserver",
-    "message",
-    "editing",
-    "shifting",
-    "editingText",
-    "merge",
-    "dateSeparator",
-    "mentions",
-    "index",
-    "search",
-    "uncollapseBlocked",
-    "unreadId"
-  ],
-  emits: [
-    "authorClick",
-    "update:uncollapseBlocked",
-    "editText",
-    "edit",
-    "delete",
-    "reply",
-    "editMessage",
-    "jumpToMessage",
-    "autoScroll"
-  ],
-  data() {
-    return {
-      hovered: false,
-      streamedReply: null as Message | null
-    };
-  },
-  computed: {
-    MessageType() {
-      return MessageType;
-    },
-    user() {
-      return this.$user.users[this.message.userId];
-    },
-    getColor() {
-      return this.$user.disableProfileColors
-        ? "unset"
-        : this.$chat.getRankColor(
-            this.$chat.selectedChat?.users?.find(
-              (assoc) => assoc.userId === this.message.userId
-            )?.ranksMap,
-            this.$chat.selectedChat?.ranks
-          );
-    }
-  },
-  mounted() {
-    if (!this.message.reply?.id) return;
-    this.$sockets.chat.on("edit", this.onEdit);
-    this.$sockets.chat.on("messageDelete", this.onDelete);
-  },
-  beforeUnmount() {
-    if (!this.message.reply?.id) return;
-    this.$sockets.chat.off("edit", this.onEdit);
-    this.$sockets.chat.off("messageDelete", this.onDelete);
-    const el = this.$refs[`message-${this.message.id}`]?.$el;
-    if (!el) return;
-    this.resizeObserver.unobserve(this.$refs[el]);
-  },
-  methods: {
-    blocked(userId?: number) {
-      return this.$user.blocked.find(
-        (block) => block.blockedUserId === userId ?? this.message.userId
-      );
-    },
-    context(e: any) {
-      e.preventDefault();
-      this.$chat.dialogs.message.message = this.message;
-      this.$chat.dialogs.message.x = e.clientX;
-      this.$chat.dialogs.message.y = e.clientY;
-      this.$chat.dialogs.message.value = true;
-    },
-    onEdit(data: Message) {
-      if (data?.id !== this.message.replyId) return;
-      if (data.content) {
-        this.message.reply.content = data.content;
-      }
-      if (data.edited !== undefined) {
-        this.message.reply.edited = data.edited;
-      }
-      if (data.editedAt !== undefined) {
-        this.message.reply.editedAt = data.editedAt;
-      }
-      if (data.pinned !== undefined) {
-        this.message.reply.pinned = data.pinned;
-      }
-    },
-    onDelete(data: Message) {
-      if (data?.id !== this.message.replyId) return;
-      this.message.reply = null;
-    }
+const hovered = ref(false);
+const streamedReply = ref<Message | null>(null);
+
+const userStore = useUserStore();
+const chatStore = useChatStore();
+
+const props = defineProps<{
+  resizeObserver?: ResizeObserver;
+  message: Message;
+  editing?: boolean;
+  shifting?: boolean;
+  editingText?: string;
+  merge?: boolean;
+  dateSeparator?: boolean;
+  mentions?: string[];
+  index?: number;
+  search?: boolean;
+  uncollapseBlocked?: boolean;
+  unreadId?: number;
+}>();
+
+const user = computed(() => userStore.users[props.message.userId]);
+
+const getColor = computed(() => {
+  return chatStore.getRankColor(
+    chatStore.selectedChat?.users?.find(
+      (assoc) => assoc.userId === props.message.userId
+    )?.ranksMap,
+    chatStore.selectedChat?.ranks
+  );
+});
+
+function blocked(userId?: number) {
+  return userStore.blocked.find(
+    (block) => block.blockedUserId === userId ?? props.message.userId
+  );
+}
+
+function context(e: any) {
+  e.preventDefault();
+  userStore.dialogs.message.message = props.message;
+  userStore.dialogs.message.x = e.clientX;
+  userStore.dialogs.message.y = e.clientY;
+  userStore.dialogs.message.value = true;
+}
+
+function onEdit(data: Message) {
+  if (data?.id !== props.message.replyId) return;
+  if (data.content) {
+    // props.message.reply.content = data.content
   }
+  if (data.edited !== undefined) {
+    // props.message.reply.edited = data.edited
+  }
+  if (data.editedAt !== undefined) {
+    // props.message.reply.editedAt = data.editedAt
+  }
+  if (data.pinned !== undefined) {
+    // props.message.reply.pinned = data.pinned
+  }
+}
+
+const onDelete = (data: Message) => {
+  if (data?.id !== props.message.replyId) return;
+  // props.message.reply = null
+};
+
+onMounted(() => {
+  if (!props.message.reply?.id) return;
+  // userStore.sockets.chat.on("edit", onEdit)
+  // userStore.sockets.chat.on("messageDelete", onDelete)
+});
+
+onBeforeUnmount(() => {
+  if (!props.message.reply?.id) return;
+  // userStore.sockets.chat.off("edit", onEdit)
+  // userStore.sockets.chat.off("messageDelete", onDelete)
+  const el = getCurrentInstance().refs[`message-${props.message.id}`]?.el;
+  if (!el) return;
+  props.resizeObserver.unobserve(el);
 });
 </script>
 

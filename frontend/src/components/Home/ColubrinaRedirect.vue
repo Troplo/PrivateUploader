@@ -18,11 +18,11 @@
           color="primary"
           @click="$emit('update:modelValue', false)"
         >
-          <v-icon class="mr-1">mdi-arrow-left</v-icon>
+          <v-icon class="mr-1">arrow-left-s-line</v-icon>
           Learn More
         </v-btn>
         <v-btn class="no-capital" color="primary" to="/register">
-          <v-icon class="mr-1">mdi-arrow-right</v-icon>
+          <v-icon class="mr-1">arrow-right-s-line</v-icon>
           Register now
         </v-btn>
       </v-card-actions>

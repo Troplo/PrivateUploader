@@ -34,7 +34,7 @@
               item.name.toLowerCase() === 'deleted items'
             "
           >
-            mdi-delete-outline
+            close-outline
           </v-icon>
           <v-icon v-else-if="item.name.toLowerCase() === 'archive'">
             mdi-archive-outline

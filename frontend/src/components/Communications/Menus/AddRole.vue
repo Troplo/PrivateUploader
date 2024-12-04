@@ -7,7 +7,7 @@
   >
     <template #activator="{ props }">
       <v-chip class="ml-2 my-1" v-bind="props" :size="size">
-        <v-icon>mdi-plus</v-icon>
+        <v-icon>add-line</v-icon>
       </v-chip>
     </template>
     <v-card>

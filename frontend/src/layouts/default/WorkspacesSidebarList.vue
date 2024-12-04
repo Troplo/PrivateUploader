@@ -226,7 +226,7 @@
         $router.push(`/workspaces/notes/${$route.params.id}`);
       "
     >
-      <v-icon>mdi-arrow-left</v-icon>
+      <v-icon>arrow-left-s-line</v-icon>
       Leave version history
     </v-card-text>
     <v-card-text
@@ -275,10 +275,10 @@
             v-if="$workspaces.workspace"
             @click.stop="createFolder.dialog = true"
           >
-            <v-icon>mdi-plus</v-icon>
+            <v-icon>add-line</v-icon>
           </v-list-item-action>
           <v-list-item-action>
-            <v-icon>mdi-menu-down</v-icon>
+            <v-icon>arrow-down-s-line</v-icon>
           </v-list-item-action>
         </template>
       </v-list-item>
@@ -384,9 +384,12 @@ import WorkspaceDialog from "@/components/Workspaces/Dialogs/Dialog.vue";
 import WorkspaceDeleteDialog from "@/components/Workspaces/Dialogs/Delete.vue";
 import { NoteDataV2, NoteVersion } from "@/models/noteVersion";
 import CoreDialog from "@/components/Core/Dialogs/Dialog.vue";
-import { CreateWorkspaceMutation } from "@/graphql/workspaces/createWorkspace.graphql";
-import { CreateNoteMutation } from "@/graphql/workspaces/createNote.graphql";
 import ShareWorkspace from "@/components/Workspaces/Dialogs/ShareWorkspace.vue";
+import {
+  CreateNoteDocument,
+  CreateWorkspaceDocument,
+  NoteDocument
+} from "@/gql/graphql";
 
 export default defineComponent({
   name: "WorkspacesSidebarList",
@@ -614,21 +617,12 @@ export default defineComponent({
       this.contextMenu.dialog = true;
     },
     async doCreateNote(name: string, internal: boolean = false) {
+      console.log(this.createNote);
       this.createNote.loading = true;
-      const {
-        data: { createNote }
-      } = await this.$apollo.mutate({
-        mutation: CreateNoteMutation,
-        variables: {
-          input: {
-            name,
-            workspaceFolderId: this.createNote.folderId
-          }
-        }
-      });
-      this.$workspaces.workspace.folders
-        .find((f) => f.id === this.createNote.folderId)
-        ?.children.push(createNote);
+      const createNote = await this.$workspaces.createNote(
+        name,
+        this.createNote.folderId
+      );
       this.createNote.dialog = false;
       this.createNote.loading = false;
       if (internal) return createNote;
@@ -669,7 +663,7 @@ export default defineComponent({
       const {
         data: { createWorkspace }
       } = await this.$apollo.mutate({
-        mutation: CreateWorkspaceMutation,
+        mutation: CreateWorkspaceDocument,
         variables: {
           input: name
         }

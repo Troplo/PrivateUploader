@@ -4,7 +4,7 @@
       <v-col cols="12" md="8" sm="12">
         <v-text-field
           v-model="search"
-          append-inner-icon="mdi-magnify"
+          append-inner-icon="search-line"
           label="Search"
           placeholder="Search for a user"
           @keydown.enter="getUsers"
@@ -75,7 +75,7 @@
     <PromoNoContent
       v-if="!$app.componentLoading && !users.length"
       description="Try searching for something else."
-      icon="mdi-magnify"
+      icon="search-line"
       title="No users found"
     />
   </v-container>

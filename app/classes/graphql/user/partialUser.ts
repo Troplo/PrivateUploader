@@ -33,7 +33,9 @@ export class PartialUserBase {
   @Field()
   bot: boolean
   @Field(() => Boolean, {
-    defaultValue: false
+    defaultValue: false,
+    deprecationReason:
+      "This field is no longer used after migration from Colubrina to Flowinity."
   })
   legacy?: boolean = false
 }
@@ -143,7 +145,9 @@ export class PartialUserFriend extends PartialUserBase {
   @Field(() => UserStatus)
   status: UserStatus
   @Field(() => String, {
-    nullable: true
+    description: "The user's name color in Communications (v3).",
+    nullable: true,
+    deprecationReason: "Replaced by ranks"
   })
   nameColor: string | null
   @Field(() => FriendNickname, {
@@ -181,7 +185,7 @@ export class PartialUserAuth extends PartialUserBase {
   @Field(() => DateType, {
     nullable: true
   })
-  dateOfBirth: Date
+  dateOfBirth: Date | null
   @Field(() => Int)
   planId: number
 }

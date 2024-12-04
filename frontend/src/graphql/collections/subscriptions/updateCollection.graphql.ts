@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client/core";
 
-export const CollectionUpdatedSubscription = gql`
-  subscription CollectionUpdated($input: FilterCollectionInput) {
+const CollectionUpdatedSubscription = gql`
+  subscription OnCollectionUpdated($input: FilterCollectionInput) {
     onCollectionUpdated(input: $input) {
       id
       name
@@ -14,32 +14,32 @@ export const CollectionUpdatedSubscription = gql`
   }
 `;
 
-export const CollectionUserAddSubscription = gql`
-  subscription CollectionUserAdded($input: FilterCollectionInput) {
+const CollectionUserAddSubscription = gql`
+  subscription OnCollectionUserAdded($input: FilterCollectionInput) {
     onCollectionUserAdded(input: $input) {
       id
     }
   }
 `;
 
-export const CollectionUserRemoveSubscription = gql`
-  subscription CollectionUserRemoved($input: FilterCollectionInput) {
+const CollectionUserRemoveSubscription = gql`
+  subscription OnCollectionUserRemoved($input: FilterCollectionInput) {
     onCollectionUserRemoved(input: $input) {
       id
     }
   }
 `;
 
-export const CollectionUserUpdateSubscription = gql`
-  subscription CollectionUserUpdated($input: FilterCollectionInput) {
+const CollectionUserUpdateSubscription = gql`
+  subscription OnCollectionUserUpdated($input: FilterCollectionInput) {
     onCollectionUserUpdated(input: $input) {
       id
     }
   }
 `;
 
-export const CollectionCreatedSubscription = gql`
-  subscription CollectionCreated {
+const CollectionCreatedSubscription = gql`
+  subscription OnCollectionCreated {
     onCollectionCreated {
       id
       name
@@ -58,8 +58,8 @@ export const CollectionCreatedSubscription = gql`
   }
 `;
 
-export const CollectionRemovedSubscription = gql`
-  subscription CollectionRemoved($input: FilterCollectionInput) {
+const CollectionRemovedSubscription = gql`
+  subscription OnCollectionRemoved($input: FilterCollectionInput) {
     onCollectionRemoved(input: $input)
   }
 `;

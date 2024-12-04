@@ -207,17 +207,18 @@ import UserAvatar from "@/components/Users/UserAvatar.vue";
 import { useCollectionsStore } from "@/store/collections.store";
 import { computed, onMounted, ref, watch } from "vue";
 import { useAppStore } from "@/store/app.store";
-import { Collection, PartialUserFriend } from "@/gql/graphql";
+import {
+  AddCollectionUserDocument,
+  Collection,
+  PartialUserFriend,
+  RemoveCollectionUserDocument,
+  TransferCollectionOwnershipDocument,
+  UpdateCollectionDocument,
+  UpdateCollectionUserPermissionsDocument
+} from "@/gql/graphql";
 import { useUserStore } from "@/store/user.store";
 import { useFriendsStore } from "@/store/friends.store";
 import { useApolloClient } from "@vue/apollo-composable";
-import { TransferCollectionOwnership } from "@/graphql/collections/transferOwnership.graphql";
-import {
-  AddCollectionUserMutation,
-  RemoveCollectionUser,
-  UpdateCollectionUserPermissionsMutation
-} from "@/graphql/collections/collectionUser.graphql";
-import { UpdateCollectionMutation } from "@/graphql/collections/updateCollection.graphql";
 import DangerZoneDialog from "@/components/Core/DangerZoneDialog.vue";
 import {
   RiAddLine,
@@ -283,7 +284,7 @@ async function transferOwnership(args: {
   loading.value = true;
   try {
     await useApolloClient().client.mutate({
-      mutation: TransferCollectionOwnership,
+      mutation: TransferCollectionOwnershipDocument,
       variables: {
         input: {
           password: args.passwordMode ? args.password : undefined,
@@ -325,7 +326,7 @@ async function removeUser(userId: number) {
   loading.value = true;
   try {
     await useApolloClient().client.mutate({
-      mutation: RemoveCollectionUser,
+      mutation: RemoveCollectionUserDocument,
       variables: {
         input: {
           collectionId: collectionStore.selected?.id,
@@ -342,7 +343,7 @@ async function addUser() {
   loading.value = true;
   try {
     await useApolloClient().client.mutate({
-      mutation: AddCollectionUserMutation,
+      mutation: AddCollectionUserDocument,
       variables: {
         input: {
           collectionId: collectionStore.selected?.id,
@@ -365,7 +366,7 @@ async function updateCollection() {
     const {
       data: { updateCollection }
     } = await useApolloClient().client.mutate({
-      mutation: UpdateCollectionMutation,
+      mutation: UpdateCollectionDocument,
       variables: {
         input: {
           collectionId: collectionStore.selected?.id,
@@ -389,7 +390,7 @@ async function updateCollectionUser(
   loading.value = true;
   try {
     await useApolloClient().client.mutate({
-      mutation: UpdateCollectionUserPermissionsMutation,
+      mutation: UpdateCollectionUserPermissionsDocument,
       variables: {
         input: {
           collectionId: collectionStore.selected?.id,

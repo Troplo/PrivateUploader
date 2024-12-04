@@ -171,7 +171,8 @@ export default defineComponent({
           password: this.password,
           code: this.totp
         });
-        await localStorage.setItem("token", data.token);
+        await this.$apollo.clearStore();
+        localStorage.setItem("token", data.token);
         this.axios.defaults.headers.common["Authorization"] = data.token;
         this.$app.token = data.token;
         if (!data.ban) {

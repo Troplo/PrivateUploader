@@ -77,7 +77,7 @@
           </v-container>
           <v-card-actions :class="!fact ? 'mt-n10' : ''">
             <v-btn to="/login">
-              <v-icon class="mr-1">mdi-arrow-left</v-icon>
+              <v-icon class="mr-1">arrow-left-s-line</v-icon>
               Login
             </v-btn>
             <v-spacer />

@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-export const ActAutoCollectsMutation = gql`
+const ActAutoCollectsMutation = gql`
   mutation ActOnAutoCollects($input: ActOnAutoCollectsInput!) {
     actOnAutoCollects(input: $input) {
       success

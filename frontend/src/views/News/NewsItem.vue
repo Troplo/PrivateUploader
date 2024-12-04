@@ -34,7 +34,7 @@ import {
   AnnouncementDocument,
   type AnnouncementQuery
 } from "@/troploservices-gql/graphql";
-import Banner from "@/components/News/NewsBanner.vue";
+import Banner from "@/components/News/Banner.vue";
 import NewsItem from "@/components/News/NewsItem.vue";
 import { ref, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
@@ -60,7 +60,7 @@ async function getAnnouncement() {
   announcement.value = data.announcement as AnnouncementQuery["announcement"];
   uiStore._currentNavItem = {
     item: {
-      name: announcement.value?.title || "Not Found",
+      name: announcement.value?.title || "News item",
       icon: RiNewsLine,
       path: `/news/${id.value}`
     },

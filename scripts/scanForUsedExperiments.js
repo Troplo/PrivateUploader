@@ -66,7 +66,7 @@ const main = (src = "../frontend/src") => {
 // v4
 main()
 // v5 (unused)
-main("../frontend-v5/src")
+main("../../Flowinity5/src")
 // v3
 main("../../TPUv3/frontend/src")
 // v2

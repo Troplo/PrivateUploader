@@ -1,13 +1,13 @@
 <template>
-  <div v-if="$user.user">
-    <v-card-title>{{ $t("settings.home.myAccount.title") }}</v-card-title>
+  <div v-if="userStore.user">
+    <v-card-title>{{ t("settings.home.myAccount.title") }}</v-card-title>
     <v-expansion-panels class="px-4">
-      <v-expansion-panel :title="$t('settings.home.myAccount.changeUsername')">
+      <v-expansion-panel :title="t('settings.home.myAccount.changeUsername')">
         <v-expansion-panel-text>
           <v-form v-model="valid.username">
             <v-text-field
               v-model="username.username"
-              :label="$t('settings.home.myAccount.username')"
+              :label="t('settings.home.myAccount.username')"
               :rules="$validation.user.username"
               class="mt-4"
             />
@@ -23,13 +23,13 @@
                 color="primary"
                 @click="changeUsername"
               >
-                {{ $t("generic.update") }}
+                {{ t("generic.update") }}
               </v-btn>
             </v-card-actions>
           </v-form>
         </v-expansion-panel-text>
       </v-expansion-panel>
-      <v-expansion-panel :title="$t('settings.home.myAccount.changePassword')">
+      <v-expansion-panel :title="t('settings.home.myAccount.changePassword')">
         <v-expansion-panel-text>
           <v-form v-model="valid.password">
             <danger-zone-input
@@ -39,13 +39,13 @@
             ></danger-zone-input>
             <v-text-field
               v-model="password.newPassword"
-              :label="$t('settings.home.myAccount.newPassword')"
+              :label="t('settings.home.myAccount.newPassword')"
               class="mt-4"
               type="password"
             />
             <v-text-field
               v-model="password.confirmNewPassword"
-              :label="$t('settings.home.myAccount.confirmPassword')"
+              :label="t('settings.home.myAccount.confirmPassword')"
               :rules="[...$validation.user.passwordSettings]"
               class="mt-4"
               type="password"
@@ -57,18 +57,18 @@
                 color="primary"
                 @click="changePassword()"
               >
-                {{ $t("generic.update") }}
+                {{ t("generic.update") }}
               </v-btn>
             </v-card-actions>
           </v-form>
         </v-expansion-panel-text>
       </v-expansion-panel>
-      <v-expansion-panel :title="$t('settings.home.myAccount.changeEmail')">
+      <v-expansion-panel :title="t('settings.home.myAccount.changeEmail')">
         <v-expansion-panel-text>
           <v-form v-model="valid.email">
             <v-text-field
               v-model="email.email"
-              :label="$t('settings.home.myAccount.email')"
+              :label="t('settings.home.myAccount.email')"
               :rules="$validation.user.email"
               class="mt-4"
             />
@@ -84,7 +84,7 @@
                 color="primary"
                 @click="changeEmail"
               >
-                {{ $t("generic.update") }}
+                {{ t("generic.update") }}
               </v-btn>
             </v-card-actions>
           </v-form>
@@ -92,18 +92,18 @@
       </v-expansion-panel>
       <v-expansion-panel>
         <v-expansion-panel-title class="bg-card">
-          {{ $t("settings.home.myAccount.2fa") }}
+          {{ t("settings.home.myAccount.2fa") }}
           <v-chip
-            v-if="$user.user?.totpEnable"
+            v-if="userStore.user?.totpEnable"
             class="ml-2"
             color="green"
             label
             size="small"
           >
-            {{ $t("generic.enabled") }}
+            {{ t("generic.enabled") }}
           </v-chip>
           <v-chip v-else class="ml-2" color="error" label size="small">
-            {{ $t("generic.disabled") }}
+            {{ t("generic.disabled") }}
           </v-chip>
         </v-expansion-panel-title>
         <v-expansion-panel-text>
@@ -113,11 +113,11 @@
       <v-expansion-panel class="text-red v-card--variant-tonal">
         <span class="v-card__underlay"></span>
         <v-expansion-panel-title>
-          {{ $t("settings.home.deleteAccount.title") }}
+          {{ t("settings.home.deleteAccount.title") }}
         </v-expansion-panel-title>
         <v-expansion-panel-text>
           <v-card-text style="white-space: pre-line">
-            {{ $t("settings.home.deleteAccount.description") }}
+            {{ t("settings.home.deleteAccount.description") }}
           </v-card-text>
           <delete-account v-model="deletion.deletionDialog" />
           <v-card-actions>
@@ -126,14 +126,14 @@
               variant="tonal"
               @click="deletion.deletionDialog = true"
             >
-              {{ $t("settings.home.deleteAccount.delete") }}
+              {{ t("settings.home.deleteAccount.delete") }}
             </v-btn>
             <danger-zone-dialog :require-both="true" @confirm="deleteGallery">
               <template #title>
-                {{ $t("settings.home.deleteAccount.purgeGallery") }}
+                {{ t("settings.home.deleteAccount.purgeGallery") }}
               </template>
               <template #content>
-                {{ $t("settings.home.deleteAccount.purgeText") }}
+                {{ t("settings.home.deleteAccount.purgeText") }}
               </template>
               <template #default="{ toggle }">
                 <v-btn
@@ -142,7 +142,7 @@
                   variant="tonal"
                   @click="toggle()"
                 >
-                  {{ $t("settings.home.deleteAccount.purgeGallery") }}
+                  {{ t("settings.home.deleteAccount.purgeGallery") }}
                 </v-btn>
               </template>
               <template #actions="{ confirm }">
@@ -151,7 +151,7 @@
                   :loading="deletion.purging"
                   @click="confirm()"
                 >
-                  {{ $t("settings.home.deleteAccount.purgeGallery") }}
+                  {{ t("settings.home.deleteAccount.purgeGallery") }}
                 </v-btn>
               </template>
             </danger-zone-dialog>
@@ -159,10 +159,10 @@
         </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
-    <v-card-title>{{ $t("settings.home.preferences.title") }}</v-card-title>
+    <v-card-title>{{ t("settings.home.preferences.title") }}</v-card-title>
     <v-slider
-      v-model="$user.user.itemsPerPage"
-      :label="$t('settings.home.preferences.itemsPerPage')"
+      v-model="userStore.user.itemsPerPage"
+      :label="t('settings.home.preferences.itemsPerPage')"
       class="px-4"
       max="72"
       min="12"
@@ -171,9 +171,9 @@
       @update:model-value="$emit('update')"
     />
     <v-select
-      v-model="$user.user.language"
+      v-model="userStore.user.language"
       :items="languages"
-      :label="$t('settings.home.preferences.language')"
+      :label="t('settings.home.preferences.language')"
       class="px-6"
       item-title="title"
       item-value="key"
@@ -181,13 +181,13 @@
     />
     <tpu-switch
       :model-value="!disableProfileColors"
-      :label="$t('settings.home.preferences.disableProfileColors')"
+      :label="t('settings.home.preferences.disableProfileColors')"
       class="px-6"
       @update:model-value="disableProfileColors = !$event"
     />
     <tpu-switch
       :model-value="!$experiments.experiments.DISABLE_ANIMATIONS"
-      :label="$t('settings.home.preferences.animations')"
+      :label="t('settings.home.preferences.animations')"
       class="px-6"
       @update:model-value="
         $experiments.setExperiment('DISABLE_ANIMATIONS', $event ? 0 : 1)
@@ -196,7 +196,7 @@
     <v-select
       v-model="theme"
       :items="themes"
-      :label="$t('settings.home.preferences.theme')"
+      :label="t('settings.home.preferences.theme')"
       class="px-6"
       item-title="title"
       item-value="value"
@@ -206,16 +206,16 @@
     <!-- select between Farenheit, Celsius or Kelvin -->
     <tpu-switch
       :model-value="!!$experiments.experiments.WEATHER"
-      :label="$t('settings.home.preferences.weather')"
+      :label="t('settings.home.preferences.weather')"
       class="px-6"
       @update:model-value="
         $experiments.setExperiment('WEATHER', $event ? 1 : 0)
       "
     />
     <v-select
-      v-model="$user.user.weatherUnit"
+      v-model="userStore.user.weatherUnit"
       :items="temperatureUnits"
-      :label="$t('settings.home.preferences.tempUnit')"
+      :label="t('settings.home.preferences.tempUnit')"
       class="px-6"
       item-title="title"
       item-value="value"
@@ -247,19 +247,19 @@
         <v-icon>
           {{
             volume > 70
-              ? "mdi-volume-high"
+              ? "volume-up-line"
               : volume > 0
-              ? "mdi-volume-medium"
-              : "mdi-volume-off"
+              ? "volume-down-line"
+              : "volume-mute-line"
           }}
         </v-icon>
       </template>
       <template #thumb-label>{{ volume.toFixed(2) }}%</template>
     </v-slider>
     <v-autocomplete
-      v-model="$user.user.excludedCollections"
+      v-model="userStore.user.excludedCollections"
       :items="collections"
-      :label="$t('settings.home.preferences.baseCollections')"
+      :label="t('settings.home.preferences.baseCollections')"
       chips
       class="px-6"
       closable-chips
@@ -271,261 +271,246 @@
       @update:model-value="$emit('update')"
     />
     <v-btn
-      v-if="$user.gold || !$app.site.officialInstance"
+      v-if="userStore.gold || !$app.site.officialInstance"
       class="mb-2 ml-5"
       @click="$app.themeEditor = !$app.themeEditor"
     >
       <v-icon class="mr-2">mdi-palette</v-icon>
       <span>
-        {{ $t("settings.home.preferences.themeEditor") }}
-        <v-chip size="x-small" class="ml-1">{{ $t("generic.beta") }}</v-chip>
+        {{ t("settings.home.preferences.themeEditor") }}
+        <v-chip size="x-small" class="ml-1">{{ t("generic.beta") }}</v-chip>
       </span>
     </v-btn>
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent } from "vue";
-import TwoFactor from "@/components/Settings/TwoFactor.vue";
+<script setup lang="ts">
+import { ref, computed, watch, onMounted } from "vue";
 import { useTheme } from "vuetify";
-import { Collection, UserInsights } from "@/gql/graphql";
-import { UserLightCollectionsQuery } from "@/graphql/collections/getUserCollections.graphql";
+import TwoFactor from "@/components/Settings/TwoFactor.vue";
 import DangerZoneInput from "@/components/Core/DangerZoneInput.vue";
-import {
-  ChangeUserEmailMutation,
-  ChangeUsernameMutation,
-  ChangeUserPasswordMutation
-} from "@/graphql/user/changeUsername.graphql";
 import DangerZoneDialog from "@/components/Core/DangerZoneDialog.vue";
-import {
-  DeleteAccountMutation,
-  DeleteGalleryMutation
-} from "@/graphql/user/deleteAccount.graphql";
 import DeleteAccount from "@/components/Users/Dialogs/DeleteAccount.vue";
 import PrideSelector from "@/components/Settings/PrideSelector.vue";
+import {
+  ChangeUserEmailDocument,
+  ChangeUserPasswordDocument,
+  ChangeUsernameDocument,
+  DeleteGalleryDocument,
+  UserInsights,
+  LightCollectionsDocument,
+  LightCollectionsQuery
+} from "@/gql/graphql";
+import { useUserStore } from "@/store/user.store";
+import { useApolloClient } from "@vue/apollo-composable";
+import { useI18n } from "vue-i18n";
+import { useToast } from "vue-toastification";
+import { useRouter } from "vue-router";
 
-export default defineComponent({
-  name: "SettingsHome",
-  components: {
-    PrideSelector,
-    DeleteAccount,
-    DangerZoneDialog,
-    DangerZoneInput,
-    TwoFactor
-  },
-  emits: ["update"],
-  setup() {
-    const theme = useTheme();
+// Emits
+defineEmits(["update"]);
 
-    return {
-      toggleTheme: (themeName: string) => {
-        localStorage.setItem("theme", themeName);
-        theme.global.name.value = themeName;
-      }
-    };
-  },
-  data() {
-    return {
-      volume: 100,
-      email: {
-        password: "",
-        totp: "",
-        email: "",
-        passwordMode: false
-      },
-      password: {
-        confirmNewPassword: "",
-        newPassword: "",
-        password: "",
-        totp: ""
-      },
-      username: {
-        username: "",
-        password: "",
-        totp: "",
-        passwordMode: false
-      },
-      collections: [] as Collection[],
-      notificationSounds: [
-        {
-          title: "Default",
-          key: 2
-        },
-        {
-          title: "KDE",
-          key: 3
-        }
-      ],
-      languages: [
-        {
-          title: "English (United States)",
-          key: "en"
-        },
-        {
-          title: "English (United Kingdom)",
-          key: "en-GB"
-        },
-        {
-          title: "Русский (Россия)",
-          key: "ru"
-        },
-        {
-          title: "French",
-          key: "fr"
-        }
-      ],
-      theme: useTheme().global.name,
-      themes: [
-        { title: "Light", value: "light" },
-        { title: "Dark", value: "dark" },
-        { title: "AMOLED", value: "amoled" }
-      ],
-      temperatureUnits: [
-        { title: "Celsius (Metric)", value: "celsius" },
-        { title: "Kelvin (Metric Standard)", value: "kelvin" },
-        { title: "Fahrenheit (Imperial)", value: "fahrenheit" }
-      ],
-      insights: [
-        { title: "Everyone", value: UserInsights.Everyone },
-        { title: "Friends", value: UserInsights.Friends },
-        { title: "Nobody", value: UserInsights.Nobody }
-      ],
-      confirmPassword: "",
-      valid: {
-        password: true,
-        username: true,
-        email: true
-      },
-      deletion: {
-        deleting: false,
-        purging: false,
-        deletionDialog: false
-      }
-    };
-  },
-  computed: {
-    disableProfileColors: {
-      get() {
-        try {
-          this.$user.disableProfileColors;
-          return JSON.parse(localStorage.getItem("disableProfileColors")!);
-        } catch {
-          return false;
-        }
-      },
-      set(val: boolean) {
-        this.$user.disableProfileColors = val;
-        localStorage.setItem("disableProfileColors", JSON.stringify(val));
-      }
-    },
-    disableBatterySave: {
-      get() {
-        try {
-          return JSON.parse(localStorage.getItem("disableBatterySave")!);
-        } catch {
-          return false;
-        }
-      },
-      set(val: boolean) {
-        localStorage.setItem("disableBatterySave", JSON.stringify(val));
-      }
+const apolloClient = useApolloClient();
+const toast = useToast();
+const userStore = useUserStore();
+const { t } = useI18n();
+const router = useRouter();
+// Theme setup
+const theme = useTheme();
+const themeName = ref(theme.global.name.value);
+
+// Toggles the theme
+function toggleTheme(themeName: string) {
+  localStorage.setItem("theme", themeName);
+  theme.global.name.value = themeName;
+}
+
+// Volume, email, password, username, and other refs
+const volume = ref(100);
+const email = ref({
+  password: "",
+  totp: "",
+  email: "",
+  passwordMode: false
+});
+
+const password = ref({
+  confirmNewPassword: "",
+  newPassword: "",
+  password: "",
+  totp: ""
+});
+
+const username = ref({
+  username: "",
+  password: "",
+  totp: "",
+  passwordMode: false
+});
+
+const collections = ref<LightCollectionsQuery["collections"]["items"]>([]);
+const notificationSounds = ref([
+  { title: "Default", key: 2 },
+  { title: "KDE", key: 3 }
+]);
+
+const languages = ref([
+  { title: "English (United States)", key: "en" },
+  { title: "English (United Kingdom)", key: "en-GB" },
+  { title: "Русский (Россия)", key: "ru" },
+  { title: "French", key: "fr" }
+]);
+
+const themes = ref([
+  { title: "Light", value: "light" },
+  { title: "Dark", value: "dark" },
+  { title: "AMOLED", value: "amoled" }
+]);
+
+const temperatureUnits = ref([
+  { title: "Celsius (Metric)", value: "celsius" },
+  { title: "Kelvin (Metric Standard)", value: "kelvin" },
+  { title: "Fahrenheit (Imperial)", value: "fahrenheit" }
+]);
+
+const insights = ref([
+  { title: "Everyone", value: UserInsights.Everyone },
+  { title: "Friends", value: UserInsights.Friends },
+  { title: "Nobody", value: UserInsights.Nobody }
+]);
+
+const confirmPassword = ref("");
+const valid = ref({
+  password: true,
+  username: true,
+  email: true
+});
+
+const deletion = ref({
+  deleting: false,
+  purging: false,
+  deletionDialog: false
+});
+
+// Computed properties
+const disableProfileColors = computed({
+  get() {
+    try {
+      return JSON.parse(localStorage.getItem("disableProfileColors")!);
+    } catch {
+      return false;
     }
   },
-  watch: {
-    volume() {
-      this.$chat.volume = this.volume / 100;
-      localStorage.setItem("volume", this.$chat.volume);
-    },
-    theme() {
-      this.toggleTheme(this.theme);
-    },
-    "$experiments.experiments.NOTIFICATION_SOUND"(val) {
-      this.$chat.sound();
-      this.$experiments.setExperiment("NOTIFICATION_SOUND", val);
+  set(val: boolean) {
+    localStorage.setItem("disableProfileColors", JSON.stringify(val));
+  }
+});
+
+const disableBatterySave = computed({
+  get() {
+    try {
+      return JSON.parse(localStorage.getItem("disableBatterySave")!);
+    } catch {
+      return false;
     }
   },
-  async mounted() {
-    this.$app.title = "Settings";
-    const {
-      data: {
-        collections: { items }
+  set(val: boolean) {
+    localStorage.setItem("disableBatterySave", JSON.stringify(val));
+  }
+});
+
+// Watchers
+watch(volume, function (newVal) {
+  localStorage.setItem("volume", String(newVal));
+});
+
+watch(themeName, function (newTheme) {
+  toggleTheme(newTheme);
+});
+
+// Lifecycle hook for mounted logic
+onMounted(async function () {
+  document.title = "Settings";
+  const {
+    data: {
+      collections: { items }
+    }
+  } = await apolloClient.client.query({
+    query: LightCollectionsDocument,
+    variables: {
+      input: {
+        limit: 99999
       }
-    } = await this.$apollo.query({
-      query: UserLightCollectionsQuery,
+    }
+  });
+  collections.value = items;
+  volume.value = this.$chat.volume * 100;
+});
+
+async function changeEmail() {
+  await apolloClient.client.mutate({
+    mutation: ChangeUserEmailDocument,
+    variables: {
+      input: {
+        email: email.value.email,
+        password: email.value.passwordMode ? email.value.password : undefined,
+        totp: email.value.passwordMode ? undefined : email.value.totp
+      }
+    }
+  });
+  this.userStore.user.email = email.value.email;
+  this.userStore.user.emailVerified = false;
+  toast.success("Your email has been updated!");
+}
+
+async function changePassword() {
+  if (password.value.newPassword !== password.value.confirmNewPassword) {
+    return toast.error("Password doesn't match.");
+  }
+  await apolloClient.client.mutate({
+    mutation: ChangeUserPasswordDocument,
+    variables: {
+      input: {
+        newPassword: password.value.newPassword,
+        currentPassword: password.value.password,
+        totp: password.value.totp
+      }
+    }
+  });
+  toast.success("Your password has been updated!");
+}
+
+async function changeUsername() {
+  await apolloClient.client.mutate({
+    mutation: ChangeUsernameDocument,
+    variables: {
+      input: {
+        username: username.value.username,
+        password: username.value.passwordMode
+          ? username.value.password
+          : undefined,
+        totp: username.value.passwordMode ? undefined : username.value.totp
+      }
+    }
+  });
+  toast.success("Your username has been updated!");
+}
+
+async function deleteGallery(dangerZone: { password: string; totp: string }) {
+  deletion.value.purging = true;
+  try {
+    await apolloClient.client.mutate({
+      mutation: DeleteGalleryDocument,
       variables: {
         input: {
-          limit: 99999
+          password: dangerZone.password,
+          totp: dangerZone.totp
         }
       }
     });
-    this.collections = items;
-    this.volume = this.$chat.volume * 100;
-  },
-  methods: {
-    async changeEmail() {
-      await this.$apollo.mutate({
-        mutation: ChangeUserEmailMutation,
-        variables: {
-          input: {
-            email: this.email.email,
-            password: this.email.passwordMode ? this.email.password : undefined,
-            totp: this.email.passwordMode ? undefined : this.email.totp
-          }
-        }
-      });
-      this.$user.user.email = this.email.email;
-      this.$user.user.emailVerified = false;
-      this.$toast.success("Your email has been updated!");
-    },
-    async changePassword() {
-      if (this.password.newPassword !== this.password.confirmNewPassword) {
-        return this.$toast.error("Password doesn't match.");
-      }
-      await this.$apollo.mutate({
-        mutation: ChangeUserPasswordMutation,
-        variables: {
-          input: {
-            newPassword: this.password.newPassword,
-            currentPassword: this.password.password,
-            totp: this.password.totp
-          }
-        }
-      });
-      this.$toast.success("Your password has been updated!");
-    },
-    async changeUsername() {
-      await this.$apollo.mutate({
-        mutation: ChangeUsernameMutation,
-        variables: {
-          input: {
-            username: this.username.username,
-            password: this.username.passwordMode
-              ? this.username.password
-              : undefined,
-            totp: this.username.passwordMode ? undefined : this.username.totp
-          }
-        }
-      });
-      this.$toast.success("Your username has been updated!");
-    },
-    async deleteGallery(dangerZone: { password: string; totp: string }) {
-      this.deletion.purging = true;
-      try {
-        await this.$apollo.mutate({
-          mutation: DeleteGalleryMutation,
-          variables: {
-            input: {
-              password: dangerZone.password,
-              totp: dangerZone.totp
-            }
-          }
-        });
-        this.$toast.success("Your gallery has been purged.");
-        await this.$router.push("/");
-      } finally {
-        this.deletion.purging = false;
-      }
-    }
+    toast.success("Your gallery has been purged.");
+    return router.push("/");
+  } finally {
+    deletion.value.purging = false;
   }
-});
+}
 </script>

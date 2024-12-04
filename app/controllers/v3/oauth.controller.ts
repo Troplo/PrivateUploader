@@ -92,28 +92,32 @@ export class OauthControllerV3 {
 
   @Get("/user")
   async getOauthUser(
-    @Auth("oauth") user: User,
+    @Auth("oauth") userCtx: User,
     @HeaderParam("x-tpu-app-id") verifyAppId?: string
   ) {
-    if (verifyAppId && verifyAppId !== user.oauthAppId)
+    const user = await User.findByPk(userCtx.id, {
+      attributes: ["id", "username", "email", "avatar"]
+    })
+    if (!user) throw Errors.USER_NOT_FOUND
+    if (verifyAppId && verifyAppId !== userCtx.oauthAppId)
       throw Errors.SECURITY_APP_ID_ERROR
-    const scopes = user.scopes.split(",")
+    const scopes = userCtx.scopes.split(",")
     const data: { [key: string]: any } = {}
     if (scopes.includes("oauth.user.email")) data.email = user.email
     if (scopes.includes("oauth.user.id")) data.id = user.id
     if (scopes.includes("oauth.user.username")) data.username = user.username
     if (scopes.includes("oauth.user.avatar"))
       data.avatar = config.hostnameWithProtocol + "/i/" + user.avatar
-    if (scopes.includes("oauth.save") && user.oauthAppId) {
+    if (scopes.includes("oauth.save") && userCtx.oauthAppId) {
       const save = await OauthSave.findOne({
         where: {
           userId: user.id,
-          oauthAppId: user.oauthAppId
+          oauthAppId: userCtx.oauthAppId
         }
       })
       if (save) data.save = save.data
     }
-    data.oauthAppId = user.oauthAppId
+    data.oauthAppId = userCtx.oauthAppId
     return data
   }
 

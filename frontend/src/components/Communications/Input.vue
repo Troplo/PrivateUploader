@@ -142,8 +142,7 @@ import EmojiPicker from "@/components/Communications/Menus/Emoji.vue";
 import emoji from "@/components/Communications/Menus/Emoji.vue";
 import UserAvatar from "@/components/Users/UserAvatar.vue";
 import emojiData from "markdown-it-emoji/lib/data/full.json";
-import { Prefix } from "@/gql/graphql";
-import { LookupBotPrefix } from "@/graphql/developer/lookupPrefix.graphql";
+import { LookupBotPrefixDocument, Prefix } from "@/gql/graphql";
 import AddAttachment from "@/components/Communications/Menus/AddAttachment.vue";
 import {
   RiAddCircleFill,
@@ -288,7 +287,7 @@ export default defineComponent({
         const {
           data: { lookupBotPrefix }
         } = await this.$apollo.query({
-          query: LookupBotPrefix,
+          query: LookupBotPrefixDocument,
           variables: {
             input: {
               chatAssociationId: parseInt(this.$route.params.chatId),

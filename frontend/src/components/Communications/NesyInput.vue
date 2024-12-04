@@ -22,7 +22,7 @@
       @keyup.esc="$emit('edit', null)"
     >
       <template v-if="!editing" #prepend>
-        <HoverChip :old="true" icon="mdi-plus" text="Attachment" />
+        <HoverChip :old="true" icon="plus" text="Attachment" />
       </template>
       <template #append-inner>
         <HoverChip :old="true" icon="mdi-star" text="Star" />

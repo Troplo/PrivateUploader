@@ -19,7 +19,7 @@
       "upgradeToGold": "Upgrade to Pro",
       "admin": "Admin Panel",
       "member": "Member of {names}",
-      "experiments": "TPU Experimental Overrides (GQL)",
+      "experiments": "TPU Experimental Overrides (v5)",
       "close": "Close sidebar",
       "communicationsShort": "Comms",
       "quickAction": "Select a new quick action.",
@@ -37,8 +37,7 @@
       "secretMenu": "Secret Menu",
       "tryProgressive": "Try the new look",
       "notifications": "Notifications",
-      "quota": "{used} / {quota} storage used",
-      "news": "News"
+      "quota": "{used} / {quota} storage used"
     },
     "privacy": {
       "title": "The Privacy Policy has been updated.",
@@ -293,7 +292,7 @@
       "flowinityFlameshot": "Introducing Flowshot, a fork of Flameshot with the ability to upload directly to Flowinity.",
       "flowshot": "How to install and use Flowshot:",
       "flowshotSteps": {
-          "1": "Download and install Flowshot for your distribution (you can download the binary with the binary above, or you can compile it yourself). If you are using Arch Linux, there is an officially supported package called <code>flowinity-flameshot</code> in the AUR.",
+          "1": "Download and install Flowshot for your distribution (you can download the binary with the binary above, or you can compile it yourself).",
           "2": "Run Flowshot, and right click the Flameshot icon in the system tray, and open the Configuration page. If you do not have a system tray, you can run <code>flameshot config</code>.",
           "3": "Enter your API key which can be created in the Security tab of the General tab of the Configuration program.",
           "4": "Check \"Upload without confirmation\" for the most optimal experience.",
@@ -323,7 +322,7 @@
       "none": "No slideshows found."
     },
     "about": {
-      "productName": "Product name: TPUvGQL (NEXT)",
+      "productName": "Product name: Flowinity5",
       "version": "Version: {version}",
       "versionDesktop": "Version/Desktop: {version}/{desktopVersion}",
       "platform": "Platform: {platform}",
@@ -390,6 +389,7 @@
     "type": "Type",
     "originalName": "Original name",
     "uploadedName": "Uploaded name",
+    "location": "Location",
     "createdAt": "Created at",
     "create": "Create",
     "size": "Size",

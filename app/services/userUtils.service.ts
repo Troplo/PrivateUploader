@@ -43,6 +43,7 @@ import { pubSub } from "@app/lib/graphql/pubsub"
 import dayjs from "dayjs"
 import { EmailNotificationService } from "@app/services/emailNotification.service"
 import { BanReason } from "@app/classes/graphql/user/ban"
+import { Experiments } from "@app/lib/experiments"
 
 @Service()
 export class UserUtilsService {
@@ -912,7 +913,7 @@ export class UserUtilsService {
       if (
         !(await Container.get(CoreService).checkExperiment(
           user.id,
-          "USER_V3_MODIFY",
+          Experiments.USER_V3_MODIFY,
           user.administrator || user.moderator
         ))
       ) {

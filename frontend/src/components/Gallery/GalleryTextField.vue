@@ -3,7 +3,7 @@
     id="gallery-search"
     :model-value="modelValue"
     :label="$t('generic.search')"
-    append-inner-icon="mdi-magnify"
+    append-inner-icon="search-line"
     class="rounded-xl"
     :autofocus="autofocus"
     @update:model-value="
@@ -23,6 +23,7 @@
     @focus="focused = true"
     @blur="focused = false"
     @change="val = $event.target.value"
+    ref="input"
   />
   <v-scroll-y-transition v-if="false">
     <v-card

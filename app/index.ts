@@ -1,3 +1,4 @@
+import "json-bigint-patch"
 // WARNING: Make sure to always import 'reflect-metadata' and 'module-alias/register' first
 import "reflect-metadata"
 import "module-alias/register"

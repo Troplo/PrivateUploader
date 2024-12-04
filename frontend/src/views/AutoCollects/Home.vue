@@ -2,7 +2,7 @@
   <v-container>
     <div class="float-right" v-if="!$experiments.experiments.PROGRESSIVE_UI">
       <v-btn class="rounded-xl ml-2" to="/autoCollect/configure">
-        <v-icon class="mr-2">mdi-cog</v-icon>
+        <v-icon class="mr-2">settings-5-line</v-icon>
         {{ $t("autoCollects.configure.title") }}
       </v-btn>
     </div>
@@ -32,7 +32,7 @@
   >
     <accessible-transition mode="out-in" name="slide-up" appear>
       <v-btn icon size="small" to="/autoCollect/configure">
-        <v-icon>mdi-cog</v-icon>
+        <v-icon>settings-5-line</v-icon>
       </v-btn>
     </accessible-transition>
   </teleport>

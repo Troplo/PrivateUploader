@@ -387,7 +387,7 @@ export class User extends Model {
   privacyPolicyAccepted: boolean
 
   @Field(() => String, {
-    description: "The user's name color in Communications.",
+    description: "The user's name color in Communications (v3).",
     nullable: true,
     deprecationReason: "Replaced by ranks"
   })

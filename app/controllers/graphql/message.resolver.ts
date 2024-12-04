@@ -21,6 +21,7 @@ import { Context } from "@app/types/graphql/context"
 import RateLimit from "@app/lib/graphql/RateLimit"
 import {
   InfiniteMessagesInput,
+  MessageType,
   PagedMessagesInput,
   ScrollPosition,
   SubscriptionMessageInput
@@ -41,6 +42,7 @@ import { embedTranslator } from "@app/lib/embedParser"
 import { ReadReceipt } from "@app/classes/graphql/chat/readReceiptSubscription"
 import { User } from "@app/models/user.model"
 import { DeleteMessage } from "@app/classes/graphql/chat/deleteMessage"
+import { GqlError } from "@app/lib/gqlErrors"
 
 export const PaginatedMessagesResponse = PagerResponse(Message)
 export type PaginatedMessagesResponse = InstanceType<
@@ -272,6 +274,11 @@ export class MessageResolver {
     })
   }
 
+  @FieldResolver(() => MessageType)
+  type(@Root() message: Message) {
+    return message.type || MessageType.MESSAGE
+  }
+
   @Authorization({
     scopes: "chats.view"
   })
@@ -324,7 +331,7 @@ export class MessageResolver {
   @Authorization({
     scopes: "chats.view"
   })
-  @Subscription({
+  @Subscription(() => ReadReceipt, {
     topics: ({ context }) => {
       return `READ_RECEIPTS:${context.user!!.id}`
     }

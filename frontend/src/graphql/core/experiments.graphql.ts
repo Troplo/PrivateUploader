@@ -1,18 +1,30 @@
 import { gql } from "@apollo/client/core";
 
-export const ExperimentsQuery = gql`
-  query GetExperiments($version: Int) {
-    experiments(version: $version) {
+const Experiments = gql`
+  query Experiments($experiments: [String!], $version: Int) {
+    experiments(version: $version, experiments: $experiments) {
       id
       value
-      description
-      createdAt
-      versions
     }
   }
 `;
 
-export const SetExperimentMutation = gql`
+const FullExperiments = gql`
+  query FullExperiments($experiments: [String!], $version: Int) {
+    experiments(version: $version, experiments: $experiments) {
+      id
+      value
+      description
+      createdAt
+      refresh
+      versions
+      override
+      force
+    }
+  }
+`;
+
+const SetExperimentMutation = gql`
   mutation SetExperiment($input: SetExperimentInput!) {
     setExperiment(input: $input) {
       value

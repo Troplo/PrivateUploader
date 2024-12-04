@@ -1,0 +1,9 @@
+subgraphs:
+  central:
+    routing_url: http://localhost:34583/graphql
+    schema:
+      subgraph_url: http://127.0.0.1:34583/graphql
+  forms:
+    routing_url: http://localhost:24005/graphql
+    schema:
+        subgraph_url: http://127.0.0.1:24005/graphql

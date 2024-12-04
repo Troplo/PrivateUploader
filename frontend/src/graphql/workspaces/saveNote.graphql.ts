@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-export const SaveNoteMutation = gql`
+const SaveNoteMutation = gql`
   mutation SaveNote($input: SaveNoteInput!) {
     saveNote(input: $input) {
       id
@@ -10,7 +10,7 @@ export const SaveNoteMutation = gql`
   }
 `;
 
-export const SaveNoteBlockMutation = gql`
+const SaveNoteBlockMutation = gql`
   mutation SaveNoteBlock($input: UpdateNoteEventInput!) {
     saveNoteBlock(input: $input)
   }

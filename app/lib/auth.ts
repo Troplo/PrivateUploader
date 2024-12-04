@@ -371,7 +371,7 @@ export async function authSystem(
             //@ts-ignore
             user.dataValues.scopes = "user.view,user.modify"
           //@ts-ignore
-          if (user) user.scopes = "user.view,user.modify"
+          user.scopes = "user.view,user.modify"
         } else {
           //@ts-ignore
           if (user?.dataValues)
@@ -379,6 +379,13 @@ export async function authSystem(
             user.dataValues.scopes = session.scopes
           //@ts-ignore
           if (user) user.scopes = session.scopes
+        }
+
+        if (session.oauthAppId) {
+          //@ts-ignore
+          if (user?.dataValues) user.dataValues.oauthAppId = session.oauthAppId
+          //@ts-ignore
+          user.oauthAppId = session.oauthAppId
         }
       }
       if (!scope.includes("user") && !user?.emailVerified) {

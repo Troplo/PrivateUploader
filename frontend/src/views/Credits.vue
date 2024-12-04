@@ -99,8 +99,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import UserCard from "@/components/Users/UserCard.vue";
-import { CreditsQuery } from "@/graphql/user/credits.graphql";
-import { PartialUserBase } from "@/gql/graphql";
+import { CreditsDocument, PartialUserBase } from "@/gql/graphql";
 
 export default defineComponent({
   name: "Credits",
@@ -281,7 +280,7 @@ export default defineComponent({
   methods: {
     async getUsers() {
       const { data } = await this.$apollo.query({
-        query: CreditsQuery
+        query: CreditsDocument
       });
       this.users = data;
     }

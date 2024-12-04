@@ -42,6 +42,7 @@ function checkMessage(id: number, chatId: number) {
 }
 
 export default async function setup(app) {
+  return;
   const sockets = app.config.globalProperties.$sockets;
   const chat = useChatStore();
   const friends = useFriendsStore();

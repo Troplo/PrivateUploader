@@ -5,7 +5,6 @@
  */
 
 // Styles
-import "@mdi/font/css/materialdesignicons.css";
 //import "@flowinity/vuetify/styles";
 //import "/home/troplo/GitHub/vuetify/packages/vuetify/src/styles/main.sass";
 import "vuetify/lib/styles/main.sass";
@@ -23,6 +22,7 @@ import {
   VTreeviewItem,
   VTreeviewGroup
 } from "vuetify/labs/components";
+import { aliases, iconify } from "@/plugins/vuetify-iconset";
 
 export class DefaultThemes {
   themes: any;
@@ -161,6 +161,13 @@ export default createVuetify({
       xs: 900
     },
     mobileBreakpoint: "xs"
+  },
+  icons: {
+    aliases,
+    sets: {
+      ri: iconify,
+      mdi: iconify
+    }
   },
   defaults: {
     VMenu: {

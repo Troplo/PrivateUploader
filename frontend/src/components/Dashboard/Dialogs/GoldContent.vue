@@ -16,7 +16,7 @@
                 id: 6,
                 internalName: 'GOLD',
                 color: '#2396ff',
-                icon: 'mdi-plus',
+                icon: 'add',
                 name: 'Pro'
               }
             }"
@@ -73,7 +73,7 @@
         @click="$emit('update:modelValue', false)"
         v-if="!centeredButtons"
       >
-        <v-icon class="mr-1">mdi-arrow-left</v-icon>
+        <v-icon class="mr-1">arrow-left-s-line</v-icon>
         Close
       </v-btn>
       <v-spacer v-if="!centeredButtons" />
@@ -85,7 +85,7 @@
           @click="startTrial"
         >
           Get your free month
-          <v-icon class="ml-1">mdi-arrow-right</v-icon>
+          <v-icon class="ml-1">arrow-right-s-line</v-icon>
         </v-btn>
         <v-btn
           v-else-if="!$app.activeNags.IAF_NAG && !$user.gold"
@@ -94,7 +94,7 @@
           href="https://github.com/sponsors/Flowinity"
         >
           Get started
-          <v-icon class="ml-1">mdi-arrow-right</v-icon>
+          <v-icon class="ml-1">arrow-right-s-line</v-icon>
         </v-btn>
         <v-btn
           v-else

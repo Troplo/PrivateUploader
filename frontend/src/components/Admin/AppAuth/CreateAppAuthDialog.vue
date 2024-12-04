@@ -75,7 +75,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import CoreDialog from "@/components/Core/Dialogs/Dialog.vue";
-import { CreateOauthAppMutation } from "@/graphql/developer/createApp.graphql";
+import { CreateOauthAppDocument } from "@/gql/graphql";
 
 export default defineComponent({
   name: "CreateAppAuthDialog",
@@ -100,7 +100,7 @@ export default defineComponent({
       try {
         this.loading = true;
         await this.$apollo.mutate({
-          mutation: CreateOauthAppMutation,
+          mutation: CreateOauthAppDocument,
           variables: {
             input: {
               verified: this.verified,

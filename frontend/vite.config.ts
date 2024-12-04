@@ -2,6 +2,7 @@
 import vue from "@vitejs/plugin-vue";
 import vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
 import graphql from "@rollup/plugin-graphql";
+import Icons from "unplugin-icons/vite";
 
 // Utilities
 import { defineConfig } from "vite";
@@ -29,6 +30,9 @@ const config = {
     emptyOutDir: true
   },
   plugins: [
+    Icons({
+      autoInstall: true
+    }),
     graphql(),
     //@ts-ignore
     ViteVersion.default(),
@@ -163,7 +167,13 @@ const config = {
       : '"/endpoints.local.json"'
   },
   resolve: {
-    alias: [{ find: /^@\/(.*)/, replacement: resolve("./src/$1") }],
+    alias: [
+      {
+        find: /^@flowforms-frontend\/(.*)/,
+        replacement: resolve("../modules/FlowForms/frontend/src/$1")
+      },
+      { find: /^@\/(.*)/, replacement: resolve("./src/$1") }
+    ],
     extensions: [".js", ".json", ".jsx", ".mjs", ".ts", ".tsx", ".vue"]
   },
   server: {
@@ -196,6 +206,15 @@ const config = {
     https: undefined,
     warmup: {
       clientFiles: ["./src/**/*.ts", "./src/**/*.vue"]
+    }
+  },
+  test: {
+    globals: true,
+    environment: "jsdom",
+    server: {
+      deps: {
+        inline: ["vuetify"]
+      }
     }
   }
 };

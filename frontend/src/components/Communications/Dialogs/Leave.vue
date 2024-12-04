@@ -53,8 +53,8 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import CoreDialog from "@/components/Core/Dialogs/Dialog.vue";
-import { DeleteGroupMutation } from "@/graphql/chats/deleteGroup.graphql";
 import DangerZoneInput from "@/components/Core/DangerZoneInput.vue";
+import { DeleteGroupDocument } from "@/gql/graphql";
 
 export default defineComponent({
   name: "Leave",
@@ -90,7 +90,7 @@ export default defineComponent({
     async doDelete() {
       if (!this.chat) return;
       await this.$apollo.mutate({
-        mutation: DeleteGroupMutation,
+        mutation: DeleteGroupDocument,
         variables: {
           input: {
             totp: this.del.passwordMode ? undefined : this.del.totp,

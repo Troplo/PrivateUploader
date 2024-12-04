@@ -15,6 +15,7 @@ import { ChatRank } from "@app/models/chatRank.model"
 import { Message } from "@app/models/message.model"
 import { ChatInvite } from "@app/models/chatInvite.model"
 import { ChatEmoji } from "@app/models/chatEmoji.model"
+import { ChatTypingEvent } from "@app/classes/graphql/chat/events/typing"
 
 @ObjectType()
 @Table
@@ -104,10 +105,17 @@ export class Chat extends Model {
     nullable: true
   })
   unread: number | undefined
+
+  @Field(() => String, {
+    nullable: true,
+    deprecationReason: "Use `sortDate` instead."
+  })
+  _redisSortDate: string | undefined
+
   @Field(() => String, {
     nullable: true
   })
-  _redisSortDate: string | undefined
+  sortDate: string | undefined
 
   @Field(() => [ChatRank])
   @HasMany(() => ChatRank, "chatId")
@@ -135,4 +143,7 @@ export class Chat extends Model {
 
   @Field(() => Int)
   onlineCount: number
+
+  @Field(() => [ChatTypingEvent])
+  typing: ChatTypingEvent[]
 }

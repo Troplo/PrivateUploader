@@ -1,5 +1,4 @@
-import { Message } from "@/models/message";
-import { Chat } from "@/models/chat";
+import { Chat, Message } from "@/gql/graphql";
 
 export interface MessageSocket {
   message: Message;

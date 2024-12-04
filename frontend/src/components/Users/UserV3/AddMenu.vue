@@ -2,7 +2,7 @@
   <v-btn class="float-right mb-2">
     <v-menu activator="parent" location="bottom">
       <template #activator>
-        <v-icon class="mr-1">mdi-plus</v-icon>
+        <v-icon class="mr-1">add-line</v-icon>
         Add widget
       </template>
       <v-list max-height="300">

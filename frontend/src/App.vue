@@ -29,7 +29,7 @@ import NetworkInspector from "@/components/Dev/Dialogs/NetworkInspector.vue";
 import BrandingDebug from "@/components/Dev/Dialogs/BrandingDebug.vue";
 
 export default defineComponent({
-  name: "TPUApp",
+  name: "FlowinityApp",
   components: {
     BrandingDebug,
     NetworkInspector,

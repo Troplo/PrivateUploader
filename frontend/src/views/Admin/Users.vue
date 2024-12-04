@@ -199,9 +199,8 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import CoreDialog from "@/components/Core/Dialogs/Dialog.vue";
-import { BanReason, User } from "@/gql/graphql";
+import { AdminGetPlansDocument, BanReason, User } from "@/gql/graphql";
 import DatePickerInput from "@/components/Core/DatePickerInput.vue";
-import { AdminPlansQuery } from "@/graphql/admin/getPlans.graphql";
 
 export default defineComponent({
   components: { DatePickerInput, CoreDialog },
@@ -271,7 +270,7 @@ export default defineComponent({
       const {
         data: { adminPlans }
       } = await this.$apollo.query({
-        query: AdminPlansQuery
+        query: AdminGetPlansDocument
       });
       this.plans = adminPlans;
     },

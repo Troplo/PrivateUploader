@@ -15,12 +15,11 @@
     :class="classString"
     :extension-height="$app.activeNags.offset"
     app
-    class="navbar border-b-2 w-full backdrop-blur-lg top-0 overflow-clip no-image"
+    class="navbar border-b-2 w-full backdrop-blur-lg top-0 z-50 overflow-clip no-image"
     color="dark"
     :flat="true"
     :floating="true"
     :style="getStyle"
-    style="z-index: 100"
     :height="uiStore.appBarType === 'collapse' ? 0 : appBarHeight"
   >
     <div
@@ -37,16 +36,8 @@
         :class="{
           'items-center':
             !expanded || (expanded && uiStore.appBarType === 'stick'),
-          ' h-full': expanded && uiStore.appBarType === 'collapse',
-          'image-offset': uiStore.appBarType === 'collapse',
-          'items-end':
-            !$vuetify.display.mobile &&
-            expanded &&
-            uiStore.appBarType === 'collapse',
-          'items-start':
-            $vuetify.display.mobile &&
-            expanded &&
-            uiStore.appBarType === 'collapse'
+          'items-end h-full': expanded && uiStore.appBarType === 'collapse',
+          'image-offset': uiStore.appBarType === 'collapse'
         }"
       >
         <div
@@ -78,7 +69,6 @@
             <v-btn
               v-if="userStore.user"
               color="white"
-              size="small"
               :icon="true"
               class="mr-2"
               @click="appStore.mainDrawer = !appStore.mainDrawer"
@@ -92,7 +82,7 @@
             mode="out-in"
             tag="div"
             class="flex"
-            v-if="userStore.user || uiStore.currentNavItem?.item?.path !== '/'"
+            v-if="userStore.user"
           >
             <div
               v-for="(rail, index) in items"
@@ -242,65 +232,7 @@
           </div>
         </div>
       </div>
-      <div id="appbar-under" class="px-4 w-full">
-        <div v-if="$vuetify.display.mobile && expanded" class="w-full">
-          <transition-group
-            name="slide-up"
-            mode="out-in"
-            tag="div"
-            class="flex"
-            v-if="userStore.user || uiStore.currentNavItem?.item?.path !== '/'"
-          >
-            <div
-              v-for="(rail, index) in items"
-              :key="rail.path"
-              class="relative overflow-visible whitespace-nowrap items-center flex mb-4"
-            >
-              <div
-                class="flex app-bar-item items-center"
-                :class="{ 'items-center': !expanded, 'items-end': expanded }"
-              >
-                <RiArrowRightSLine
-                  v-if="items.length > 1 && index !== 0"
-                  class="w-6 fill-medium-emphasis-dark items-center mr-2"
-                />
-                <div class="flex items-center flex-grow">
-                  <router-link
-                    :to="rail.path"
-                    class="cursor-pointer flex items-center"
-                    @click="
-                      !rail?.fake && rail?.id
-                        ? (uiStore.navigationMode = rail?.id)
-                        : ''
-                    "
-                  >
-                    <component
-                      :is="rail?.icon"
-                      v-if="rail?.icon"
-                      class="w-8"
-                      :class="
-                        uiStore.currentNavItem?.item?.path === rail.path
-                          ? 'fill-white'
-                          : 'fill-medium-emphasis-dark'
-                      "
-                    />
-                    <span
-                      style="margin: 0 8px 0 8px"
-                      :class="
-                        uiStore.currentNavItem?.item?.path === rail.path
-                          ? 'text-white'
-                          : 'text-medium-emphasis-dark'
-                      "
-                    >
-                      {{ rail.name }}
-                    </span>
-                  </router-link>
-                </div>
-              </div>
-            </div>
-          </transition-group>
-        </div>
-      </div>
+      <div id="appbar-under" class="px-4 w-full"></div>
     </div>
   </v-app-bar>
   <teleport to="#main-first" v-if="uiStore.ready && userStore.user">

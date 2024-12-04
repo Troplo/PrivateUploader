@@ -22,6 +22,7 @@ import {
   WorkspaceItemType
 } from "@app/classes/graphql/workspaces/noteInput"
 import { WorkspaceUserInput } from "@app/classes/graphql/workspaces/user"
+import { Experiments } from "@app/lib/experiments"
 
 @Resolver(WorkspaceUser)
 @Service()
@@ -35,7 +36,7 @@ export class WorkspaceUserResolver {
 
   @Authorization({
     scopes: ["workspaces.modify"],
-    requiredExperiments: ["NOTE_COLLAB"]
+    requiredExperiments: [Experiments.NOTE_COLLAB]
   })
   @Mutation(() => WorkspaceUser, {
     description:

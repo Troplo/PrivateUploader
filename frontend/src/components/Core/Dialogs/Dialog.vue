@@ -14,7 +14,7 @@
             icon
             @click="$emit('update:modelValue', false)"
           >
-            <v-icon>mdi-arrow-left</v-icon>
+            <v-icon>arrow-left-s-line</v-icon>
           </v-btn>
           <v-toolbar-title>
             <slot name="title">Default title</slot>

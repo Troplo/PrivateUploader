@@ -200,7 +200,7 @@
         "
         @click="jumpToBottom"
       >
-        <v-icon class="mr-1 ml-1" size="17">mdi-arrow-down</v-icon>
+        <v-icon class="mr-1 ml-1" size="17">arrow-down-s-line</v-icon>
         {{ $t("chats.jumpToBottom") }}
       </v-toolbar>
       <v-toolbar
@@ -410,11 +410,11 @@ export default defineComponent({
             you: true
           }
         : this.$user.users[this.chat?.recipient?.id]?.blocked
-          ? {
-              value: true,
-              you: false
-            }
-          : { value: false, you: false };
+        ? {
+            value: true,
+            you: false
+          }
+        : { value: false, you: false };
     },
     ScrollPosition() {
       return ScrollPosition;

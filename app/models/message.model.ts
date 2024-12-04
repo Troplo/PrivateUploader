@@ -60,9 +60,7 @@ export class Message extends Model {
   })
   content: string
 
-  @Field(() => MessageType, {
-    nullable: true
-  })
+  @Field(() => MessageType)
   @Column({
     type: DataType.ENUM(
       "message",

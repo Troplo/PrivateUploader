@@ -43,14 +43,12 @@ watch(
       appStore.mainDrawer = false;
     }
     if (display.mobile.value) return;
-    if (experimentsStore.experiments.PROGRESSIVE_UI) {
-      localStorage.setItem("memberSidebarShown", val.toString());
-    }
+    localStorage.setItem("memberSidebarShown", val.toString());
   }
 );
 
 onMounted(() => {
-  if (experimentsStore.experiments.PROGRESSIVE_UI && !display.mobile.value) {
+  if (!display.mobile.value) {
     if (!localStorage.getItem("memberSidebarShown")) return;
     chatStore.memberSidebarShown =
       localStorage.getItem("memberSidebarShown") === "true";

@@ -1,10 +1,10 @@
 <template>
   <linearGradient
     :id="id || 'pride_gradient'"
-    :x1="$experiments.experiments.NEW_BRANDING ? -146.005 : 0"
-    :y1="$experiments.experiments.NEW_BRANDING ? 354.015 : 448"
-    :x2="$experiments.experiments.NEW_BRANDING ? 90.0049 : header ? 500 : 720"
-    :y2="$experiments.experiments.NEW_BRANDING ? 590.024 : 448"
+    :x1="-146.005"
+    :y1="354.015"
+    :x2="90.0049"
+    :y2="590.024"
     gradientUnits="userSpaceOnUse"
   >
     <template v-if="gradientValues.length">
@@ -18,7 +18,7 @@
     <template v-else>
       <stop
         offset="0"
-        :stop-color="$vuetify.theme.current.dark ? '#FFFFFF' : '#000000'"
+        :stop-color="theme.current.value.dark ? '#FFFFFF' : '#000000'"
       />
     </template>
   </linearGradient>
@@ -28,14 +28,17 @@
 import { useExperimentsStore } from "@/store/experiments.store";
 import { PrideVariant } from "@/types/pride";
 import { computed, onMounted, watch } from "vue";
+import { useTheme } from "vuetify/lib/framework.mjs";
 
+const theme = useTheme();
+const experimentsStore = useExperimentsStore();
 const props = defineProps({
   header: Boolean,
   id: String
 });
 
 const gradientValues = computed(() => {
-  const pride = useExperimentsStore().experiments.PRIDE as PrideVariant;
+  const pride = experimentsStore.experiments.PRIDE as PrideVariant;
   return PrideVariant.gradient(pride);
 });
 

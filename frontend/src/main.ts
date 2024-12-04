@@ -29,10 +29,9 @@ import events from "./boot/events";
 import socket from "./boot/socket";
 import apolloHttp from "./boot/apollo";
 import vuetify from "@/plugins/vuetify";
-import { setupSockets } from "./boot/sockets";
 import TpuSwitch from "@/components/Framework/Input/TpuSwitch.vue";
+import { useDebugStore } from "@/store/debug.store";
 import { useEndpointsStore } from "./store/endpoints.store";
-import MasonryWall from "@yeger/vue-masonry-wall";
 
 const isSlideshow = window.location.pathname.startsWith("/slideshow/");
 
@@ -94,9 +93,28 @@ if (import.meta.env.VITE_PROD_ANALYTICS === "true") {
   });
 }
 
-if (process.env.NODE_ENV === "development") {
+if (import.meta.env.DEV || import.meta.env.DEBUG_FEATURES) {
+  const debugNotification = document.createElement("div");
+  debugNotification.id = "debug-notification";
+  debugNotification.innerHTML =
+    "<strong>Debug menu loaded.</strong><br>CTRL+ALT+M to open.";
+  debugNotification.classList.add(
+    "absolute",
+    "top-0",
+    "right-0",
+    "p-2",
+    "border-red",
+    "border-2"
+  );
+  debugNotification.style.zIndex = "10000";
+  document.body.appendChild(debugNotification);
+  setTimeout(() => {
+    debugNotification.remove();
+  }, 2000);
+
   const loggingMixin = {
     beforeMount() {
+      if (localStorage.getItem("renderMonitor") !== "true") return;
       if (
         //@ts-ignore
         this.$options?.name?.startsWith("V") ||
@@ -111,6 +129,7 @@ if (process.env.NODE_ENV === "development") {
       );
     },
     updated() {
+      if (localStorage.getItem("renderMonitor") !== "true") return;
       if (
         //@ts-ignore
         this.$options?.name?.startsWith("V") ||
@@ -122,6 +141,33 @@ if (process.env.NODE_ENV === "development") {
       console.log(
         `[TPU/Dev] ${this.$options.__file?.split("/")?.pop()} updated`
       );
+      if (!this.$el?.style) return;
+      this.$el.style.backgroundColor = "rgba(255, 0, 0, 0.2)";
+      setTimeout(() => {
+        this.$el.style.backgroundColor = "";
+      }, 200);
+      const debugStore = useDebugStore();
+      console.log(this);
+      try {
+        if (!this.$data?._renderId) {
+          this.$data._renderId = Math.random() * 1000000;
+        }
+        const component = debugStore.rerenders.find(
+          (c) => c.id === this.$data._renderId.toString()
+        );
+        if (component) {
+          component.renders++;
+        } else {
+          debugStore.rerenders.push({
+            id: this.$data._renderId.toString(),
+            name: this.$options.__file?.split("/")?.pop(),
+            renders: 1,
+            el: this.$el,
+            stateA: null,
+            stateB: null
+          });
+        }
+      } catch {}
     }
   };
   app.mixin(loggingMixin);
@@ -132,7 +178,6 @@ app.use(Toast, {
 });
 app.config.globalProperties.$toast = useToast();
 app.use(i18n);
-app.use(MasonryWall);
 
 if (import.meta.env.DEV) app.config.performance = true;
 
@@ -144,15 +189,11 @@ useEndpointsStore()
     globals(app);
     if (!isSlideshow) {
       apolloHttp(app);
-    }
-
-    if (!isSlideshow) {
       events();
       socket(app).then(() => {});
-      setupSockets(app);
     }
-
     app.component("TpuSwitch", TpuSwitch);
-
     app.mount("#tpu-app");
   });
+
+export default app;

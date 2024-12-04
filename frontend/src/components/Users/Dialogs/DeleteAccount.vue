@@ -105,14 +105,17 @@ import { useI18n } from "vue-i18n";
 import DangerZoneInput from "@/components/Core/DangerZoneInput.vue";
 import CoreDialog from "@/components/Core/Dialogs/Dialog.vue";
 import { useUserStore } from "@/store/user.store";
-import { DeleteAccountMutation } from "@/graphql/user/deleteAccount.graphql";
 import { useRouter } from "vue-router";
 import { useApolloClient } from "@vue/apollo-composable";
 import { useChatStore } from "@/store/chat.store";
 import UserAvatar from "@/components/Users/UserAvatar.vue";
-import { Chat, ChatAssociation } from "@/gql/graphql";
-import { GetChatUsersQuery } from "@/graphql/chats/chats.graphql";
-import { TransferOwnershipMutation } from "@/graphql/chats/transferOwnership.graphql";
+import {
+  Chat,
+  ChatAssociation,
+  DeleteAccountDocument,
+  GetChatUsersDocument,
+  TransferGroupOwnershipDocument
+} from "@/gql/graphql";
 
 const password = ref("");
 const totp = ref("");
@@ -152,7 +155,7 @@ async function deleteAccount() {
   loading.value = true;
   try {
     await apolloClient.client.mutate({
-      mutation: DeleteAccountMutation,
+      mutation: DeleteAccountDocument,
       variables: {
         input: {
           password: password.value,
@@ -177,7 +180,7 @@ async function loadUsers() {
         chat: { users }
       }
     } = await apolloClient.client.query({
-      query: GetChatUsersQuery,
+      query: GetChatUsersDocument,
       variables: {
         input: {
           chatId: chat.id
@@ -194,7 +197,7 @@ async function transferOwnerships() {
     transferring.value.total = Object.keys(transferMap.value).length;
     for (const [chatId, userId] of Object.entries(transferMap.value)) {
       await apolloClient.client.mutate({
-        mutation: TransferOwnershipMutation,
+        mutation: TransferGroupOwnershipDocument,
         variables: {
           input: {
             associationId: parseInt(chatId),

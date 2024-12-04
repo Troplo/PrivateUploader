@@ -127,7 +127,7 @@
                     variant="outlined"
                     @click="subrule.rules.push(defaultSubRule())"
                   >
-                    <v-icon size="30" style="height: 100%">mdi-plus</v-icon>
+                    <v-icon size="30" style="height: 100%">add-line</v-icon>
                     {{ $t("autoCollects.configure.createSubSubRule") }}
                   </v-card>
                 </v-sheet>
@@ -147,25 +147,21 @@
                     })
                   "
                 >
-                  <v-icon size="30" style="height: 100%">mdi-plus</v-icon>
+                  <v-icon size="30" style="height: 100%">add-line</v-icon>
                   {{ $t("autoCollects.configure.createSubRule") }}
                 </v-card>
               </v-sheet>
-              <v-sheet class="rounded-xxl mt-3" outlined>
-                <v-card
-                  class="rounded-xxl"
-                  color="white"
-                  elevation="0"
-                  height="50"
-                  max-width="100%"
-                  variant="outlined"
-                  @click="saveRule(rule)"
-                >
-                  <v-icon size="30" style="width: 100%; height: 100%">
-                    mdi-content-save
-                  </v-icon>
-                </v-card>
-              </v-sheet>
+              <v-card
+                class="d-flex justify-center rounded-xxl"
+                color="white"
+                elevation="0"
+                height="50"
+                max-width="100%"
+                variant="outlined"
+                @click="saveRule(rule)"
+              >
+                <v-icon size="45">save-2-line</v-icon>
+              </v-card>
             </template>
           </v-expansion-panel>
         </v-expansion-panels>
@@ -174,16 +170,13 @@
         </v-card-subtitle>
         <v-sheet class="rounded-xxl mt-3" outlined>
           <v-card
-            class="rounded-xxl"
+            class="d-flex justify-center rounded-xxl"
             elevation="0"
             height="50"
-            max-width="100%"
             variant="outlined"
             @click="createRule()"
           >
-            <v-icon size="50" style="width: 100%; height: 100%">
-              mdi-plus
-            </v-icon>
+            <v-icon size="50">add-line</v-icon>
           </v-card>
         </v-sheet>
       </v-container>

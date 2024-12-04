@@ -1,15 +1,4 @@
 <template>
-  <v-progress-linear
-    v-if="
-      $app.dialogs.upload.loading && !$experiments.experiments.PROGRESSIVE_UI
-    "
-    :model-value="$app.dialogs.upload.percentage"
-    color="primary"
-  >
-    <v-tooltip activator="parent" location="top">
-      <span>{{ $app.dialogs.upload.percentage }}%</span>
-    </v-tooltip>
-  </v-progress-linear>
   <v-alert
     v-if="$app.activeNags.EMAIL_VERIFICATION"
     :icon="false"

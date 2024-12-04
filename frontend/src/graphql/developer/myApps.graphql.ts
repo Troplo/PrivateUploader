@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-export const MyAppsQuery = gql`
+const MyAppsQuery = gql`
   query DevApps {
     oauthApps {
       id
@@ -21,7 +21,7 @@ export const MyAppsQuery = gql`
   }
 `;
 
-export const MyAppQuery = gql`
+const MyAppQuery = gql`
   query DevApp($input: MyAppInput!) {
     oauthApp(input: $input) {
       id

@@ -22,20 +22,20 @@
         target="_blank"
         :disabled="!malUser?.name"
       >
-        <v-icon>mdi-open-in-new</v-icon>
+        <v-icon>external-link-line</v-icon>
       </v-btn>
       <v-btn
         icon
         :disabled="page === 1"
         @click="page > 1 ? page-- : (page = 1)"
       >
-        <v-icon>mdi-chevron-left</v-icon>
+        <v-icon>arrow-left-s-line</v-icon>
       </v-btn>
       <v-btn icon @click="getMAL">
-        <v-icon>mdi-refresh</v-icon>
+        <v-icon>refresh-line</v-icon>
       </v-btn>
       <v-btn icon :disabled="page >= pages" @click="page < pages ? page++ : ''">
-        <v-icon>mdi-chevron-right</v-icon>
+        <v-icon>arrow-right-s-line</v-icon>
       </v-btn>
     </v-toolbar>
     <template v-if="!loading">
@@ -151,7 +151,7 @@
                       )
                     "
                   >
-                    <v-icon>mdi-plus</v-icon>
+                    <v-icon>add-line</v-icon>
                     <v-tooltip :eager="false" activator="parent" location="top">
                       Increase watched episode count
                     </v-tooltip>

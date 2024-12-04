@@ -1,9 +1,10 @@
 import { Field, InputType, Int } from "type-graphql"
+import { Experiments } from "@app/lib/experiments"
 
 @InputType()
 export class SetExperimentInput {
-  @Field(() => String)
-  key: string
+  @Field(() => Experiments)
+  key: Experiments
   @Field(() => Int)
   value: number
   @Field(() => Int, {

@@ -38,7 +38,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import CoreDialog from "@/components/Core/Dialogs/Dialog.vue";
-import { UpdateShareLinkMutation } from "@/graphql/workspaces/updateShareLink.graphql";
+import { ToggleNoteShareDocument } from "@/gql/graphql";
 
 export default defineComponent({
   components: { CoreDialog },
@@ -61,7 +61,7 @@ export default defineComponent({
       const {
         data: { toggleNoteShare }
       } = await this.$apollo.mutate({
-        mutation: UpdateShareLinkMutation,
+        mutation: ToggleNoteShareDocument,
         variables: {
           input: parseInt(this.$route.params.id)
         }

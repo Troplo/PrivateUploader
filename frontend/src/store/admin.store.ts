@@ -3,7 +3,7 @@
 import { defineStore } from "pinia";
 import axios from "@/plugins/axios";
 import { useUserStore } from "@/store/user.store";
-import { User } from "@/models/user";
+import { User } from "@/gql/graphql";
 
 export interface AdminState {}
 

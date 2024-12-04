@@ -66,13 +66,15 @@ import { defineComponent } from "vue";
 import GalleryCore from "@/components/Gallery/GalleryCore.vue";
 import { CollectionCache } from "@/types/collection";
 import GalleryNavigation from "@/components/Gallery/GalleryNavigation.vue";
-import { GalleryQuery } from "@/graphql/gallery/gallery.graphql";
 import {
+  GalleryDocument,
   GalleryFilter,
   GalleryInput,
   GalleryOrder,
   GallerySort,
   GalleryType,
+  OnCreateUploadsDocument,
+  OnUpdateUploadsDocument,
   Pager,
   Upload
 } from "@/gql/graphql";
@@ -83,8 +85,6 @@ import {
   UseSubscriptionReturn
 } from "@vue/apollo-composable";
 import functions from "@/plugins/functions";
-import { UploadsSubscription } from "@/graphql/gallery/subscriptions/createUploads.graphql";
-import { UpdateUploadsSubscription } from "@/graphql/gallery/subscriptions/updateUploads.graphql";
 
 export default defineComponent({
   components: { GalleryNavigation, GalleryCore },
@@ -139,7 +139,7 @@ export default defineComponent({
       const {
         data: { gallery }
       } = await useApolloClient().client.query({
-        query: GalleryQuery,
+        query: GalleryDocument,
         variables: {
           input: {
             page: 1,
@@ -194,7 +194,7 @@ export default defineComponent({
       const {
         data: { gallery }
       } = await this.$apollo.query({
-        query: GalleryQuery,
+        query: GalleryDocument,
         fetchPolicy: "network-only",
         variables: {
           input: {
@@ -243,7 +243,7 @@ export default defineComponent({
     generateSubscription() {
       this.createSubscription?.stop();
       this.createSubscription = useSubscription(
-        UploadsSubscription,
+        OnCreateUploadsDocument,
         {
           input: {
             type: this.type,
@@ -259,7 +259,7 @@ export default defineComponent({
 
       this.updateSubscription?.stop();
       this.updateSubscription = useSubscription(
-        UpdateUploadsSubscription,
+        OnUpdateUploadsDocument,
         {},
         {
           context: {

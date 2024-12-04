@@ -1,0 +1,7 @@
+@font-face {
+    font-family: FlowinityIcons;
+    font-style: normal;
+    font-display: swap;
+    src: url("/fonts/flowinity/FlowinityIcons-Regular.woff2") format("woff2");
+    unicode-range: U+E900-E90F, U+F800-F8FF;
+}

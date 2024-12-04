@@ -19,7 +19,7 @@
         edit.type === 'update';
       "
     >
-      <v-icon>mdi-plus</v-icon>
+      <v-icon>add-line</v-icon>
     </v-btn>
   </v-card-text>
   <v-list>
@@ -43,7 +43,7 @@
             :disabled="domain.id === 1"
             @click="deleteDomain(domain.id)"
           >
-            <v-icon>mdi-delete</v-icon>
+            <v-icon>close-line</v-icon>
           </v-btn>
           <v-btn
             v-if="$user.user?.administrator"

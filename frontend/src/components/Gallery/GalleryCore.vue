@@ -7,69 +7,6 @@
       :remove="removeFromCollection"
       @collection-added="collectionAdded($event)"
     />
-    <div
-      v-if="
-        !selected.length &&
-        supports.multiSelect &&
-        !$experiments.experiments.PROGRESSIVE_UI
-      "
-      class="float-right"
-    >
-      <slot name="multi-select-actions">
-        <v-btn class="rounded-xl ml-2" variant="text" @click="selectAll()">
-          <v-icon>mdi-plus</v-icon>
-          &nbsp;{{ $t("gallery.selectAll") }}
-        </v-btn>
-      </slot>
-    </div>
-    <div
-      v-if="
-        selected.length &&
-        supports.multiSelect &&
-        !$experiments.experiments.PROGRESSIVE_UI
-      "
-      class="float-right"
-    >
-      <v-btn class="rounded-xl ml-2" variant="text" @click="download()">
-        <v-icon class="mr-1">mdi-download</v-icon>
-        {{ $t("gallery.downloadSelected") }}
-      </v-btn>
-      <slot
-        :deselect-all="deselectAll"
-        :select-all="selectAll"
-        :selected="selected"
-        name="multi-select-actions-length"
-      >
-        <v-btn class="rounded-xl ml-2" variant="text" @click="selectAll()">
-          <v-icon class="mr-1">mdi-plus</v-icon>
-          {{ $t("gallery.selectAll") }}
-        </v-btn>
-        <v-btn class="rounded-xl ml-2" variant="text" @click="deselectAll()">
-          <v-icon class="mr-1">mdi-close</v-icon>
-          {{ $t("gallery.deselectAll") }}
-        </v-btn>
-        <v-btn
-          class="rounded-xl"
-          color="red darken-1"
-          variant="text"
-          @click="$ui.shifting ? bulkDeleteConfirm() : (deleteConfirm = true)"
-        >
-          <v-icon class="mr-1">mdi-delete</v-icon>
-          {{ $t("gallery.deleteSelected") }}
-        </v-btn>
-        <v-btn
-          class="rounded-xl ml-2"
-          variant="text"
-          @click="bulkAddCollection()"
-        >
-          <v-icon class="mr-1">mdi-folder-multiple-image</v-icon>
-          {{ $t("gallery.collectSelected") }}
-        </v-btn>
-      </slot>
-    </div>
-    <br v-if="!$experiments.experiments.PROGRESSIVE_UI" />
-    <br v-if="!$experiments.experiments.PROGRESSIVE_UI" />
-    <br v-if="!$experiments.experiments.PROGRESSIVE_UI" />
     <v-row v-if="!loading && items?.items?.length">
       <v-col
         v-for="item in items.items"
@@ -166,16 +103,6 @@
     />
     <small>
       Total Pages: {{ items.pager?.totalPages.toLocaleString() }}
-      <v-btn
-        v-if="
-          supports.randomAttachment && !$experiments.experiments.PROGRESSIVE_UI
-        "
-        :loading="randomAttachmentLoading"
-        style="float: right"
-        @click="$emit('randomAttachment')"
-      >
-        Random Attachment
-      </v-btn>
       <br />
       Total Items: {{ items.pager?.totalItems.toLocaleString() }}
     </small>
@@ -188,10 +115,7 @@
   />
   <!-- Progressive Action Bar options -->
 
-  <teleport
-    to="#appbar-options"
-    v-if="$experiments.experiments.PROGRESSIVE_UI && $ui.ready"
-  >
+  <teleport to="#appbar-options" v-if="$ui.ready">
     <accessible-transition mode="out-in" name="slide-up" appear>
       <slot
         name="appbar-options"
@@ -216,7 +140,7 @@
                 <v-tooltip activator="parent" location="bottom">
                   {{ $t("gallery.randomAttachment") }}
                 </v-tooltip>
-                <v-icon>mdi-dice-multiple</v-icon>
+                <v-icon><MdiDice /></v-icon>
               </v-btn>
               <v-btn icon size="small" @click="selectAll()">
                 <v-tooltip activator="parent" location="bottom">
@@ -256,7 +180,9 @@
               <v-tooltip activator="parent" location="bottom">
                 {{ $t("gallery.randomAttachment") }}
               </v-tooltip>
-              <v-icon>mdi-dice-multiple</v-icon>
+              <v-icon>
+                <MdiDice />
+              </v-icon>
             </v-btn>
             <v-btn
               icon
@@ -366,9 +292,11 @@ import AccessibleTransition from "@/components/Core/AccessibleTransition.vue";
 import RiImageCloseLine from "@/components/Icons/v5/ri-image-close-line.vue";
 import WorkspaceDeleteDialog from "@/components/Workspaces/Dialogs/Delete.vue";
 import RiCheckLine from "@/components/Icons/v5/ri-check-line.vue";
+import MdiDice from "@/components/Icons/v5/MdiDice.vue";
 
 export default defineComponent({
   components: {
+    MdiDice,
     RiCheckboxMultipleFill,
     RiSearchLine,
     RiCheckLine,

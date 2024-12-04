@@ -47,9 +47,10 @@ import {
 } from "@app/controllers/graphql/messageEmbed.resolver"
 import { WorkspaceUserResolver } from "@app/controllers/graphql/workspaceUser.resolver"
 import { NotificationResolver } from "@app/controllers/graphql/notification.resolver"
+import { ExperimentsResolver } from "@app/controllers/graphql/experiments.resolver"
 
 export const generateSchema = () => {
-  return buildSchema({
+  const centralSchema = buildSchema({
     resolvers: [
       UserResolver,
       AuthResolver,
@@ -87,7 +88,8 @@ export const generateSchema = () => {
       PartialUserBaseResolver,
       EmbedMediaResolver,
       WorkspaceUserResolver,
-      NotificationResolver
+      NotificationResolver,
+      ExperimentsResolver
     ],
     container: Container,
     authChecker: authChecker,
@@ -96,4 +98,6 @@ export const generateSchema = () => {
     // set default number to int
     scalarsMap: [{ type: Number, scalar: Int }]
   })
+
+  return centralSchema
 }

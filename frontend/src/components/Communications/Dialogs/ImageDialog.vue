@@ -36,7 +36,7 @@
         {{ domain }}
       </v-tooltip>
       <span>
-        <v-icon size="18" class="mx-1">mdi-open-in-new</v-icon>
+        <v-icon size="18" class="mx-1">external-link-line</v-icon>
       </span>
     </a>
   </v-dialog>
