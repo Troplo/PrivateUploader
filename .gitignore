@@ -33,6 +33,8 @@ app/config/public.pem
 app/config/rs256-key.private.pem
 app/config/rs256-key.public.pem
 app/config/hs256-key.pem
+app/config/cfront*
+
 storage/*
 frontend_build/
 frontend_build.old/
