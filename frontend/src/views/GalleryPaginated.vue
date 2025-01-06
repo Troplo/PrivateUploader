@@ -75,7 +75,9 @@ import {
   GallerySort,
   GalleryType,
   Pager,
-  Upload
+  Upload,
+  GallerySearchMode,
+  SearchModeInput
 } from "@/gql/graphql";
 import { isNumeric } from "@/plugins/isNumeric";
 import {
@@ -86,6 +88,7 @@ import {
 import functions from "@/plugins/functions";
 import { UploadsSubscription } from "@/graphql/gallery/subscriptions/createUploads.graphql";
 import { UpdateUploadsSubscription } from "@/graphql/gallery/subscriptions/updateUploads.graphql";
+import { SearchMode } from "../../../app/classes/graphql/gallery/galleryInput";
 
 export default defineComponent({
   components: { GalleryNavigation, GalleryCore },
@@ -121,7 +124,15 @@ export default defineComponent({
       },
       randomLoading: false,
       createSubscription: null as UseSubscriptionReturn<any, any> | null,
-      updateSubscription: null as UseSubscriptionReturn<any, any> | null
+      updateSubscription: null as UseSubscriptionReturn<any, any> | null,
+      types: {
+        [GallerySearchMode.User]: "user:",
+        [GallerySearchMode.Before]: "before:",
+        [GallerySearchMode.After]: "after:",
+        [GallerySearchMode.During]: "during:",
+        [GallerySearchMode.Order]: "order:",
+        [GallerySearchMode.Type]: "type:"
+      }
     };
   },
   computed: {
@@ -192,6 +203,18 @@ export default defineComponent({
       if (this.$experiments.experiments.PROGRESSIVE_UI) {
         this.$app.componentLoading = true;
       }
+      const searchMode: SearchModeInput[] = [];
+      let offset = 0;
+      for (const [key, value] of Object.entries(this.types)) {
+        if (!this.show.search) break;
+        if (this.show.search.startsWith(value)) {
+          searchMode.push({
+            mode: key as GallerySearchMode,
+            value: this.show.search?.split(value)?.[1].split(" ")?.[0] || ""
+          });
+          offset = value.length + searchMode[0].value.length + 1;
+        }
+      }
       const {
         data: { gallery }
       } = await this.$apollo.query({
@@ -201,12 +224,13 @@ export default defineComponent({
           input: {
             page: this.page,
             filters: this.show.selected,
-            search: this.show.search,
+            search: this.show.search.slice(offset),
             sort: this.show.sort,
             type: this.type,
             order: this.show.order,
             collectionId: typeof this.rid === "number" ? this.rid : undefined,
-            shareLink: typeof this.rid === "string" ? this.rid : undefined
+            shareLink: typeof this.rid === "string" ? this.rid : undefined,
+            advanced: searchMode
           }
         } as GalleryInput
       });

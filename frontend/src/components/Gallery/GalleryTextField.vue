@@ -5,6 +5,7 @@
     :label="$t('generic.search')"
     append-inner-icon="mdi-magnify"
     class="rounded-xl"
+    autocomplete="off"
     :autofocus="autofocus"
     @update:model-value="
       $emit('update:modelValue', $event);
@@ -21,15 +22,15 @@
       focused = false;
     "
     @focus="focused = true"
-    @blur="focused = false"
     @change="val = $event.target.value"
   />
-  <v-scroll-y-transition v-if="false">
+  <v-scroll-y-transition>
     <v-card
+      id="gallery-search-menu"
       v-show="focused"
       style="
         position: absolute;
-        z-index: 2;
+        z-index: 999;
         max-height: 400px;
         overflow-y: visible;
       "
@@ -47,23 +48,54 @@
         <br />
         <v-kbd>during:2023-01-01</v-kbd>
         During a certain date
-        <br />
+        <!-- <br />
         <v-kbd>order:asc</v-kbd>
         Set the direction
         <br />
         <v-kbd>type:image</v-kbd>
-        Filter by type
+        Filter by type-->
       </v-container>
       <v-container v-else>
-        <v-list-item
-          v-for="(item, index) of items"
-          :key="item.label"
-          :active="selectedIndex === index"
-          class="rounded pointer"
-          @mouseover="selectedIndex = index"
+        <template v-if="mode === GallerySearchMode.User">
+          {{ selectedValue }}
+          <v-list-item
+            v-for="(item, index) of items"
+            :key="item.label"
+            :active="
+              index === items.findIndex((i) => i.value === selectedValue)
+            "
+            class="rounded pointer"
+            @mouseover="selectedValue = item.value"
+            @click="
+              $emit('update:modelValue', `${prefix}${item.label}`);
+              $emit('submit');
+              focused = false;
+            "
+          >
+            <template #prepend>
+              <user-avatar
+                :user="{ username: item.label, avatar: item.image }"
+                size="30"
+                class="mr-2"
+              />
+            </template>
+            {{ item.label }}
+          </v-list-item>
+        </template>
+        <template
+          v-else-if="
+            mode === GallerySearchMode.Before ||
+            mode === GallerySearchMode.After ||
+            mode === GallerySearchMode.During
+          "
         >
-          {{ item.label }}
-        </v-list-item>
+          <v-date-picker
+            :hide-header="true"
+            :multiple="mode === GallerySearchMode.During ? 2 : undefined"
+            v-model="dateValue"
+            @update:model-value="handleDateUpdate"
+          />
+        </template>
       </v-container>
     </v-card>
   </v-scroll-y-transition>
@@ -72,8 +104,10 @@
 <script lang="ts">
 import { GallerySearchMode } from "@/gql/graphql";
 import { defineComponent } from "vue";
+import UserAvatar from "@/components/Users/UserAvatar.vue";
 
 export default defineComponent({
+  components: { UserAvatar },
   props: {
     modelValue: {
       type: String,
@@ -87,20 +121,33 @@ export default defineComponent({
   emits: ["update:modelValue", "submit"],
   data() {
     return {
-      selectedIndex: -1,
+      selectedValue: -1,
       focused: false,
       val: "",
-      currentTabIndex: -1
+      dateValue: null,
+      currentTabIndex: -1,
+      types: {
+        [GallerySearchMode.User]: "user:",
+        [GallerySearchMode.Before]: "before:",
+        [GallerySearchMode.After]: "after:",
+        [GallerySearchMode.During]: "during:",
+        [GallerySearchMode.Order]: "order:",
+        [GallerySearchMode.Type]: "type:"
+      }
     };
   },
   computed: {
+    GallerySearchMode() {
+      return GallerySearchMode;
+    },
     items() {
       switch (this.mode) {
         case GallerySearchMode.User:
           return this.$user.tracked.map((user) => {
             return {
               label: user.username,
-              value: user.id
+              value: user.id,
+              image: user.avatar
             };
           });
         default:
@@ -108,40 +155,60 @@ export default defineComponent({
       }
     },
     mode(): GallerySearchMode | null {
-      if (this.modelValue.startsWith("user:")) {
-        return GallerySearchMode.User;
-      } else if (this.modelValue.startsWith("before:")) {
-        return GallerySearchMode.Before;
-      } else if (this.modelValue.startsWith("after:")) {
-        return GallerySearchMode.After;
-      } else if (this.modelValue.startsWith("during:")) {
-        return GallerySearchMode.During;
-      } else if (this.modelValue.startsWith("order:")) {
-        return GallerySearchMode.Order;
-      } else if (this.modelValue.startsWith("type:")) {
-        return GallerySearchMode.Type;
-      } else {
-        return null;
+      let lastMode: GallerySearchMode | null = null;
+
+      const segments = this.modelValue.split(" ");
+
+      for (const segment of segments) {
+        let isValidMode = false;
+
+        for (const [key, value] of Object.entries(this.types)) {
+          if (segment.startsWith(value) && segment.includes(":")) {
+            lastMode = key as GallerySearchMode;
+            isValidMode = true;
+            break;
+          }
+        }
+
+        // If a segment is not a valid mode and isn't empty, return null
+        if (!isValidMode && segment.trim() !== "") {
+          return null;
+        }
       }
+
+      return lastMode;
+    },
+    prefix() {
+      return this.types[this.mode || GallerySearchMode.User];
     }
   },
   mounted() {
     document.addEventListener("keydown", this.onKeyDown);
+    document.addEventListener("click", this.onClick);
+  },
+  unmounted() {
+    this.cancelEvent();
   },
   methods: {
     onKeyDown(e: KeyboardEvent) {
       if (e.key === "ArrowDown") {
         e.preventDefault();
-        this.selectedIndex++;
-        if (this.selectedIndex >= this.items.length) {
-          this.selectedIndex = 0;
+        const nextIndex =
+          this.items.findIndex((i) => i.value === this.selectedValue) + 1;
+        if (nextIndex < this.items.length) {
+          this.selectedValue = this.items[nextIndex].value;
+        } else {
+          this.selectedValue = this.items[0].value;
         }
       }
       if (e.key === "ArrowUp") {
         e.preventDefault();
-        this.selectedIndex--;
-        if (this.selectedIndex < 0) {
-          this.selectedIndex = this.items.length - 1;
+        const nextIndex =
+          this.items.findIndex((i) => i.value === this.selectedValue) - 1;
+        if (nextIndex >= 0) {
+          this.selectedValue = this.items[nextIndex].value;
+        } else {
+          this.selectedValue = this.items[this.items.length - 1].value;
         }
       }
       if (
@@ -150,20 +217,63 @@ export default defineComponent({
         this.selectedIndex !== -1
       ) {
         e.preventDefault();
-        this.$emit(
-          "update:modelValue",
-          this.modelValue + this.items[this.selectedIndex]?.value
-        );
+        const item = this.items.find((i) => i.value === this.selectedValue);
+        if (!item) return;
+        this.$emit("update:modelValue", `${this.prefix}${item?.label || ""}`);
       }
       if (e.key === "Escape") {
         this.closeMenu();
       }
     },
+    onClick(e: any) {
+      if (
+        !e.target ||
+        (e.target.id !== "gallery-search" &&
+          !e.composedPath().find((el) => el.id === "gallery-search-menu"))
+      ) {
+        this.closeMenu();
+      }
+    },
     cancelEvent() {
       document.removeEventListener("keydown", this.onKeyDown);
+      document.removeEventListener("click", this.onClick);
     },
     closeMenu() {
       this.focused = false;
+    },
+    handleDateUpdate(val: string | string[]) {
+      if (
+        (this.mode === GallerySearchMode.During &&
+          this.dateValue.length === 2) ||
+        this.mode !== GallerySearchMode.During
+      ) {
+        this.$emit(
+          "update:modelValue",
+          `${this.prefix}${
+            this.mode === GallerySearchMode.During
+              ? `${this.dateValue[0].toISOString().split("T")[0]}..${
+                  this.dateValue[this.dateValue.length - 1]
+                    .toISOString()
+                    .split("T")[0]
+                }`
+              : this.dateValue.toISOString().split("T")[0]
+          }`
+        );
+        this.focused = false;
+        this.$emit("submit");
+      }
+    }
+  },
+  watch: {
+    modelValue(val) {
+      if (this.mode) {
+        const selectedItem = this.items.find(
+          (i) => i.value === this.selectedValue
+        );
+        if (selectedItem?.label !== val.replace(this.prefix, "")) {
+          this.selectedValue = -1;
+        }
+      }
     }
   }
 });
