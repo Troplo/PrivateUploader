@@ -56,7 +56,8 @@ import { BanReason } from "@app/classes/graphql/user/ban"
       "alternatePasswords",
       "mailToken",
       "fcmNotificationKey",
-      "dateOfBirth"
+      "dateOfBirth",
+      "trusted"
     ]
   }
 }))
@@ -469,6 +470,11 @@ export class User extends Model {
     type: DataType.TEXT
   })
   banReason: string | null
+
+  @Column({
+    type: DataType.BOOLEAN
+  })
+  trusted: boolean
 
   @Field(() => Plan, {
     nullable: true

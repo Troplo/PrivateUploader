@@ -3,6 +3,7 @@ import {
   BelongsToMany,
   Column,
   DataType,
+  DefaultScope,
   HasMany,
   HasOne,
   Model,
@@ -18,6 +19,11 @@ import { Field, Float, Int, ObjectType } from "type-graphql"
 import { PartialUserBase } from "@app/classes/graphql/user/partialUser"
 import { DateType } from "@app/classes/graphql/serializers/date"
 
+@DefaultScope(() => ({
+  attributes: {
+    exclude: ["approved", "flagged"]
+  }
+}))
 @ObjectType()
 @Table
 export class Upload extends Model {
@@ -121,6 +127,13 @@ export class Upload extends Model {
     defaultValue: "application/octet-stream"
   })
   mimeType: string
+
+  @Column
+  approved: boolean
+
+  @Field()
+  @Column
+  flagged: boolean
 
   @Field(() => PartialUserBase, {
     nullable: true

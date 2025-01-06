@@ -22,6 +22,15 @@ import { Upload } from "@app/models/upload.model"
 import { AwsService } from "@app/services/aws.service"
 import mime from "mime"
 import { Op } from "sequelize"
+import { GraphQLError } from "graphql/error"
+import { UpdateAdminUploadInput } from "@app/classes/graphql/gallery/updateUploadInput"
+import {
+  AdminPunishmentType,
+  AdminPunishmentUploadInput
+} from "@app/classes/graphql/admin/punishment"
+import { AuthService } from "@app/services/auth.service"
+import { BanReason } from "@app/classes/graphql/user/ban"
+import { GalleryService } from "@app/services/gallery.service"
 
 @Resolver()
 @Service()
@@ -29,7 +38,9 @@ export class AdminResolver {
   constructor(
     private userUtilsService: UserUtilsService,
     private adminService: AdminService,
-    private awsService: AwsService
+    private awsService: AwsService,
+    private authService: AuthService,
+    private galleryService: GalleryService
   ) {}
 
   @Authorization({
@@ -406,6 +417,125 @@ export class AdminResolver {
     for (const upload of uploads) {
       const location = `${upload.location}/${upload.sha256sum}:1`
       await upload.update({ location })
+    }
+    return { success: true }
+  }
+
+  @Authorization({
+    accessLevel: AccessLevel.MODERATOR_ONLY,
+    scopes: "*",
+    allowMaintenance: true
+  })
+  @Query(() => Int)
+  async adminMQueueCount() {
+    const trustedUsers = await User.findAll({
+      where: {
+        trusted: true
+      },
+      attributes: ["id"]
+    })
+    return await Upload.count({
+      where: {
+        userId: {
+          [Op.notIn]: trustedUsers.map((u) => u.id)
+        },
+        approved: false
+      }
+    })
+  }
+
+  @Authorization({
+    accessLevel: AccessLevel.MODERATOR_ONLY,
+    scopes: "*",
+    allowMaintenance: true
+  })
+  @Mutation(() => Success)
+  async adminSetTrusted(
+    @Ctx() ctx: Context,
+    @Arg("userId", () => Int) userId: number,
+    @Arg("trusted", () => Boolean) trusted: boolean
+  ) {
+    const user = await User.findByPk(userId)
+    if (!user) throw new GqlError("USER_NOT_FOUND")
+    if ((user.administrator || user.moderator) && !trusted) {
+      throw new GraphQLError("Cannot untrust a moderator or administrator")
+    }
+    await user.update({ trusted })
+    return { success: true }
+  }
+
+  @Authorization({
+    accessLevel: AccessLevel.MODERATOR_ONLY,
+    scopes: "*",
+    allowMaintenance: true
+  })
+  @Mutation(() => [Upload])
+  async adminUpdateApprovedState(
+    @Ctx() ctx: Context,
+    @Arg("input", () => [UpdateAdminUploadInput])
+    input: [UpdateAdminUploadInput]
+  ) {
+    const upload = await Upload.findAll({
+      where: {
+        id: input.map((i) => i.uploadId)
+      }
+    })
+    for (const u of upload) {
+      const update = input.find((i) => i.uploadId === u.id)
+      if (update) {
+        await u.update({
+          approved: update.approved,
+          flagged: update.flagged
+        })
+      }
+    }
+    return upload
+  }
+
+  @Authorization({
+    accessLevel: AccessLevel.MODERATOR_ONLY,
+    scopes: "*",
+    allowMaintenance: true
+  })
+  @Mutation(() => Success)
+  async adminUploadPunishment(
+    @Ctx() ctx: Context,
+    @Arg("input", () => AdminPunishmentUploadInput)
+    input: AdminPunishmentUploadInput
+  ) {
+    const upload = await Upload.findByPk(input.uploadId)
+    if (!upload) throw new GqlError("ATTACHMENT_NOT_FOUND")
+    const user = await User.findByPk(upload.userId)
+    // this should never happen
+    if (!user) throw new GqlError("USER_NOT_FOUND")
+    if (user.administrator || user.moderator) {
+      throw new GraphQLError(
+        "Cannot delete uploads from a moderator or admin. If there is a problem, contact Flowinity instance administrator."
+      )
+    }
+    switch (input.type) {
+      case AdminPunishmentType.DELETE_UPLOAD:
+        await this.galleryService.deleteUpload(upload.id, user.id)
+        break
+      case AdminPunishmentType.DELETE_ACCOUNT_IMMEDIATELY:
+        await this.authService.validateAuthMethod({
+          credentials: {
+            password: input.password,
+            totp: input.totp
+          },
+          userId: ctx.user!!.id,
+          totp: true,
+          password: true,
+          alternatePassword: false
+        })
+        await this.adminService.updateBanned(
+          user.id,
+          true,
+          "Upload violation",
+          input.banReason ?? BanReason.OTHER,
+          new Date().toISOString()
+        )
+        break
     }
     return { success: true }
   }

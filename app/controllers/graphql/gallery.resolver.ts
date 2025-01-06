@@ -15,7 +15,11 @@ import { Service } from "typedi"
 import { Context } from "@app/types/graphql/context"
 import { GraphQLScalarType } from "graphql/type"
 import { Upload } from "@app/models/upload.model"
-import { GalleryInput, Type } from "@app/classes/graphql/gallery/galleryInput"
+import {
+  Filter,
+  GalleryInput,
+  Type
+} from "@app/classes/graphql/gallery/galleryInput"
 import { Collection } from "@app/models/collection.model"
 import { GalleryService } from "@app/services/gallery.service"
 import { PaginatedGalleryResponse } from "@app/classes/graphql/gallery/galleryResponse"
@@ -97,6 +101,10 @@ export class GalleryResolver {
         throw new GraphQLError(
           "You don't have permission to view this collection"
         )
+    } else if (input.type === Type.MQUEUE) {
+      if (!ctx.user?.moderator) {
+        throw new GqlError("NOT_ADMIN")
+      }
     } else if (!ctx.user) {
       throw new GraphQLError("You must be logged in to view the gallery")
     }
@@ -110,6 +118,13 @@ export class GalleryResolver {
       !checkScope("starred.view", ctx.scopes)
     ) {
       throw new GqlError("INVALID_SCOPE")
+    }
+    // If the filter includes ADMIN_FLAGGED and it is not MQUEUE, throw an error
+    if (
+      input.filters?.includes(Filter.ADMIN_FLAGGED) &&
+      input.type !== Type.MQUEUE
+    ) {
+      throw new GqlError("NOT_ADMIN")
     }
     return await this.galleryService.getGalleryV4(
       ctx.user?.id,
@@ -285,5 +300,11 @@ export class GalleryResolver {
   @FieldResolver(() => CollectionItem)
   async items(@Root() upload: Upload) {
     return await upload.$get("items")
+  }
+
+  @FieldResolver(() => Boolean)
+  async flagged(@Root() upload: Upload, @Ctx() ctx: Context) {
+    if (!ctx.user?.moderator) return false
+    return upload.flagged
   }
 }

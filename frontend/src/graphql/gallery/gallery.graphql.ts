@@ -49,6 +49,7 @@ const GalleryQuery = gql`
           userId
           attachmentId
         }
+        flagged
       }
     }
   }

@@ -37,6 +37,7 @@ import { DeletionService } from "@app/services/deletion.service"
 import { Plan } from "@app/models/plan.model"
 import { Subscription } from "@app/models/subscription.model"
 import { OfficialInstJolt707 } from "@app/services/officialInst.jolt707"
+import { EmailNotificationService } from "@app/services/emailNotification.service"
 
 const inviteParams = {
   include: [
@@ -148,9 +149,24 @@ export class AdminService {
   }
 
   async getUsers() {
-    return User.findAll({
+    const users: any[] = await User.findAll({
       attributes: {
-        exclude: ["emailToken", "storedStatus"]
+        exclude: ["emailToken", "storedStatus"],
+        // include all and trusted
+        include: [
+          "id",
+          "username",
+          "email",
+          "emailVerified",
+          "avatar",
+          "banned",
+          "banReason",
+          "banReasonType",
+          "pendingDeletionDate",
+          "trusted",
+          "createdAt",
+          "updatedAt"
+        ]
       },
       include: [
         {
@@ -163,6 +179,49 @@ export class AdminService {
         }
       ]
     })
+    for (const user of users) {
+      user.dataValues.uploadsCount = await Upload.count({
+        where: {
+          userId: user.id
+        }
+      })
+      const uploadsApproved = await Upload.count({
+        where: {
+          userId: user.id,
+          approved: true
+        }
+      })
+      const uploadsUnapproved = await Upload.count({
+        where: {
+          userId: user.id,
+          approved: false
+        }
+      })
+      user.dataValues.messagesCount = await Message.count({
+        where: {
+          userId: user.id
+        }
+      })
+      // Calculate a risk score based on the number of approved and unapproved uploads
+      user.dataValues.riskScore = user.trusted
+        ? 0
+        : this.calculateRiskScore(uploadsApproved, uploadsUnapproved)
+    }
+    return users
+  }
+
+  calculateRiskScore(approvedUploads: number, unapprovedUploads: number) {
+    if (approvedUploads === 0 && unapprovedUploads === 0) {
+      return 0
+    }
+    if (approvedUploads === 0) {
+      return 100
+    }
+
+    // Calculate risk score based on ratio
+    const ratio = unapprovedUploads / (approvedUploads + 1)
+    const riskScore = Math.min(100, ratio * 100)
+    return Math.round(riskScore * 100) / 100 // Rounded to 2 decimal places
   }
 
   async getStats() {
@@ -434,6 +493,10 @@ export class AdminService {
     await redisClient.json.del(`user:${userId}`)
     const deletionService = Container.get(DeletionService)
     deletionService.checkUsers()
+    if (banned) {
+      const emailNotificationService = Container.get(EmailNotificationService)
+      await emailNotificationService.warnBanAccountNotification(userId)
+    }
     return true
   }
 

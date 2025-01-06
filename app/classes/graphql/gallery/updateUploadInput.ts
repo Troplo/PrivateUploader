@@ -10,3 +10,13 @@ export class UpdateUploadInput {
   @MaxLength(400)
   name: string
 }
+
+@InputType()
+export class UpdateAdminUploadInput {
+  @Field(() => Int)
+  uploadId: number
+  @Field(() => Boolean)
+  approved: boolean
+  @Field(() => Boolean)
+  flagged: boolean
+}
