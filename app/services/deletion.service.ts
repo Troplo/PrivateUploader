@@ -67,6 +67,11 @@ export class DeletionService {
           } else {
             const location = upload.location.split("/")[1].split(":")[0]
             if (!location) return
+            await Upload.destroy({
+              where: {
+                id: upload.id
+              }
+            })
             await this.awsService.deleteFile(
               location,
               upload.location.split("/")[0]

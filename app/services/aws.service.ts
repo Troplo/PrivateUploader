@@ -268,7 +268,7 @@ export class AwsService {
     })
     if (uploads.length === 0) {
       const command = new DeleteObjectCommand({
-        Bucket: this.s3Config!.bucket!,
+        Bucket: bucket,
         Key: key
       })
       await s3.send(command)
