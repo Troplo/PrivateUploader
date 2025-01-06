@@ -133,6 +133,7 @@ export class GalleryService {
           await fs.unlinkSync(global.storageRoot + upload.attachment)
         } else {
           const location = upload.location.split("/")[1].split(":")[0]
+          console.log(location)
           if (!location) return
           await this.awsService.deleteFile(
             location,
