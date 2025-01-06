@@ -38,27 +38,43 @@ import { OauthUser } from "@app/models/oauthUser.model"
 import { ChatEmoji } from "@app/models/chatEmoji.model"
 import { ChatInvite } from "@app/models/chatInvite.model"
 import { Invite } from "@app/models/invite.model"
+import { AwsService } from "@app/services/aws.service"
+import { Op } from "sequelize"
 
 @Service()
 export class DeletionService {
   constructor(
     private readonly emailService: EmailNotificationService,
-    private readonly cacheService: CacheService
+    private readonly cacheService: CacheService,
+    private readonly awsService: AwsService
   ) {}
 
   async deleteGallery(user: User) {
     const uploads = await Upload.findAll({
       where: {
-        userId: user.id,
-        deletable: true
+        userId: user.id
       },
-      attributes: ["id", "attachment"]
+      attributes: ["id", "attachment", "location"]
     })
 
     for (const upload of uploads) {
       try {
         if (!upload.attachment) continue
-        await fs.unlinkSync(global.storageRoot + upload.attachment)
+        try {
+          if (upload.location === "local") {
+            if (!upload.attachment) return
+            await fs.unlinkSync(global.storageRoot + upload.attachment)
+          } else {
+            const location = upload.location.split("/")[1].split(":")[0]
+            if (!location) return
+            await this.awsService.deleteFile(
+              location,
+              upload.location.split("/")[0]
+            )
+          }
+        } catch (e) {
+          console.log(e)
+        }
       } catch (e) {
         console.log(e)
       }
@@ -83,8 +99,18 @@ export class DeletionService {
 
     await this.deleteGallery(user)
 
-    await new Promise((resolve) => setTimeout(resolve, 5000))
-
+    await BlockedUser.destroy({
+      where: {
+        [Op.or]: [
+          {
+            userId: user.id
+          },
+          {
+            blockedUserId: user.id
+          }
+        ]
+      }
+    })
     await Message.update(
       {
         userId: null
