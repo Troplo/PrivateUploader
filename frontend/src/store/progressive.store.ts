@@ -887,7 +887,9 @@ export const useProgressiveUIStore = defineStore("progressive", () => {
             selectedIcon: markRaw(RiAuctionFill),
             experimentsRequired: ["ACCOUNT_DEV_ELIGIBLE"],
             scopesRequired: ["*"],
-            badge: useAdminStore().approvalCount.toLocaleString()
+            badge: useAdminStore().approvalCount
+              ? useAdminStore().approvalCount.toLocaleString()
+              : undefined
           },
           {
             icon: markRaw(RiBug2Line),
