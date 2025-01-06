@@ -57,7 +57,6 @@
       </v-container>
       <v-container v-else>
         <template v-if="mode === GallerySearchMode.User">
-          {{ selectedValue }}
           <v-list-item
             v-for="(item, index) of items"
             :key="item.label"
