@@ -237,7 +237,7 @@ import DangerZoneDialog from "@/components/Core/DangerZoneDialog.vue";
 
 const adminStore = useAdminStore();
 
-const gallery = useTemplateRef("gallery");
+const gallery = useTemplateRef<any>("gallery");
 const toast = useToast();
 async function punish() {
   switch (dialogs.value.report.action) {
@@ -274,7 +274,6 @@ const loading = ref(false);
 async function act(input: UpdateAdminUploadInput[]) {
   loading.value = true;
   await adminStore.setApproval(input);
-  console.log(gallery.value.gallery.items, gallery.value.gallery);
   gallery.value.gallery.gallery.items =
     gallery.value.gallery.gallery.items.filter(
       (item) => !input.some((i) => i.uploadId === item.id)
