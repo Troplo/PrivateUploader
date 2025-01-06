@@ -88,7 +88,6 @@ import {
 import functions from "@/plugins/functions";
 import { UploadsSubscription } from "@/graphql/gallery/subscriptions/createUploads.graphql";
 import { UpdateUploadsSubscription } from "@/graphql/gallery/subscriptions/updateUploads.graphql";
-import { SearchMode } from "../../../app/classes/graphql/gallery/galleryInput";
 
 export default defineComponent({
   components: { GalleryNavigation, GalleryCore },
@@ -212,6 +211,7 @@ export default defineComponent({
             mode: key as GallerySearchMode,
             value: this.show.search?.split(value)?.[1].split(" ")?.[0] || ""
           });
+          //@ts-ignore
           offset = value.length + searchMode[0].value.length + 1;
         }
       }
