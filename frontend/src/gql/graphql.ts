@@ -99,6 +99,21 @@ export enum AdminCacheType {
   Userstats = 'userstats'
 }
 
+export enum AdminPunishmentType {
+  DeleteAccountImmediately = 'DELETE_ACCOUNT_IMMEDIATELY',
+  DeleteUpload = 'DELETE_UPLOAD'
+}
+
+export type AdminPunishmentUploadInput = {
+  banReason?: InputMaybe<BanReason>;
+  /** You may use either 2FA token or password. Required for DELETE_ACCOUNT_IMMEDIATELY. */
+  password?: InputMaybe<Scalars['String']['input']>;
+  /** TOTP/2FA code if enabled. You may use either 2FA token or password. Required for DELETE_ACCOUNT_IMMEDIATELY. */
+  totp?: InputMaybe<Scalars['String']['input']>;
+  type: AdminPunishmentType;
+  uploadId: Scalars['Int']['input'];
+};
+
 export type AlternatePassword = {
   __typename?: 'AlternatePassword';
   name: Scalars['String']['output'];
@@ -279,6 +294,7 @@ export type ChangeUsernameInput = {
 
 export type Chat = {
   __typename?: 'Chat';
+  /** @deprecated Use `sortDate` instead. */
   _redisSortDate?: Maybe<Scalars['String']['output']>;
   association?: Maybe<ChatAssociation>;
   background?: Maybe<Scalars['String']['output']>;
@@ -294,7 +310,9 @@ export type Chat = {
   onlineCount: Scalars['Int']['output'];
   ranks: Array<ChatRank>;
   recipient?: Maybe<PartialUserBase>;
+  sortDate?: Maybe<Scalars['String']['output']>;
   type: Scalars['String']['output'];
+  typing: Array<ChatTypingEvent>;
   unread?: Maybe<Scalars['Int']['output']>;
   updatedAt: Scalars['DateTimeISO']['output'];
   /** Null if the chat is owned by a Colubrina legacy user, or the account was deleted. */
@@ -406,6 +424,7 @@ export type ChatTypingEvent = {
   chatId: Scalars['Int']['output'];
   expires?: Maybe<Scalars['Float']['output']>;
   user: PartialUserFriend;
+  userId: Scalars['Int']['output'];
 };
 
 export type ChatsInput = {
@@ -819,12 +838,92 @@ export type ExperimentType = {
   createdAt?: Maybe<Scalars['Date']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   force: Scalars['Boolean']['output'];
-  id: Scalars['String']['output'];
+  id: Experiments;
   override: Scalars['Boolean']['output'];
   refresh?: Maybe<Scalars['Boolean']['output']>;
   value: Scalars['Int']['output'];
   versions: Array<Scalars['Int']['output']>;
 };
+
+/** Available experiments */
+export enum Experiments {
+  AccountDevEligible = 'ACCOUNT_DEV_ELIGIBLE',
+  AndroidConfig = 'ANDROID_CONFIG',
+  ApiFallbackOnError = 'API_FALLBACK_ON_ERROR',
+  ApiVersion = 'API_VERSION',
+  ApiVersionV2 = 'API_VERSION_V2',
+  Badges = 'BADGES',
+  BreadcrumbShowParent = 'BREADCRUMB_SHOW_PARENT',
+  CanEnableProgressiveUi = 'CAN_ENABLE_PROGRESSIVE_UI',
+  ChatCaching = 'CHAT_CACHING',
+  ChatGuidedWizard = 'CHAT_GUIDED_WIZARD',
+  ClassicMigrate = 'CLASSIC_MIGRATE',
+  CommsSuperbar = 'COMMS_SUPERBAR',
+  Communications = 'COMMUNICATIONS',
+  CommunicationsInlineSidebarHires = 'COMMUNICATIONS_INLINE_SIDEBAR_HIRES',
+  CommunicationsKeepLoaded = 'COMMUNICATIONS_KEEP_LOADED',
+  CommunicationsQuadSidebarLowres = 'COMMUNICATIONS_QUAD_SIDEBAR_LOWRES',
+  CopyMsgId = 'COPY_MSG_ID',
+  CreepySfxButton = 'CREEPY_SFX_BUTTON',
+  DebugFavicon = 'DEBUG_FAVICON',
+  DesignV2 = 'DESIGN_V2',
+  DisableAnimations = 'DISABLE_ANIMATIONS',
+  DownloadTheAppNag = 'DOWNLOAD_THE_APP_NAG',
+  EarlyAccess = 'EARLY_ACCESS',
+  EditorV2 = 'EDITOR_V2',
+  EnableAutostartAppNag = 'ENABLE_AUTOSTART_APP_NAG',
+  EnablePulseTab = 'ENABLE_PULSE_TAB',
+  ExpandAppBarImage = 'EXPAND_APP_BAR_IMAGE',
+  ExperienceFluid = 'EXPERIENCE_FLUID',
+  ExperienceGalleryItemWidth = 'EXPERIENCE_GALLERY_ITEM_WIDTH',
+  ExperienceItemsPerPage = 'EXPERIENCE_ITEMS_PER_PAGE',
+  Fab = 'FAB',
+  Flowinity = 'FLOWINITY',
+  GalleryInfiniteScroll = 'GALLERY_INFINITE_SCROLL',
+  HoverChipCloseDelay = 'HOVER_CHIP_CLOSE_DELAY',
+  HoverChipHover = 'HOVER_CHIP_HOVER',
+  HoverChipOpenDelay = 'HOVER_CHIP_OPEN_DELAY',
+  IafNag = 'IAF_NAG',
+  InstantUpload = 'INSTANT_UPLOAD',
+  InteractiveNotes = 'INTERACTIVE_NOTES',
+  LegacyAttributesUi = 'LEGACY_ATTRIBUTES_UI',
+  LegacyCustomization = 'LEGACY_CUSTOMIZATION',
+  LegacyFlowinitySso = 'LEGACY_FLOWINITY_SSO',
+  LegacyMobileNav = 'LEGACY_MOBILE_NAV',
+  Meet = 'MEET',
+  MemeGen = 'MEME_GEN',
+  NativeBadges = 'NATIVE_BADGES',
+  NewBranding = 'NEW_BRANDING',
+  NoteAiAssist = 'NOTE_AI_ASSIST',
+  NoteCollab = 'NOTE_COLLAB',
+  NotificationSound = 'NOTIFICATION_SOUND',
+  OfficialInstance = 'OFFICIAL_INSTANCE',
+  PinnedMessages = 'PINNED_MESSAGES',
+  Pride = 'PRIDE',
+  ProfileBanner = 'PROFILE_BANNER',
+  ProgressiveHome = 'PROGRESSIVE_HOME',
+  ProgressiveUi = 'PROGRESSIVE_UI',
+  ProjectCentral = 'PROJECT_CENTRAL',
+  ProjectMerge = 'PROJECT_MERGE',
+  QuickNotes = 'QUICK_NOTES',
+  RailSidebar = 'RAIL_SIDEBAR',
+  RemoveLegacySocket = 'REMOVE_LEGACY_SOCKET',
+  ResizableSidebars = 'RESIZABLE_SIDEBARS',
+  SfxKfx = 'SFX_KFX',
+  SfxKolf = 'SFX_KOLF',
+  Surveys = 'SURVEYS',
+  Theme = 'THEME',
+  UserV2 = 'USER_V2',
+  UserV3 = 'USER_V3',
+  UserV3Editor = 'USER_V3_EDITOR',
+  UserV3Modify = 'USER_V3_MODIFY',
+  V5Float = 'V5_FLOAT',
+  Weather = 'WEATHER',
+  Webmail = 'WEBMAIL',
+  Widgets = 'WIDGETS',
+  WorkspacesSidebar = 'WORKSPACES_SIDEBAR',
+  ZzTest = 'ZZ_TEST'
+}
 
 export type Features = {
   __typename?: 'Features';
@@ -883,6 +982,7 @@ export type FriendsInput = {
 
 /** The filter to apply to the gallery request */
 export enum GalleryFilter {
+  AdminFlagged = 'ADMIN_FLAGGED',
   All = 'ALL',
   Audio = 'AUDIO',
   Gifs = 'GIFS',
@@ -948,6 +1048,7 @@ export enum GallerySort {
 export enum GalleryType {
   AutoCollect = 'AUTO_COLLECT',
   Collection = 'COLLECTION',
+  Mqueue = 'MQUEUE',
   Personal = 'PERSONAL',
   Starred = 'STARRED'
 }
@@ -1116,7 +1217,7 @@ export type Message = {
   readReceipts: Array<ReadReceipt>;
   reply?: Maybe<Message>;
   replyId?: Maybe<Scalars['Int']['output']>;
-  type?: Maybe<MessageType>;
+  type: MessageType;
   updatedAt: Scalars['Date']['output'];
   user?: Maybe<PartialUserBase>;
   userId?: Maybe<Scalars['Int']['output']>;
@@ -1168,8 +1269,13 @@ export type Mutation = {
   adminGenerateMimeTypeMap: GenericSuccessObject;
   adminMigrateLegacyRanksForChat: GenericSuccessObject;
   adminMigrateToS3: GenericSuccessObject;
+  adminRenameLocationNewFormat: GenericSuccessObject;
+  adminRenameS3Object: GenericSuccessObject;
   adminSendEmailForUnverifiedUsers: GenericSuccessObject;
   adminSetExperimentOverride: ExperimentOverride;
+  adminSetTrusted: GenericSuccessObject;
+  adminUpdateApprovedState: Array<Upload>;
+  adminUploadPunishment: GenericSuccessObject;
   applyDomain: Domain;
   blockUser: GenericSuccessObject;
   cancelTyping: Scalars['Boolean']['output'];
@@ -1314,6 +1420,22 @@ export type MutationAdminGenerateInsightsArgs = {
 
 export type MutationAdminSetExperimentOverrideArgs = {
   input: ExperimentOverrideInput;
+};
+
+
+export type MutationAdminSetTrustedArgs = {
+  trusted: Scalars['Boolean']['input'];
+  userId: Scalars['Int']['input'];
+};
+
+
+export type MutationAdminUpdateApprovedStateArgs = {
+  input: Array<UpdateAdminUploadInput>;
+};
+
+
+export type MutationAdminUploadPunishmentArgs = {
+  input: AdminPunishmentUploadInput;
 };
 
 
@@ -1828,6 +1950,7 @@ export type PartialUserBase = {
   friends: Array<Friend>;
   id: Scalars['Int']['output'];
   integrations: Array<Integration>;
+  /** @deprecated This field is no longer used after migration from Colubrina to Flowinity. */
   legacy: Scalars['Boolean']['output'];
   moderator: Scalars['Boolean']['output'];
   mutualCollections: Array<Collection>;
@@ -1852,9 +1975,14 @@ export type PartialUserFriend = {
   friends: Array<Friend>;
   id: Scalars['Int']['output'];
   integrations: Array<Integration>;
+  /** @deprecated This field is no longer used after migration from Colubrina to Flowinity. */
   legacy: Scalars['Boolean']['output'];
   moderator: Scalars['Boolean']['output'];
   mutualCollections: Array<Collection>;
+  /**
+   * The user's name color in Communications (v3).
+   * @deprecated Replaced by ranks
+   */
   nameColor?: Maybe<Scalars['String']['output']>;
   nickname?: Maybe<FriendNickname>;
   notifications: Array<Notification>;
@@ -2021,6 +2149,7 @@ export type PulseUserAgent = {
 export type Query = {
   __typename?: 'Query';
   adminGetExperimentOverrides: Array<ExperimentOverride>;
+  adminMQueueCount: Scalars['Int']['output'];
   adminPlans: Array<Plan>;
   autoCollectRule: AutoCollectRule;
   autoCollectRules: Array<AutoCollectRule>;
@@ -2108,6 +2237,7 @@ export type QueryCollectionsArgs = {
 
 
 export type QueryExperimentsArgs = {
+  experiments?: InputMaybe<Array<Scalars['String']['input']>>;
   version?: InputMaybe<Scalars['Int']['input']>;
 };
 
@@ -2264,7 +2394,7 @@ export enum SessionType {
 }
 
 export type SetExperimentInput = {
-  key: Scalars['String']['input'];
+  key: Experiments;
   /** Admin only. */
   userId?: InputMaybe<Scalars['Int']['input']>;
   value: Scalars['Int']['input'];
@@ -2355,7 +2485,7 @@ export type Subscription = {
   onMessage: MessageSubscription;
   /** Subscribe to Note collaborative user positions. */
   onNoteCollabPosition: NoteCollabPosition;
-  /** Returns the chat association ID */
+  /** Returns the chat ID */
   onReadChat: Scalars['Int']['output'];
   onReadReceipt: ReadReceipt;
   onTyping: ChatTypingEvent;
@@ -2470,6 +2600,12 @@ export type TransferOwnershipInput = {
   totp?: InputMaybe<Scalars['String']['input']>;
   /** User to transfer to. */
   userId: Scalars['Int']['input'];
+};
+
+export type UpdateAdminUploadInput = {
+  approved: Scalars['Boolean']['input'];
+  flagged: Scalars['Boolean']['input'];
+  uploadId: Scalars['Int']['input'];
 };
 
 export type UpdateAppInput = {
@@ -2598,6 +2734,7 @@ export type Upload = {
   /** Non-deletable items are used for profile pictures, banners, etc and are not visible in the Gallery page by default, and cannot be deleted. */
   deletable: Scalars['Boolean']['output'];
   fileSize: Scalars['Float']['output'];
+  flagged: Scalars['Boolean']['output'];
   id: Scalars['Int']['output'];
   item?: Maybe<CollectionItem>;
   items: Array<CollectionItem>;
@@ -2668,7 +2805,7 @@ export type User = {
   moderator: Scalars['Boolean']['output'];
   mutualCollections: Array<Collection>;
   /**
-   * The user's name color in Communications.
+   * The user's name color in Communications (v3).
    * @deprecated Replaced by ranks
    */
   nameColor?: Maybe<Scalars['String']['output']>;
@@ -3061,7 +3198,7 @@ export type CreateChatInviteMutation = { __typename?: 'Mutation', createChatInvi
 
 export type StandardEmbedFragment = { __typename?: 'EmbedDataV2', media?: Array<{ __typename?: 'EmbedMedia', url?: string | null, proxyUrl?: string | null, attachment?: string | null, width?: number | null, height?: number | null, isInternal: boolean, videoEmbedUrl?: string | null, mimeType?: string | null, type: EmbedMediaType, upload?: { __typename?: 'Upload', id: number, createdAt: any, attachment: string, userId: number, name?: string | null, type: string, fileSize: number } | null }> | null, text?: Array<{ __typename?: 'EmbedText', imageProxyUrl?: string | null, text: string, heading?: boolean | null, imageUrl?: string | null }> | null, metadata: { __typename?: 'EmbedMetadata', url?: string | null, siteName?: string | null, siteIcon?: string | null, footer?: string | null, type: EmbedType, id?: string | null, restricted?: boolean | null } } & { ' $fragmentName'?: 'StandardEmbedFragment' };
 
-export type StandardMessageFragment = { __typename?: 'Message', id: number, createdAt: any, updatedAt: any, chatId: number, userId?: number | null, content?: string | null, type?: MessageType | null, edited: boolean, editedAt?: any | null, replyId?: number | null, pinned: boolean, emoji?: Array<{ __typename?: 'ChatEmoji', name?: string | null, icon?: string | null, id: string, chatId: number }> | null, embeds: Array<(
+export type StandardMessageFragment = { __typename?: 'Message', id: number, createdAt: any, updatedAt: any, chatId: number, userId?: number | null, content?: string | null, type: MessageType, edited: boolean, editedAt?: any | null, replyId?: number | null, pinned: boolean, emoji?: Array<{ __typename?: 'ChatEmoji', name?: string | null, icon?: string | null, id: string, chatId: number }> | null, embeds: Array<(
     { __typename?: 'EmbedDataV2' }
     & { ' $fragmentRefs'?: { 'StandardEmbedFragment': StandardEmbedFragment } }
   )>, reply?: { __typename?: 'Message', content?: string | null, userId?: number | null, id: number, readReceipts: Array<{ __typename?: 'ReadReceipt', associationId: number, messageId: number, user?: { __typename?: 'PartialUserBase', id: number, avatar?: string | null, username: string, legacy: boolean } | null }>, embeds: Array<{ __typename?: 'EmbedDataV2', metadata: { __typename?: 'EmbedMetadata', type: EmbedType }, media?: Array<{ __typename?: 'EmbedMedia', type: EmbedMediaType }> | null }>, user?: { __typename?: 'PartialUserBase', username: string, id: number, avatar?: string | null } | null } | null, user?: { __typename?: 'PartialUserBase', username: string, id: number, avatar?: string | null } | null, readReceipts: Array<{ __typename?: 'ReadReceipt', associationId: number, messageId: number, user?: { __typename?: 'PartialUserBase', id: number, avatar?: string | null, username: string, legacy: boolean } | null }> } & { ' $fragmentName'?: 'StandardMessageFragment' };
@@ -3320,7 +3457,7 @@ export type GetExperimentsQueryVariables = Exact<{
 }>;
 
 
-export type GetExperimentsQuery = { __typename?: 'Query', experiments: Array<{ __typename?: 'ExperimentType', id: string, value: number, description?: string | null, createdAt?: any | null, versions: Array<number> }> };
+export type GetExperimentsQuery = { __typename?: 'Query', experiments: Array<{ __typename?: 'ExperimentType', id: Experiments, value: number, description?: string | null, createdAt?: any | null, versions: Array<number> }> };
 
 export type SetExperimentMutationVariables = Exact<{
   input: SetExperimentInput;
@@ -3332,12 +3469,12 @@ export type SetExperimentMutation = { __typename?: 'Mutation', setExperiment: { 
 export type ExtraStateQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ExtraStateQueryQuery = { __typename?: 'Query', friends: Array<{ __typename?: 'Friend', id: number, status: FriendStatus, userId?: number | null, friendId: number, user: { __typename?: 'PartialUserFriend', username: string, id: number, createdAt: any, administrator: boolean, moderator: boolean, avatar?: string | null, status: UserStatus } }>, experiments: Array<{ __typename?: 'ExperimentType', id: string, value: number, description?: string | null, createdAt?: any | null }>, workspaces: Array<{ __typename?: 'Workspace', id: number, name: string, userId?: number | null, createdAt: any, updatedAt: any, icon?: string | null, folders: Array<{ __typename?: 'WorkspaceFolder', id: number, createdAt: any, updatedAt: any, name: string, workspaceId: number, folderId?: number | null, children: Array<{ __typename?: 'Note', id: number, createdAt: any, updatedAt: any, name: string, workspaceFolderId: number, shareLink?: string | null }> }> }>, chats: Array<{ __typename?: 'Chat', id: number, description?: string | null, type: string, background?: string | null, unread?: number | null, name: string, userId?: number | null, icon?: string | null, createdAt: any, updatedAt: any, _redisSortDate?: string | null, invites: Array<{ __typename?: 'ChatInvite', id: string, userId?: number | null, createdAt: any, rankId?: string | null, updatedAt: any, expiredAt?: any | null, invalidated: boolean }>, association?: { __typename?: 'ChatAssociation', id: number, hidden?: boolean | null, chatId: number, permissions: Array<string>, userId?: number | null, rank: string, createdAt: any, lastRead?: number | null, notifications: string } | null, users: Array<{ __typename?: 'ChatAssociation', id: number, chatId: number, userId?: number | null, rank: string, createdAt: any, lastRead?: number | null, ranksMap: Array<string> }>, recipient?: { __typename?: 'PartialUserBase', id: number } | null, ranks: Array<{ __typename?: 'ChatRank', id: string, color?: string | null, name: string, userId?: number | null, createdAt?: any | null, chatId: number, updatedAt?: any | null, managed: boolean, index: number, permissionsMap: Array<string> }> }>, coreState: { __typename?: 'CoreState', name: string, release: string, hostname: string, hostnameWithProtocol: string, registrations: boolean, officialInstance: boolean, termsNoteId?: string | null, privacyNoteId?: string | null, inviteAFriend: boolean, preTrustedDomains: Array<string>, hostnames: Array<string>, _redis: string, server: string, finishedSetup: boolean, domain: string, uptime: number, uptimeSys: number, commitVersion: string, connection: { __typename?: 'Connection', ip: string }, announcements: Array<{ __typename?: 'Announcement', userId?: number | null, content: string, type?: string | null, id: number, createdAt?: any | null, updatedAt?: any | null, user?: { __typename?: 'PartialUserBase', username: string, id: number, createdAt: any, administrator: boolean, moderator: boolean, avatar?: string | null } | null }>, stats: { __typename?: 'CoreStats', users: number, announcements: number, usage?: any | null, collections: number, collectionItems: number, uploads: number, invites: number, inviteMilestone: number, pulse: number, pulses: number, docs: number, messages: number, chats: number, hours?: any | null, uploadGraph?: { __typename?: 'DataLabelsGraph', data: Array<number>, labels: Array<string> } | null, messageGraph?: { __typename?: 'DataLabelsGraph', data: Array<number>, labels: Array<string> } | null, pulseGraph?: { __typename?: 'DataLabelsGraph', data: Array<number>, labels: Array<string> } | null }, maintenance: { __typename?: 'Maintenance', enabled: boolean, message?: string | null, statusPage?: string | null }, providers: { __typename?: 'Providers', anilist: boolean, lastfm: boolean, mal: boolean }, features: { __typename?: 'Features', communications: boolean, collections: boolean, autoCollects: boolean, workspaces: boolean, insights: boolean } }, collections: { __typename?: 'PaginatedCollectionResponse', items: Array<{ __typename?: 'Collection', id: number, name: string, permissionsMetadata: { __typename?: 'PermissionsMetadata', write: boolean, read: boolean, configure: boolean } }> }, currentUser?: { __typename?: 'User', username: string, email: string, pulse: boolean, groupPrivacy: UserGroupPrivacy, friendRequests: UserFriendRequestPrivacy, profileLayout?: any | null, description?: string | null, administrator: boolean, darkTheme: boolean, emailVerified: boolean, banned: boolean, createdAt: any, inviteId?: number | null, discordPrecache: boolean, avatar?: string | null, domainId: number, totpEnable: boolean, quota: number, moderator: boolean, subscriptionId?: number | null, itemsPerPage: number, banner?: string | null, pendingAutoCollects?: number | null, scopes?: string | null, status: UserStatus, storedStatus: UserStoredStatus, weatherUnit: string, themeEngine?: any | null, xp: number, publicProfile: boolean, privacyPolicyAccepted?: boolean | null, excludedCollections?: Array<number> | null, id: number, language: string, nameColor?: string | null, insights: UserInsights, alternatePasswords?: Array<{ __typename?: 'AlternatePassword', scopes: string, totp: boolean, name: string }> | null, plan?: { __typename?: 'Plan', quotaMax: number, color?: string | null, internalName: string, name: string, icon: string, id: number } | null, domain?: { __typename?: 'Domain', active: boolean, domain: string, id: number } | null, badges: Array<{ __typename?: 'Badge', color?: string | null, icon?: string | null, id: number, image?: string | null, name: string, priority?: number | null, tooltip?: string | null }>, subscription?: { __typename?: 'TPUSubscription', cancelled: boolean, metadata?: { __typename?: 'SubscriptionMetadata', hours: number } | null } | null, notifications: Array<{ __typename?: 'Notification', id: number, dismissed: boolean, message: string, route?: string | null, createdAt: any }>, integrations: Array<{ __typename?: 'Integration', type: string, providerUsername?: string | null, providerUserId?: number | null, id: number, error?: string | null, expiresAt?: any | null }> } | null, trackedUsers: Array<{ __typename?: 'PartialUserFriend', username: string, id: number, createdAt: any, administrator: boolean, moderator: boolean, avatar?: string | null, blocked?: boolean | null, status: UserStatus, nameColor?: string | null, bot: boolean, nickname?: { __typename?: 'FriendNickname', nickname: string } | null }>, blockedUsers: Array<{ __typename?: 'BlockedUser', id: string, userId?: number | null, createdAt: any, updatedAt: any, blockedUserId: number, silent: boolean }>, userEmoji: Array<{ __typename?: 'ChatEmoji', id: string, userId?: number | null, chatId: number, icon?: string | null, name?: string | null, createdAt: any, updatedAt: any }> };
+export type ExtraStateQueryQuery = { __typename?: 'Query', friends: Array<{ __typename?: 'Friend', id: number, status: FriendStatus, userId?: number | null, friendId: number, user: { __typename?: 'PartialUserFriend', username: string, id: number, createdAt: any, administrator: boolean, moderator: boolean, avatar?: string | null, status: UserStatus } }>, experiments: Array<{ __typename?: 'ExperimentType', id: Experiments, value: number, description?: string | null, createdAt?: any | null }>, workspaces: Array<{ __typename?: 'Workspace', id: number, name: string, userId?: number | null, createdAt: any, updatedAt: any, icon?: string | null, folders: Array<{ __typename?: 'WorkspaceFolder', id: number, createdAt: any, updatedAt: any, name: string, workspaceId: number, folderId?: number | null, children: Array<{ __typename?: 'Note', id: number, createdAt: any, updatedAt: any, name: string, workspaceFolderId: number, shareLink?: string | null }> }> }>, chats: Array<{ __typename?: 'Chat', id: number, description?: string | null, type: string, background?: string | null, unread?: number | null, name: string, userId?: number | null, icon?: string | null, createdAt: any, updatedAt: any, _redisSortDate?: string | null, invites: Array<{ __typename?: 'ChatInvite', id: string, userId?: number | null, createdAt: any, rankId?: string | null, updatedAt: any, expiredAt?: any | null, invalidated: boolean }>, association?: { __typename?: 'ChatAssociation', id: number, hidden?: boolean | null, chatId: number, permissions: Array<string>, userId?: number | null, rank: string, createdAt: any, lastRead?: number | null, notifications: string } | null, users: Array<{ __typename?: 'ChatAssociation', id: number, chatId: number, userId?: number | null, rank: string, createdAt: any, lastRead?: number | null, ranksMap: Array<string> }>, recipient?: { __typename?: 'PartialUserBase', id: number } | null, ranks: Array<{ __typename?: 'ChatRank', id: string, color?: string | null, name: string, userId?: number | null, createdAt?: any | null, chatId: number, updatedAt?: any | null, managed: boolean, index: number, permissionsMap: Array<string> }> }>, coreState: { __typename?: 'CoreState', name: string, release: string, hostname: string, hostnameWithProtocol: string, registrations: boolean, officialInstance: boolean, termsNoteId?: string | null, privacyNoteId?: string | null, inviteAFriend: boolean, preTrustedDomains: Array<string>, hostnames: Array<string>, _redis: string, server: string, finishedSetup: boolean, domain: string, uptime: number, uptimeSys: number, commitVersion: string, connection: { __typename?: 'Connection', ip: string }, announcements: Array<{ __typename?: 'Announcement', userId?: number | null, content: string, type?: string | null, id: number, createdAt?: any | null, updatedAt?: any | null, user?: { __typename?: 'PartialUserBase', username: string, id: number, createdAt: any, administrator: boolean, moderator: boolean, avatar?: string | null } | null }>, stats: { __typename?: 'CoreStats', users: number, announcements: number, usage?: any | null, collections: number, collectionItems: number, uploads: number, invites: number, inviteMilestone: number, pulse: number, pulses: number, docs: number, messages: number, chats: number, hours?: any | null, uploadGraph?: { __typename?: 'DataLabelsGraph', data: Array<number>, labels: Array<string> } | null, messageGraph?: { __typename?: 'DataLabelsGraph', data: Array<number>, labels: Array<string> } | null, pulseGraph?: { __typename?: 'DataLabelsGraph', data: Array<number>, labels: Array<string> } | null }, maintenance: { __typename?: 'Maintenance', enabled: boolean, message?: string | null, statusPage?: string | null }, providers: { __typename?: 'Providers', anilist: boolean, lastfm: boolean, mal: boolean }, features: { __typename?: 'Features', communications: boolean, collections: boolean, autoCollects: boolean, workspaces: boolean, insights: boolean } }, collections: { __typename?: 'PaginatedCollectionResponse', items: Array<{ __typename?: 'Collection', id: number, name: string, permissionsMetadata: { __typename?: 'PermissionsMetadata', write: boolean, read: boolean, configure: boolean } }> }, currentUser?: { __typename?: 'User', username: string, email: string, pulse: boolean, groupPrivacy: UserGroupPrivacy, friendRequests: UserFriendRequestPrivacy, profileLayout?: any | null, description?: string | null, administrator: boolean, darkTheme: boolean, emailVerified: boolean, banned: boolean, createdAt: any, inviteId?: number | null, discordPrecache: boolean, avatar?: string | null, domainId: number, totpEnable: boolean, quota: number, moderator: boolean, subscriptionId?: number | null, itemsPerPage: number, banner?: string | null, pendingAutoCollects?: number | null, scopes?: string | null, status: UserStatus, storedStatus: UserStoredStatus, weatherUnit: string, themeEngine?: any | null, xp: number, publicProfile: boolean, privacyPolicyAccepted?: boolean | null, excludedCollections?: Array<number> | null, id: number, language: string, nameColor?: string | null, insights: UserInsights, alternatePasswords?: Array<{ __typename?: 'AlternatePassword', scopes: string, totp: boolean, name: string }> | null, plan?: { __typename?: 'Plan', quotaMax: number, color?: string | null, internalName: string, name: string, icon: string, id: number } | null, domain?: { __typename?: 'Domain', active: boolean, domain: string, id: number } | null, badges: Array<{ __typename?: 'Badge', color?: string | null, icon?: string | null, id: number, image?: string | null, name: string, priority?: number | null, tooltip?: string | null }>, subscription?: { __typename?: 'TPUSubscription', cancelled: boolean, metadata?: { __typename?: 'SubscriptionMetadata', hours: number } | null } | null, notifications: Array<{ __typename?: 'Notification', id: number, dismissed: boolean, message: string, route?: string | null, createdAt: any }>, integrations: Array<{ __typename?: 'Integration', type: string, providerUsername?: string | null, providerUserId?: number | null, id: number, error?: string | null, expiresAt?: any | null }> } | null, trackedUsers: Array<{ __typename?: 'PartialUserFriend', username: string, id: number, createdAt: any, administrator: boolean, moderator: boolean, avatar?: string | null, blocked?: boolean | null, status: UserStatus, nameColor?: string | null, bot: boolean, nickname?: { __typename?: 'FriendNickname', nickname: string } | null }>, blockedUsers: Array<{ __typename?: 'BlockedUser', id: string, userId?: number | null, createdAt: any, updatedAt: any, blockedUserId: number, silent: boolean }>, userEmoji: Array<{ __typename?: 'ChatEmoji', id: string, userId?: number | null, chatId: number, icon?: string | null, name?: string | null, createdAt: any, updatedAt: any }> };
 
 export type CoreStateQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CoreStateQueryQuery = { __typename?: 'Query', experiments: Array<{ __typename?: 'ExperimentType', id: string, value: number, description?: string | null, createdAt?: any | null, versions: Array<number> }>, coreState: { __typename?: 'CoreState', name: string, release: string, hostname: string, hostnameWithProtocol: string, registrations: boolean, officialInstance: boolean, termsNoteId?: string | null, privacyNoteId?: string | null, inviteAFriend: boolean, preTrustedDomains: Array<string>, hostnames: Array<string>, _redis: string, server: string, finishedSetup: boolean, domain: string, uptime: number, uptimeSys: number, commitVersion: string, connection: { __typename?: 'Connection', ip: string }, announcements: Array<{ __typename?: 'Announcement', userId?: number | null, content: string, type?: string | null, id: number, createdAt?: any | null, updatedAt?: any | null, user?: { __typename?: 'PartialUserBase', username: string, id: number, createdAt: any, administrator: boolean, moderator: boolean, avatar?: string | null } | null }>, stats: { __typename?: 'CoreStats', users: number, announcements: number, usage?: any | null, collections: number, collectionItems: number, uploads: number, invites: number, inviteMilestone: number, pulse: number, pulses: number, docs: number, messages: number, chats: number, hours?: any | null, uploadGraph?: { __typename?: 'DataLabelsGraph', data: Array<number>, labels: Array<string> } | null, messageGraph?: { __typename?: 'DataLabelsGraph', data: Array<number>, labels: Array<string> } | null, pulseGraph?: { __typename?: 'DataLabelsGraph', data: Array<number>, labels: Array<string> } | null }, maintenance: { __typename?: 'Maintenance', enabled: boolean, message?: string | null, statusPage?: string | null }, providers: { __typename?: 'Providers', anilist: boolean, lastfm: boolean, mal: boolean }, features: { __typename?: 'Features', communications: boolean, collections: boolean, autoCollects: boolean, workspaces: boolean, insights: boolean } } };
+export type CoreStateQueryQuery = { __typename?: 'Query', experiments: Array<{ __typename?: 'ExperimentType', id: Experiments, value: number, description?: string | null, createdAt?: any | null, versions: Array<number> }>, coreState: { __typename?: 'CoreState', name: string, release: string, hostname: string, hostnameWithProtocol: string, registrations: boolean, officialInstance: boolean, termsNoteId?: string | null, privacyNoteId?: string | null, inviteAFriend: boolean, preTrustedDomains: Array<string>, hostnames: Array<string>, _redis: string, server: string, finishedSetup: boolean, domain: string, uptime: number, uptimeSys: number, commitVersion: string, connection: { __typename?: 'Connection', ip: string }, announcements: Array<{ __typename?: 'Announcement', userId?: number | null, content: string, type?: string | null, id: number, createdAt?: any | null, updatedAt?: any | null, user?: { __typename?: 'PartialUserBase', username: string, id: number, createdAt: any, administrator: boolean, moderator: boolean, avatar?: string | null } | null }>, stats: { __typename?: 'CoreStats', users: number, announcements: number, usage?: any | null, collections: number, collectionItems: number, uploads: number, invites: number, inviteMilestone: number, pulse: number, pulses: number, docs: number, messages: number, chats: number, hours?: any | null, uploadGraph?: { __typename?: 'DataLabelsGraph', data: Array<number>, labels: Array<string> } | null, messageGraph?: { __typename?: 'DataLabelsGraph', data: Array<number>, labels: Array<string> } | null, pulseGraph?: { __typename?: 'DataLabelsGraph', data: Array<number>, labels: Array<string> } | null }, maintenance: { __typename?: 'Maintenance', enabled: boolean, message?: string | null, statusPage?: string | null }, providers: { __typename?: 'Providers', anilist: boolean, lastfm: boolean, mal: boolean }, features: { __typename?: 'Features', communications: boolean, collections: boolean, autoCollects: boolean, workspaces: boolean, insights: boolean } } };
 
 export type WeatherQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -3459,7 +3596,7 @@ export type GalleryQueryVariables = Exact<{
 }>;
 
 
-export type GalleryQuery = { __typename?: 'Query', gallery: { __typename?: 'PaginatedUploadResponse', pager: { __typename?: 'Pager', totalItems: number, currentPage: number, pageSize: number, totalPages: number, startPage: number, endPage: number, startIndex: number, endIndex: number }, items: Array<{ __typename?: 'Upload', id: number, createdAt: any, updatedAt: any, attachment: string, userId: number, name?: string | null, originalFilename?: string | null, type: string, fileSize: number, deletable: boolean, textMetadata?: string | null, autoCollectApproval?: { __typename?: 'AutoCollectApproval', id: number, autoCollectRuleId: number } | null, user?: { __typename?: 'PartialUserBase', username: string, id: number, avatar?: string | null } | null, collections: Array<{ __typename?: 'Collection', id: number, name: string }>, item?: { __typename?: 'CollectionItem', id: number, pinned: boolean, collectionId: number } | null, starred?: { __typename?: 'Star', id: number, userId: number, attachmentId: number } | null }> } };
+export type GalleryQuery = { __typename?: 'Query', gallery: { __typename?: 'PaginatedUploadResponse', pager: { __typename?: 'Pager', totalItems: number, currentPage: number, pageSize: number, totalPages: number, startPage: number, endPage: number, startIndex: number, endIndex: number }, items: Array<{ __typename?: 'Upload', id: number, createdAt: any, updatedAt: any, attachment: string, userId: number, name?: string | null, originalFilename?: string | null, type: string, fileSize: number, deletable: boolean, textMetadata?: string | null, flagged: boolean, autoCollectApproval?: { __typename?: 'AutoCollectApproval', id: number, autoCollectRuleId: number } | null, user?: { __typename?: 'PartialUserBase', username: string, id: number, avatar?: string | null } | null, collections: Array<{ __typename?: 'Collection', id: number, name: string }>, item?: { __typename?: 'CollectionItem', id: number, pinned: boolean, collectionId: number } | null, starred?: { __typename?: 'Star', id: number, userId: number, attachmentId: number } | null }> } };
 
 export type DeleteUploadsMutationVariables = Exact<{
   input: DeleteUploadInput;
@@ -3772,7 +3909,7 @@ export const ResetOauthSecretDocument = {"kind":"Document","definitions":[{"kind
 export const UpdateOauthUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateOauthUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateAppUserInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateOauthUser"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<UpdateOauthUserMutation, UpdateOauthUserMutationVariables>;
 export const DomainsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Domains"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"domains"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"domain"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}}]}}]} as unknown as DocumentNode<DomainsQuery, DomainsQueryVariables>;
 export const AddFriendDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AddFriend"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"AddFriendInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"friend"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<AddFriendMutation, AddFriendMutationVariables>;
-export const GalleryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Gallery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GalleryInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"gallery"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"pager"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalItems"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"pageSize"}},{"kind":"Field","name":{"kind":"Name","value":"totalPages"}},{"kind":"Field","name":{"kind":"Name","value":"startPage"}},{"kind":"Field","name":{"kind":"Name","value":"endPage"}},{"kind":"Field","name":{"kind":"Name","value":"startIndex"}},{"kind":"Field","name":{"kind":"Name","value":"endIndex"}}]}},{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"autoCollectApproval"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"autoCollectRuleId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"attachment"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"originalFilename"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"fileSize"}},{"kind":"Field","name":{"kind":"Name","value":"deletable"}},{"kind":"Field","name":{"kind":"Name","value":"textMetadata"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"collections"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"item"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"pinned"}},{"kind":"Field","name":{"kind":"Name","value":"collectionId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"starred"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"attachmentId"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GalleryQuery, GalleryQueryVariables>;
+export const GalleryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Gallery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GalleryInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"gallery"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"pager"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalItems"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"pageSize"}},{"kind":"Field","name":{"kind":"Name","value":"totalPages"}},{"kind":"Field","name":{"kind":"Name","value":"startPage"}},{"kind":"Field","name":{"kind":"Name","value":"endPage"}},{"kind":"Field","name":{"kind":"Name","value":"startIndex"}},{"kind":"Field","name":{"kind":"Name","value":"endIndex"}}]}},{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"autoCollectApproval"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"autoCollectRuleId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"attachment"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"originalFilename"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"fileSize"}},{"kind":"Field","name":{"kind":"Name","value":"deletable"}},{"kind":"Field","name":{"kind":"Name","value":"textMetadata"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"collections"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"item"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"pinned"}},{"kind":"Field","name":{"kind":"Name","value":"collectionId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"starred"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"attachmentId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"flagged"}}]}}]}}]}}]} as unknown as DocumentNode<GalleryQuery, GalleryQueryVariables>;
 export const DeleteUploadsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteUploads"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteUploadInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteUploads"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<DeleteUploadsMutation, DeleteUploadsMutationVariables>;
 export const UpdateUploadDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateUpload"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateUploadInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateUpload"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<UpdateUploadMutation, UpdateUploadMutationVariables>;
 export const CreateUploadsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"CreateUploads"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"onCreateUpload"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"upload"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"attachment"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"originalFilename"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"fileSize"}},{"kind":"Field","name":{"kind":"Name","value":"deletable"}},{"kind":"Field","name":{"kind":"Name","value":"textMetadata"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"item"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"collections"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"starred"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]}}]} as unknown as DocumentNode<CreateUploadsSubscription, CreateUploadsSubscriptionVariables>;

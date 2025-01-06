@@ -22,6 +22,7 @@ import FlowinityLogo from "@/components/Brand/FlowinityLogo.vue";
 import { h } from "vue";
 import { CoreStateQuery } from "@/graphql/core/stateOnly.graphql";
 import { RiNewsFill } from "@remixicon/vue";
+import { useAdminStore } from "@/store/admin.store";
 
 export enum Platform {
   WEB = "WEB",
@@ -729,6 +730,7 @@ export const useAppStore = defineStore("app", {
       useCollectionsStore().init();
       useWorkspacesStore().init();
       useFriendsStore().init();
+      if (useUserStore().user?.moderator) useAdminStore().getCountApprovals();
     },
     async refresh() {
       const {

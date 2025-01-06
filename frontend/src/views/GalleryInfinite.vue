@@ -10,6 +10,7 @@
           sort: true
         }
       "
+      :types="filterTypes"
       @refreshGallery="getGallery()"
       @update:show="show = $event"
       v-model:search="show.search"
@@ -89,7 +90,7 @@ import GalleryCoreInfinite from "@/components/Gallery/GalleryCoreInfinite.vue";
 
 export default defineComponent({
   components: { GalleryCoreInfinite, GalleryNavigation, GalleryCore },
-  props: ["path", "type", "name", "random", "supports", "id"],
+  props: ["path", "type", "name", "random", "supports", "id", "filterTypes"],
   provide() {
     return {
       getGallery: this.getGallery,

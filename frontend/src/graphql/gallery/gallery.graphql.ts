@@ -48,6 +48,7 @@ export const GalleryQuery = gql`
           userId
           attachmentId
         }
+        flagged
       }
     }
   }

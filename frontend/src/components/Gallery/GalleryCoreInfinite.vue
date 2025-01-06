@@ -75,6 +75,7 @@
       :items="items?.items"
       :gap="16"
       :key-mapper="(item) => item.id"
+      @append="append"
     >
       <template #default="{ item }">
         <GalleryItem
@@ -492,6 +493,9 @@ export default defineComponent({
     this.$ui.navigationMode = RailMode.GALLERY;
   },
   methods: {
+    append() {
+      console.log("append");
+    },
     download() {
       this.downloadingLoading = true;
       this.axios

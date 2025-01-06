@@ -10,6 +10,7 @@
           sort: true
         }
       "
+      :types="filterTypes"
       @refreshGallery="getGallery()"
       @update:show="show = $event"
       v-model:search="show.search"
@@ -88,7 +89,7 @@ import { UpdateUploadsSubscription } from "@/graphql/gallery/subscriptions/updat
 
 export default defineComponent({
   components: { GalleryNavigation, GalleryCore },
-  props: ["path", "type", "name", "random", "supports", "id"],
+  props: ["path", "type", "name", "random", "supports", "id", "filterTypes"],
   provide() {
     return {
       getGallery: this.getGallery,

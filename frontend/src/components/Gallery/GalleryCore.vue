@@ -346,7 +346,7 @@ import AddToCollection from "@/components/Gallery/Dialogs/AddToCollection.vue";
 import { CollectionCache } from "@/types/collection";
 import Paginate from "@/components/Core/Paginate.vue";
 import OCRMetadata from "@/components/Gallery/Dialogs/OCRMetadata.vue";
-import { Pager, Upload } from "@/gql/graphql";
+import { GalleryType, Pager, Upload } from "@/gql/graphql";
 import {
   RiAddLine,
   RiCheckboxMultipleFill,
@@ -605,7 +605,11 @@ export default defineComponent({
   },
   mounted() {
     this.setAppBar();
-    this.$ui.navigationMode = RailMode.GALLERY;
+    if (this.$route.path.startsWith("/admin/")) {
+      this.$ui.navigationMode = RailMode.ADMIN;
+    } else {
+      this.$ui.navigationMode = RailMode.GALLERY;
+    }
   },
   watch: {
     "$route.params.page"() {

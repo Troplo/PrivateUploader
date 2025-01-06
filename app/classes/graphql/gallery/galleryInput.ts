@@ -15,7 +15,8 @@ export enum Filter {
   PASTE = "paste",
   INCLUDE_METADATA = "metadata",
   INCLUDE_UNDELETABLE = "includeUndeletable",
-  ONLY_UNDELETABLE = "undeletable"
+  ONLY_UNDELETABLE = "undeletable",
+  ADMIN_FLAGGED = "flagged"
 }
 
 export enum Sort {
@@ -49,7 +50,8 @@ export enum Type {
   PERSONAL,
   STARRED,
   COLLECTION,
-  AUTO_COLLECT
+  AUTO_COLLECT,
+  MQUEUE
 }
 
 registerEnumType(Filter, {

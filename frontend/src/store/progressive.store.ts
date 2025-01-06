@@ -30,6 +30,8 @@ import {
   RiDashboardLine,
   RiDownloadFill,
   RiDownloadLine,
+  RiFileCheckFill,
+  RiFileCheckLine,
   RiFileTextFill,
   RiFileTextLine,
   RiFlowChart,
@@ -100,6 +102,7 @@ import { VIcon } from "vuetify/components";
 import functions from "@/plugins/functions";
 import { useTheme } from "vuetify";
 import { useCollectionsStore } from "@/store/collections.store";
+import { useAdminStore } from "@/store/admin.store";
 
 export enum RailMode {
   HOME,
@@ -773,6 +776,13 @@ export const useProgressiveUIStore = defineStore("progressive", () => {
               name: "AppAuth / Developer",
               path: "/admin/oauth",
               selectedIcon: markRaw(RiLockFill)
+            },
+            {
+              icon: markRaw(RiFileCheckLine),
+              name: "MQueue",
+              path: "/admin/queue",
+              selectedIcon: markRaw(RiFileCheckFill),
+              badge: useAdminStore().approvalCount.toLocaleString()
             }
           ],
           [RailMode.MAIL]: mailStore.mailboxes.map((mailbox) => ({
@@ -876,7 +886,8 @@ export const useProgressiveUIStore = defineStore("progressive", () => {
             path: "/admin",
             selectedIcon: markRaw(RiAuctionFill),
             experimentsRequired: ["ACCOUNT_DEV_ELIGIBLE"],
-            scopesRequired: ["*"]
+            scopesRequired: ["*"],
+            badge: useAdminStore().approvalCount.toLocaleString()
           },
           {
             icon: markRaw(RiBug2Line),

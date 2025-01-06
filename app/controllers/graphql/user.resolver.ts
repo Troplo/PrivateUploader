@@ -443,7 +443,7 @@ export class UserResolver extends createBaseResolver("User", User) {
         })
       await this.userUtilsService.queueDeleteAccount(
         ctx.user!!.id,
-        false,
+        true,
         BanReason.UNDER_AGE
       )
       const emailNotificationService = Container.get(EmailNotificationService)

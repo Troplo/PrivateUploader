@@ -297,6 +297,11 @@ const routes = [
             path: "oauth/:id",
             name: "Admin AppAuth Item",
             component: () => import("@/views/Admin/OauthItem.vue")
+          },
+          {
+            path: "queue/:page?",
+            name: "Admin Mqueue",
+            component: () => import("@/views/Admin/ModQueue.vue")
           }
         ]
       },

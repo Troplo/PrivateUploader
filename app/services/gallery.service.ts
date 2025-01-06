@@ -34,6 +34,7 @@ import { AwsService } from "@app/services/aws.service"
 import crypto from "crypto"
 import cryptoRandomString from "crypto-random-string"
 import path from "path"
+import { GqlError } from "@app/lib/gqlErrors"
 
 const PART_SIZE = 20 * 1024 * 1024
 
@@ -390,6 +391,24 @@ export class GalleryService {
             }
           }
         ]
+        break
+      case Type.MQUEUE:
+        if (input.filters?.includes(Filter.ADMIN_FLAGGED)) {
+          base.flagged = true
+        } else {
+          base.approved = false
+        }
+        include = [
+          {
+            model: User,
+            as: "user",
+            attributes: partialUserBase,
+            where: {
+              trusted: false
+            },
+            required: true
+          }
+        ]
     }
     // delete undefined keys
     Object.keys(base).forEach(
@@ -400,6 +419,9 @@ export class GalleryService {
       include,
       limit: limit || 12,
       offset,
+      attributes: {
+        include: ["flagged", "approved"]
+      },
       order: [sortParams]
     })
     const count = await Upload.count({

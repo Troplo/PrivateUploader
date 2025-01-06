@@ -135,6 +135,15 @@ export default defineComponent({
           exact: true,
           scope: "*",
           level: 2
+        },
+        {
+          id: 19,
+          name: "MQueue",
+          path: "/admin/queue",
+          icon: "mdi-message-alert",
+          exact: true,
+          scope: "*",
+          level: 1
         }
       ] as {
         id: number;

@@ -6,7 +6,7 @@
     <template #title>
       <slot name="title" />
     </template>
-    <div class="mx-4">
+    <div class="m-4">
       <div v-if="$slots.content" class="pt-2" />
       <slot name="content" />
       <div v-if="$slots.content" class="pb-2" />
@@ -18,9 +18,9 @@
         @confirm="confirmSubmit"
       ></danger-zone-input>
     </div>
-    <div v-if="$slots.actions" class="d-flex justify-end pr-2 pb-2">
+    <v-card-actions v-if="$slots.actions" class="d-flex justify-end pr-2 pb-2">
       <slot name="actions" :confirm="confirmSubmit" />
-    </div>
+    </v-card-actions>
   </CoreDialog>
   <slot :toggle="() => (dialog = !dialog)"></slot>
 </template>
@@ -43,7 +43,7 @@ const props = defineProps({
 const password = ref("");
 const totp = ref("");
 const passwordMode = ref(false);
-const dialog = ref(false);
+const dialog = defineModel<boolean>();
 const userStore = useUserStore();
 
 const emit = defineEmits(["confirm"]);

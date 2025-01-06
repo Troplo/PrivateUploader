@@ -1,67 +1,5 @@
 <template>
-  <CoreDialog
-    v-if="banWizard.user"
-    v-model="banWizard.dialog"
-    max-width="600px"
-    class="user-content"
-  >
-    <template #title>
-      Ban {{ banWizard.user.username }} / {{ banWizard.user.id }}
-    </template>
-
-    <v-container>
-      <strong>ID: {{ banWizard.user.id }}</strong>
-      <br />
-      <strong>Username: {{ banWizard.user.username }}</strong>
-      <br />
-      <strong>Email: {{ banWizard.user.email }}</strong>
-      <br />
-
-      <v-checkbox v-model="banWizard.user.banned" label="Banned" class="mt-2" />
-      <v-textarea
-        v-model="banWizard.user.banReason"
-        label="Reason (Shown to user, GUI does not show Reason Type if filled)"
-        outlined
-        rows="1"
-      ></v-textarea>
-      <v-select
-        v-model="banWizard.user.banReasonType"
-        :items="banReasonTypes"
-        label="Reason Type (Shown to user if no Reason is filled)"
-        outlined
-      />
-      <date-picker-input
-        v-model="banWizard.user.pendingDeletionDate"
-        label="Permanent account deletion date"
-        outlined
-        class="mb-2"
-      />
-      <small class="text-red">
-        This will delete all their Flowinity data after this date, the same
-        system is used for account deletion in Settings > Account. If a user
-        requested their account deleted immediately, you can use this and set
-        "PENDING_MANUAL_ACCOUNT_DELETION" as the reason, this acts identically
-        to Settings account deletion, and the user will be able to reactivate
-        their account until the date passes. Any other types will not permit the
-        user to reactivate their account.
-      </small>
-      <br />
-      <small>ALL FIELDS ARE REQUIRED</small>
-    </v-container>
-    <v-card-actions>
-      <v-spacer />
-      <v-btn
-        color="primary"
-        @click="
-          banWizard.dialog = false;
-          banWizard.user = undefined;
-        "
-      >
-        Cancel
-      </v-btn>
-      <v-btn color="red" @click="ban()">Ban</v-btn>
-    </v-card-actions>
-  </CoreDialog>
+  <BanUser v-model:ban-wizard="banWizard" />
   <CoreDialog
     v-if="subWizard.user"
     v-model="subWizard.dialog"
@@ -143,7 +81,8 @@
         <v-toolbar-title>Users</v-toolbar-title>
       </v-toolbar>
       <v-container>
-        <v-data-table :headers="headers" :items="users">
+        <v-text-field label="Search" v-model="search"></v-text-field>
+        <v-data-table :headers="headers" :items="filteredUsers">
           <template #[`item.banned`]="{ item }: any">
             {{ item.banned ? "Yes" : "No" }}
             <template v-if="item.pendingDeletionDate">
@@ -190,6 +129,12 @@
               @change="verify(item.id, $event.target.checked)"
             />
           </template>
+          <template #[`item.trusted`]="{ item }: any">
+            <v-checkbox
+              :model-value="item.trusted"
+              @change="setTrusted(item.id, $event.target.checked)"
+            />
+          </template>
         </v-data-table>
       </v-container>
     </v-card>
@@ -202,9 +147,10 @@ import CoreDialog from "@/components/Core/Dialogs/Dialog.vue";
 import { BanReason, User } from "@/gql/graphql";
 import DatePickerInput from "@/components/Core/DatePickerInput.vue";
 import { AdminPlansQuery } from "@/graphql/admin/getPlans.graphql";
-
+import gql from "graphql-tag";
+import BanUser from "@/components/Admin/Dialogs/BanUser.vue";
 export default defineComponent({
-  components: { DatePickerInput, CoreDialog },
+  components: { BanUser, DatePickerInput, CoreDialog },
   data() {
     return {
       users: [],
@@ -240,31 +186,51 @@ export default defineComponent({
         {
           title: "Created",
           key: "createdAt"
+        },
+        {
+          title: "Uploads",
+          key: "uploadsCount"
+        },
+        {
+          title: "Messages",
+          key: "messagesCount"
+        },
+        {
+          title: "Risk Score",
+          key: "riskScore"
+        },
+        {
+          title: "Trusted",
+          key: "trusted"
         }
       ],
       banWizard: {
         dialog: false,
         user: undefined as undefined | User
       },
-      banReasonTypes: [
-        BanReason.PendingManualAccountDeletion,
-        BanReason.Spam,
-        BanReason.Harassment,
-        BanReason.IllegalContent,
-        BanReason.UnderAge,
-        BanReason.Other
-      ],
       subWizard: {
         dialog: false,
         user: undefined as undefined | User,
         expiredAt: undefined as undefined | string
       },
-      plans: []
+      plans: [],
+      search: ""
     };
   },
   mounted() {
     this.getUsers();
     this.getPlans();
+  },
+  computed: {
+    filteredUsers() {
+      return this.users.filter((user) => {
+        return (
+          user.username.toLowerCase().includes(this.search.toLowerCase()) ||
+          user.email.toLowerCase().includes(this.search.toLowerCase()) ||
+          user.id.toString().includes(this.search)
+        );
+      });
+    }
   },
   methods: {
     async getPlans() {
@@ -284,17 +250,6 @@ export default defineComponent({
       this.$toast.success("User gold status updated.");
       this.subWizard.dialog = false;
     },
-    async ban() {
-      await this.axios.patch("/admin/ban", {
-        id: this.banWizard.user.id,
-        banned: this.banWizard.user.banned,
-        banReason: this.banWizard.user.banReason,
-        banReasonType: this.banWizard.user.banReasonType,
-        pendingDeletionDate: this.banWizard.user.pendingDeletionDate
-      });
-      this.$toast.success("User banned.");
-      this.banWizard.dialog = false;
-    },
     async getUsers() {
       const { data } = await this.axios.get("/admin/users");
       this.users = data;
@@ -302,6 +257,15 @@ export default defineComponent({
     async verify(id: number, emailVerified: boolean) {
       await this.axios.patch("/admin/verify", { id, emailVerified });
       this.$toast.success("User email verified status updated.");
+    },
+    async setTrusted(id: number, trusted: boolean) {
+      try {
+        await this.$admin.setTrusted(id, trusted);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        await this.getUsers();
+      }
     }
   }
 });
