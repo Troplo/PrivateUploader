@@ -19,6 +19,7 @@ import {
   Filter,
   GalleryInput,
   Order,
+  SearchMode,
   Sort,
   Type
 } from "@app/classes/graphql/gallery/galleryInput"
@@ -34,7 +35,6 @@ import { AwsService } from "@app/services/aws.service"
 import crypto from "crypto"
 import cryptoRandomString from "crypto-random-string"
 import path from "path"
-import { GqlError } from "@app/lib/gqlErrors"
 
 const PART_SIZE = 20 * 1024 * 1024
 
@@ -410,6 +410,51 @@ export class GalleryService {
           }
         ]
     }
+    // -- ADVANCED SEARCH --
+    for (const search of input.advanced || []) {
+      switch (search.mode) {
+        case SearchMode.BEFORE:
+          base.createdAt = {
+            [Op.lte]: search.value
+          }
+          break
+        case SearchMode.DURING:
+          // Separated by ..
+          const dates: string[] | Date[] = search.value.split("..")
+          if (dates.length !== 2) {
+            throw new GraphQLError("Invalid date range.")
+          }
+          let dateRange: Date[]
+          try {
+            dateRange = dates.map((date) => new Date(date))
+          } catch {
+            throw new GraphQLError("Invalid date range.")
+          }
+          base.createdAt = {
+            [Op.between]: dateRange
+          }
+          break
+        case SearchMode.AFTER:
+          base.createdAt = {
+            [Op.gte]: search.value
+          }
+          break
+        case SearchMode.USER:
+          // Removing this will allow anyone to view any user's uploads
+          if (input.type === Type.PERSONAL) {
+            continue
+          }
+          const user = await User.findOne({
+            where: {
+              username: search.value
+            },
+            attributes: ["id"]
+          })
+          if (user) base.userId = user.id
+          break
+      }
+    }
+    // -- END ADVANCED SEARCH --
     // delete undefined keys
     Object.keys(base).forEach(
       (key) => base[key] === undefined && delete base[key]
