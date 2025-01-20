@@ -11,7 +11,6 @@
       appBarHeight
     ]"
     id="navbar"
-    :key="$app.activeNags.offset"
     :class="classString"
     :extension-height="$app.activeNags.offset"
     app

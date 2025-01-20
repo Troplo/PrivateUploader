@@ -1,6 +1,11 @@
 import { registerEnumType } from "type-graphql"
 
 export enum Experiments {
+  JITSI_PRO_ELIGIBLE = "JITSI_PRO_ELIGIBLE",
+  JITSI_SHOW_HOURS = "JITSI_SHOW_HOURS",
+  JITSI_PRO_META = "JITSI_PRO_META",
+  JITSI_PRO_REQUIREMENT = "JITSI_PRO_REQUIREMENT",
+  SNAPSPACES = "SNAPSPACES",
   NEW_BRANDING = "NEW_BRANDING",
   CAN_ENABLE_PROGRESSIVE_UI = "CAN_ENABLE_PROGRESSIVE_UI",
   EDITOR_V2 = "EDITOR_V2",
@@ -87,6 +92,11 @@ export type ExperimentsLegacy = Experiments | ExperimentsMeta
 
 export function getExperiments() {
   return {
+    JITSI_PRO_ELIGIBLE: false,
+    JITSI_SHOW_HOURS: false,
+    JITSI_PRO_META: 0,
+    JITSI_PRO_REQUIREMENT: 8,
+    SNAPSPACES: false,
     NEW_BRANDING: false,
     CAN_ENABLE_PROGRESSIVE_UI: false,
     EDITOR_V2: false,
@@ -165,10 +175,39 @@ export function getExperiments() {
     EXPERIENCE_GALLERY_ITEM_WIDTH: 4,
     ANDROID_CONFIG: true,
     LEGACY_ATTRIBUTES_UI: false,
+    // ALWAYS LAST! USED FOR CODEGEN
     ZZ_TEST: false,
     meta: {
+      JITSI_PRO_ELIGIBLE: {
+        description:
+          "Is eligible for Flowinity Pro autorenewal based on hours.",
+        createdAt: "2025-01-17T00:00:00.000Z",
+        versions: [4, 5]
+      },
+      JITSI_SHOW_HOURS: {
+        description: "Show hours in Flowinity v4+.",
+        createdAt: "2025-01-17T00:00:00.000Z",
+        versions: [4, 5]
+      },
+      JITSI_PRO_META: {
+        description: "Properties for metadata parsing.",
+        createdAt: "2025-01-17T00:00:00.000Z",
+        versions: [4, 5]
+      },
+      JITSI_PRO_REQUIREMENT: {
+        description:
+          "Amount of hours required to grant Flowinity Pro.\nTPUv2: 14h / TPUv3+: 8h",
+        createdAt: "2025-01-17T00:00:00.000Z",
+        versions: [4, 5]
+      },
+      SNAPSPACES: {
+        description: "Enable Snapspaces.",
+        createdAt: "2025-01-17T00:00:00.000Z",
+        versions: [4, 5]
+      },
       ZZ_TEST: {
-        description: "ZZ_TEST",
+        description:
+          "Used internally for codegen tooling. This will always be last.",
         createdAt: "2024-09-26T00:00:00.000Z",
         versions: [5]
       },
@@ -614,3 +653,41 @@ registerEnumType(Experiments, {
   name: "Experiments",
   description: "Available experiments"
 })
+
+// Encoding for JITSI_PRO_META
+// Create a Byte Array of strings
+const strings = [
+  "Jolt",
+  "Dhease",
+  "Dhease Nheeights",
+  "Jolt707",
+  "Jensen",
+  "Nesy",
+  "JJS707"
+]
+
+function encodeJitsiProMeta() {
+  const combined = strings.join("|")
+  let encodedNumber = BigInt(0)
+  for (let i = 0; i < combined.length; i++) {
+    const charCode = combined.charCodeAt(i)
+    encodedNumber = encodedNumber * BigInt(256) + BigInt(charCode)
+  }
+  return BigInt("1" + encodedNumber) // Add a prefix just in case the number starts with 0
+}
+
+function decodeJitsiProMeta(value: bigint) {
+  let bigNum = BigInt(value.toString().slice(1))
+  const charCodes = []
+  while (bigNum > 0) {
+    const charCode = Number(bigNum % BigInt(256)) // Extract last character
+    charCodes.unshift(charCode) // Add to the beginning of the array
+    bigNum = bigNum / BigInt(256) // Remove the last character
+  }
+  const combined = String.fromCharCode(...charCodes) // Create the combined string
+  return combined.split("|") // Split into original strings
+}
+
+console.log(encodeJitsiProMeta())
+
+console.log(decodeJitsiProMeta(encodeJitsiProMeta()))
