@@ -431,6 +431,10 @@ export type ChatsInput = {
   hidden?: Scalars['Boolean']['input'];
 };
 
+export type CheckUsernameInput = {
+  username: Scalars['String']['input'];
+};
+
 export type ClearCacheInput = {
   await?: InputMaybe<Scalars['Boolean']['input']>;
   type: AdminCacheType;
@@ -880,12 +884,18 @@ export enum Experiments {
   Fab = 'FAB',
   Flowinity = 'FLOWINITY',
   GalleryInfiniteScroll = 'GALLERY_INFINITE_SCROLL',
+  HdwdSurvLngusr = 'HDWD_SURV_LNGUSR',
+  HdwdSurvNewusr = 'HDWD_SURV_NEWUSR',
   HoverChipCloseDelay = 'HOVER_CHIP_CLOSE_DELAY',
   HoverChipHover = 'HOVER_CHIP_HOVER',
   HoverChipOpenDelay = 'HOVER_CHIP_OPEN_DELAY',
   IafNag = 'IAF_NAG',
   InstantUpload = 'INSTANT_UPLOAD',
   InteractiveNotes = 'INTERACTIVE_NOTES',
+  JitsiProEligible = 'JITSI_PRO_ELIGIBLE',
+  JitsiProMeta = 'JITSI_PRO_META',
+  JitsiProRequirement = 'JITSI_PRO_REQUIREMENT',
+  JitsiShowHours = 'JITSI_SHOW_HOURS',
   LegacyAttributesUi = 'LEGACY_ATTRIBUTES_UI',
   LegacyCustomization = 'LEGACY_CUSTOMIZATION',
   LegacyFlowinitySso = 'LEGACY_FLOWINITY_SSO',
@@ -907,10 +917,16 @@ export enum Experiments {
   ProjectMerge = 'PROJECT_MERGE',
   QuickNotes = 'QUICK_NOTES',
   RailSidebar = 'RAIL_SIDEBAR',
+  RegisterIntro = 'REGISTER_INTRO',
+  RegisterV2 = 'REGISTER_V2',
+  RegisterV2Landing = 'REGISTER_V2_LANDING',
   RemoveLegacySocket = 'REMOVE_LEGACY_SOCKET',
   ResizableSidebars = 'RESIZABLE_SIDEBARS',
   SfxKfx = 'SFX_KFX',
   SfxKolf = 'SFX_KOLF',
+  Snapspaces = 'SNAPSPACES',
+  SocialHubMoveIntro = 'SOCIAL_HUB_MOVE_INTRO',
+  SuperbarSocialHub = 'SUPERBAR_SOCIAL_HUB',
   Surveys = 'SURVEYS',
   Theme = 'THEME',
   UserV2 = 'USER_V2',
@@ -2160,6 +2176,7 @@ export type Query = {
   chatAuditLog: PaginatedChatAuditLogResponse;
   chatInvite?: Maybe<ChatInvite>;
   chats: Array<Chat>;
+  checkUsername: Scalars['Boolean']['output'];
   collection?: Maybe<Collection>;
   /** Return the number of pending invitations for collections for the current user */
   collectionInvitesCount: Scalars['Int']['output'];
@@ -2223,6 +2240,11 @@ export type QueryChatInviteArgs = {
 
 export type QueryChatsArgs = {
   input?: InputMaybe<ChatsInput>;
+};
+
+
+export type QueryCheckUsernameArgs = {
+  input: CheckUsernameInput;
 };
 
 
@@ -3016,6 +3038,13 @@ export type AdminGetPlansQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type AdminGetPlansQuery = { __typename?: 'Query', adminPlans: Array<{ __typename?: 'Plan', id: number, name: string, quotaMax: number, price: number, features?: string | null, color?: string | null, internalName: string, purchasable: boolean, internalFeatures?: string | null, icon: string }> };
+
+export type CheckUsernameQueryVariables = Exact<{
+  input: CheckUsernameInput;
+}>;
+
+
+export type CheckUsernameQuery = { __typename?: 'Query', checkUsername: boolean };
 
 export type LoginMutationVariables = Exact<{
   input: LoginInput;
@@ -3826,6 +3855,7 @@ export const StandardMessageFragmentDoc = {"kind":"Document","definitions":[{"ki
 export const PagerFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"Pager"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Pager"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalItems"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"pageSize"}},{"kind":"Field","name":{"kind":"Name","value":"totalPages"}},{"kind":"Field","name":{"kind":"Name","value":"startPage"}},{"kind":"Field","name":{"kind":"Name","value":"endPage"}},{"kind":"Field","name":{"kind":"Name","value":"startIndex"}},{"kind":"Field","name":{"kind":"Name","value":"endIndex"}},{"kind":"Field","name":{"kind":"Name","value":"pages"}}]}}]} as unknown as DocumentNode<PagerFragment, unknown>;
 export const AdminClearCacheDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AdminClearCache"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ClearCacheInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"adminClearCache"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<AdminClearCacheMutation, AdminClearCacheMutationVariables>;
 export const AdminGetPlansDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"AdminGetPlans"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"adminPlans"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"quotaMax"}},{"kind":"Field","name":{"kind":"Name","value":"price"}},{"kind":"Field","name":{"kind":"Name","value":"features"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"internalName"}},{"kind":"Field","name":{"kind":"Name","value":"purchasable"}},{"kind":"Field","name":{"kind":"Name","value":"internalFeatures"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}}]}}]} as unknown as DocumentNode<AdminGetPlansQuery, AdminGetPlansQueryVariables>;
+export const CheckUsernameDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CheckUsername"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CheckUsernameInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"checkUsername"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<CheckUsernameQuery, CheckUsernameQueryVariables>;
 export const LoginDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Login"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"LoginInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"login"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]}}]} as unknown as DocumentNode<LoginMutation, LoginMutationVariables>;
 export const RegisterDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Register"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RegisterInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"register"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]}}]} as unknown as DocumentNode<RegisterMutation, RegisterMutationVariables>;
 export const ActOnAutoCollectsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ActOnAutoCollects"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ActOnAutoCollectsInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"actOnAutoCollects"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<ActOnAutoCollectsMutation, ActOnAutoCollectsMutationVariables>;

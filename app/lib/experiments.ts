@@ -1,6 +1,18 @@
 import { registerEnumType } from "type-graphql"
 
 export enum Experiments {
+  REGISTER_V2_LANDING = "REGISTER_V2_LANDING",
+  REGISTER_V2 = "REGISTER_V2",
+  REGISTER_INTRO = "REGISTER_INTRO",
+  HDWD_SURV_LNGUSR = "HDWD_SURV_LNGUSR",
+  HDWD_SURV_NEWUSR = "HDWD_SURV_NEWUSR",
+  SOCIAL_HUB_MOVE_INTRO = "SOCIAL_HUB_MOVE_INTRO",
+  SUPERBAR_SOCIAL_HUB = "SUPERBAR_SOCIAL_HUB",
+  JITSI_PRO_ELIGIBLE = "JITSI_PRO_ELIGIBLE",
+  JITSI_SHOW_HOURS = "JITSI_SHOW_HOURS",
+  JITSI_PRO_META = "JITSI_PRO_META",
+  JITSI_PRO_REQUIREMENT = "JITSI_PRO_REQUIREMENT",
+  SNAPSPACES = "SNAPSPACES",
   NEW_BRANDING = "NEW_BRANDING",
   CAN_ENABLE_PROGRESSIVE_UI = "CAN_ENABLE_PROGRESSIVE_UI",
   EDITOR_V2 = "EDITOR_V2",
@@ -87,6 +99,18 @@ export type ExperimentsLegacy = Experiments | ExperimentsMeta
 
 export function getExperiments() {
   return {
+    REGISTER_V2_LANDING: false,
+    REGISTER_V2: true,
+    REGISTER_INTRO: 0,
+    HDWD_SURV_LNGUSR: false,
+    HDWD_SURV_NEWUSR: false,
+    SOCIAL_HUB_MOVE_INTRO: true,
+    SUPERBAR_SOCIAL_HUB: true,
+    JITSI_PRO_ELIGIBLE: false,
+    JITSI_SHOW_HOURS: false,
+    JITSI_PRO_META: 0,
+    JITSI_PRO_REQUIREMENT: 8,
+    SNAPSPACES: false,
     NEW_BRANDING: false,
     CAN_ENABLE_PROGRESSIVE_UI: false,
     EDITOR_V2: false,
@@ -165,10 +189,76 @@ export function getExperiments() {
     EXPERIENCE_GALLERY_ITEM_WIDTH: 4,
     ANDROID_CONFIG: true,
     LEGACY_ATTRIBUTES_UI: false,
+    // ALWAYS LAST! USED FOR CODEGEN
     ZZ_TEST: false,
     meta: {
+      REGISTER_V2_LANDING: {
+        description: "Show new registration with landing page.",
+        createdAt: "2025-02-14T00:00:00.000Z",
+        versions: [4, 5]
+      },
+      REGISTER_V2: {
+        description: "Show new registration with introduction.",
+        createdAt: "2025-02-14T00:00:00.000Z",
+        versions: [4, 5]
+      },
+      REGISTER_INTRO: {
+        description:
+          "Show registration introduction. 0 = finished/opt out, 1-many = step.",
+        createdAt: "2025-02-14T00:00:00.000Z",
+        versions: [4, 5]
+      },
+      HDWD_SURV_LNGUSR: {
+        description: "Show 'How did we do?' survey for long-term users.",
+        createdAt: "2025-02-14T00:00:00.000Z",
+        versions: [4, 5]
+      },
+      HDWD_SURV_NEWUSR: {
+        description: "Show 'How did we do?' survey for new users.",
+        createdAt: "2025-02-14T00:00:00.000Z",
+        versions: [4, 5]
+      },
+      SOCIAL_HUB_MOVE_INTRO: {
+        description:
+          "Show tutorial introduction about new Social Hub location.",
+        createdAt: "2025-02-14T00:00:00.000Z",
+        versions: [4, 5]
+      },
+      SUPERBAR_SOCIAL_HUB: {
+        description: "Move the Social Hub to a Superbar item.",
+        createdAt: "2025-02-14T00:00:00.000Z",
+        versions: [4, 5]
+      },
+      JITSI_PRO_ELIGIBLE: {
+        description:
+          "Is eligible for Flowinity Pro autorenewal based on hours.",
+        createdAt: "2025-01-17T00:00:00.000Z",
+        versions: [4, 5]
+      },
+      JITSI_SHOW_HOURS: {
+        description: "Show hours in Flowinity v4+.",
+        createdAt: "2025-01-17T00:00:00.000Z",
+        versions: [4, 5]
+      },
+      JITSI_PRO_META: {
+        description: "Properties for metadata parsing.",
+        createdAt: "2025-01-17T00:00:00.000Z",
+        versions: [4, 5]
+      },
+      JITSI_PRO_REQUIREMENT: {
+        description:
+          "Amount of hours required to grant Flowinity Pro.\nTPUv2: 14h / TPUv3+: 8h",
+        createdAt: "2025-01-17T00:00:00.000Z",
+        versions: [4, 5]
+      },
+      SNAPSPACES: {
+        description: "Enable Snapspaces.",
+        createdAt: "2025-01-17T00:00:00.000Z",
+        versions: [4, 5]
+      },
       ZZ_TEST: {
-        description: "ZZ_TEST",
+        description:
+          "Used internally for codegen tooling. This will always be last.",
         createdAt: "2024-09-26T00:00:00.000Z",
         versions: [5]
       },

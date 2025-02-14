@@ -48,6 +48,7 @@
         name="fade-transition"
       >
         <v-btn
+          variant="flat"
           v-if="isHovering"
           icon
           style="position: absolute; top: 10px; right: 10px"

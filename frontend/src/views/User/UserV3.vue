@@ -1,5 +1,5 @@
 <template>
-  <div v-if="user">
+  <div v-if="user" :class="{ 'tutorial-tip-userv3': tutorial }">
     <UserV3Settings
       v-model="config.dialog"
       :component="selectedComponent"
@@ -67,7 +67,8 @@
                     <v-btn
                       v-if="
                         $experiments.experiments.USER_V3_MODIFY &&
-                        user?.id === $user.user?.id
+                        user?.id === $user.user?.id &&
+                        !forceLayout
                       "
                       icon
                       size="small"
@@ -88,7 +89,8 @@
                     <v-btn
                       v-if="
                         $experiments.experiments.USER_V3_MODIFY &&
-                        user?.id === $user.user?.id
+                        user?.id === $user.user?.id &&
+                        !forceLayout
                       "
                       icon
                       size="small"
@@ -363,7 +365,7 @@ export default defineComponent({
     UserBanner,
     VueDraggable
   },
-  props: ["username"],
+  props: ["username", "forceLayout", "tutorial"],
   data() {
     return {
       config: {
@@ -724,6 +726,7 @@ export default defineComponent({
   },
   methods: {
     updateLayout() {
+      if (this.forceLayout) return;
       this.$user.user.profileLayout = this.layout;
       this.$user.save();
     },
@@ -871,7 +874,8 @@ export default defineComponent({
         }
         const username = this.username || this.$route.params.username;
         this.user = await this.$user.getUser(username);
-        this.layout = this.user?.profileLayout || this.defaultLayout;
+        this.layout =
+          this.forceLayout || this.user?.profileLayout || this.defaultLayout;
         if (!this.username)
           this.$app.title = this.user?.username + "'s Profile";
         this.setTheme();
@@ -880,7 +884,7 @@ export default defineComponent({
           this.$ui.currentNavItem = {
             item: this.$ui.userRail(this.user),
             rail: [
-              this.$ui.navigation.options[RailMode.HOME].find(
+              this.$ui.navigation.options[RailMode.SOCIAL].find(
                 (i) => i.path === "/users"
               )
             ]
@@ -935,5 +939,11 @@ export default defineComponent({
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+.tutorial-tip-userv3 .user-content .v-btn,
+.tutorial-tip-userv3 .v-avatar,
+.tutorial-tip-userv3 #user-header {
+  animation: tutorial-tip-glow 3s infinite;
 }
 </style>

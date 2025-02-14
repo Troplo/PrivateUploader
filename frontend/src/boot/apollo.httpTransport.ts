@@ -20,6 +20,7 @@ import { useUserStore } from "@/store/user.store";
 import { useEndpointsStore } from "@/store/endpoints.store";
 import { setupSockets } from "./sockets";
 import { useApolloClient } from "@vue/apollo-composable";
+import { GraphQLError } from "graphql/error";
 
 function getToken(app: App) {
   return (
@@ -93,8 +94,11 @@ export default function apolloFlowinity(app: App) {
           for (const err of error.extensions.validationErrors as any[]) {
             const values: string[] = Object.values(err.constraints);
 
-            for (const value of values) {
-              toast.error(functions.charUp(value) + ".");
+            if (ctx.noToast) {
+            } else {
+              for (const value of values) {
+                toast.error(functions.charUp(value) + ".");
+              }
             }
           }
         } else if (error.extensions?.code === "CHAT_NOT_FOUND") {

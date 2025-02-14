@@ -107,6 +107,7 @@
               :key="item.id + item.path + ''"
               class="flex items-center"
               :item="item"
+              :rail="parseInt(rail)"
               :disabled="
                 item.scopesRequired &&
                 !functions.checkScope(item.scopesRequired, $user.user?.scopes)

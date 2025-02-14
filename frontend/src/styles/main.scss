@@ -137,17 +137,17 @@
 }
 
 .v-overlay-container .v-theme--light.v-tooltip .v-overlay__content {
-  color: #000000 !important;
+  color: #000000;
 }
 
 .v-overlay-container .v-theme--dark.v-tooltip .v-overlay__content {
-  background-color: #222222 !important;
-  color: #fff !important;
+  background-color: #222222;
+  color: #fff;
 }
 
 .v-overlay-container .v-theme--amoled.v-tooltip .v-overlay__content {
-  background-color: #000000 !important;
-  color: #fff !important;
+  background-color: #000000;
+  color: #fff;
   box-shadow: 0 0 0 0;
   border: 1px solid #191919;
 }
@@ -812,5 +812,17 @@ h6 {
     margin-inline-start: 0px;
     margin-inline-end: 0px;
     padding-inline-start: 40px;
+  }
+}
+
+@keyframes tutorial-tip-glow {
+  0% {
+    box-shadow: 0 0 10px 0 rgb(255, 215, 7, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 20px 0 rgb(255, 215, 7, 0.7);
+  }
+  100% {
+    box-shadow: 0 0 10px 0 rgb(255, 215, 7, 0.7);
   }
 }

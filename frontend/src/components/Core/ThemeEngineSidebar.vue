@@ -277,7 +277,7 @@ export default defineComponent({
       themes: [
         { title: "Light", value: "light" },
         { title: "Dark", value: "dark" },
-        { title: "AMOLED", value: "amoled" }
+        { title: "Midnight", value: "amoled" }
       ],
       editor: false,
       options: {

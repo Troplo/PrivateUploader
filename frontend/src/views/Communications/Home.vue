@@ -1,6 +1,7 @@
 <template>
   <v-container class="d-flex">
     <v-tabs
+      v-if="superBarMode"
       v-model="tab"
       background-color="transparent"
       :direction="$vuetify.display.mobile ? 'horizontal' : 'vertical'"
@@ -27,7 +28,7 @@
         </v-btn>
       </v-tab>
     </v-tabs>
-    <v-container>
+    <component :is="superBarMode ? 'div' : VContainer" class="w-full">
       <v-text-field
         v-if="tab !== 0 && tab !== 5"
         v-model="search"
@@ -85,7 +86,7 @@
         <BlockList :friends="<BlockedUser[]>searchWrapper" />
       </template>
       <template v-else-if="tab === 5">
-        <div class="d-flex flex-column">
+        <v-container class="d-flex flex-column">
           <v-text-field
             v-model="addFriend.username"
             label="Username"
@@ -108,7 +109,7 @@
                 : $t("chats.socialHub.friends.addFriend")
             }}
           </v-btn>
-        </div>
+        </v-container>
         <div>
           <v-divider></v-divider>
           <div class="d-flex justify-center align-center">
@@ -129,12 +130,12 @@
           </div>
         </div>
       </template>
-    </v-container>
+    </component>
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { computed, ComputedRef, h, onMounted, ref } from "vue";
+import { computed, ComputedRef, h, onMounted, ref, watch } from "vue";
 import { useAppStore } from "@/store/app.store";
 import PromoNoContent from "@/components/Core/PromoNoContent.vue";
 import { useChatStore } from "@/store/chat.store";
@@ -156,11 +157,16 @@ import { useFriendsStore } from "@/store/friends.store";
 import { useUserStore } from "@/store/user.store";
 import functions from "@/plugins/functions";
 import PlaceholderCheckerboard from "@/components/Core/PlaceholderCheckerboard.vue";
+import { useExperimentsStore } from "@/store/experiments.store";
+import { useRoute } from "vue-router";
+import { VContainer } from "vuetify/components";
+import { RailMode, useProgressiveUIStore } from "@/store/progressive.store";
 
 const appStore = useAppStore();
 const chatStore = useChatStore();
 const friendsStore = useFriendsStore();
 const userStore = useUserStore();
+const experimentsStore = useExperimentsStore();
 const tab = ref(0);
 const promotedGroup = ref<Chat>(null);
 const apolloClient = useApolloClient();
@@ -214,12 +220,6 @@ async function getPromotedChat() {
   });
   promotedGroup.value = chat.data.chatInvite.chat;
 }
-
-onMounted(() => {
-  appStore.title = "Social Hub";
-  appStore.railMode = "communications";
-  getPromotedChat();
-});
 
 const recentChats = computed(() => {
   // find ones with _redisSortDate within 48h
@@ -306,6 +306,55 @@ function image(chat: Chat) {
   }
   return "https://i.troplo.com/i/a050d6f271c3.png";
 }
+
+const superBarMode = computed(() => {
+  return (
+    !experimentsStore.experiments.SUPERBAR_SOCIAL_HUB ||
+    !experimentsStore.experiments.PROGRESSIVE_UI
+  );
+});
+
+const route = useRoute();
+function setTabString(val: string) {
+  switch (val) {
+    case "feed":
+      tab.value = 0;
+      break;
+    case "friends":
+      tab.value = 1;
+      break;
+    case "incoming":
+      tab.value = 2;
+      break;
+    case "outgoing":
+      tab.value = 3;
+      break;
+    case "blocked":
+      tab.value = 4;
+      break;
+    case "new-friend":
+      tab.value = 5;
+      break;
+    default:
+      tab.value = 0;
+  }
+}
+
+watch(
+  () => route.params.tab,
+  (val) => {
+    setTabString(<string>val);
+  }
+);
+
+const uiStore = useProgressiveUIStore();
+onMounted(() => {
+  appStore.title = "Social Hub";
+  appStore.railMode = "communications";
+  if (superBarMode.value) uiStore.navigationMode = RailMode.SOCIAL;
+  getPromotedChat();
+  if (route.params.tab) setTabString(<string>route.params.tab);
+});
 </script>
 
 <style scoped>

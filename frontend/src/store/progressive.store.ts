@@ -26,6 +26,8 @@ import {
   RiCodeLine,
   RiCollageFill,
   RiCollageLine,
+  RiCompassFill,
+  RiCompassLine,
   RiDashboardFill,
   RiDashboardLine,
   RiDownloadFill,
@@ -75,10 +77,18 @@ import {
   RiStarLine,
   RiToolsFill,
   RiToolsLine,
+  RiUserAddFill,
+  RiUserAddLine,
   RiUserFill,
+  RiUserFollowFill,
   RiUserFollowLine,
+  RiUserForbidFill,
   RiUserForbidLine,
   RiUserLine,
+  RiUserReceivedFill,
+  RiUserReceivedLine,
+  RiUserSharedFill,
+  RiUserSharedLine,
   RiUserUnfollowLine,
   RiVideoChatFill,
   RiVideoChatLine
@@ -103,10 +113,16 @@ import functions from "@/plugins/functions";
 import { useTheme } from "vuetify";
 import { useCollectionsStore } from "@/store/collections.store";
 import { useAdminStore } from "@/store/admin.store";
+import SocialHubTutorialTip from "@/components/Communications/SocialHub/SocialHubTutorialTip.vue";
+import MeetSuperbar from "@/components/TutorialTips/MeetSuperbar.vue";
+import { RegisterSteps } from "@/views/Auth/registerSteps";
+import GalleryTutorialTip from "@/components/TutorialTips/GalleryTutorialTip.vue";
+import SettingsTutorialTip from "@/components/TutorialTips/SettingsTutorialTip.vue";
 
 export enum RailMode {
   HOME,
   GALLERY,
+  SOCIAL,
   CHAT,
   WORKSPACES,
   MEET,
@@ -135,6 +151,14 @@ export interface NavigationOption {
   options?: NavigationOption[];
   parentPath?: string;
   externalPath?: string;
+  tutorialTip?: {
+    component: VNode;
+    key: string;
+    value: number;
+    // Used on dismiss if we want to show another tutorial tip using the same key
+    // Set to 0 to dismiss the tutorial tip
+    nextValue: number;
+  };
 }
 
 export interface ContextMenuItem {
@@ -263,12 +287,16 @@ export const useProgressiveUIStore = defineStore("progressive", () => {
                 }
               ]
             },
-            {
-              icon: markRaw(RiGroupLine),
-              name: "Users",
-              path: "/users",
-              selectedIcon: markRaw(RiGroupFill)
-            },
+            ...(useExperimentsStore().experiments.SUPERBAR_SOCIAL_HUB
+              ? []
+              : [
+                  {
+                    icon: markRaw(RiGroupLine),
+                    name: "Users",
+                    path: "/users",
+                    selectedIcon: markRaw(RiGroupFill)
+                  }
+                ]),
             {
               icon: markRaw(RiUserLine),
               name: "My Profile",
@@ -289,7 +317,13 @@ export const useProgressiveUIStore = defineStore("progressive", () => {
               name: "My Gallery",
               path: "/gallery",
               selectedIcon: markRaw(RiImage2Fill),
-              scopesRequired: ["gallery.view"]
+              scopesRequired: ["gallery.view"],
+              tutorialTip: {
+                component: h(GalleryTutorialTip),
+                key: "REGISTER_INTRO",
+                value: RegisterSteps.GALLERY_INTRO,
+                nextValue: RegisterSteps.GALLERY_ACTION_BAR
+              }
             },
             {
               icon: markRaw(RiStarLine),
@@ -322,17 +356,68 @@ export const useProgressiveUIStore = defineStore("progressive", () => {
               scopesRequired: ["user.modify"]
             }
           ],
-          [RailMode.CHAT]: [
+          [RailMode.SOCIAL]: [
             {
-              icon: markRaw(RiGroup2Line),
-              name: "Social Hub",
-              path: "/social",
-              selectedIcon: markRaw(RiGroup2Fill),
+              icon: markRaw(RiGroupLine),
+              name: "Feed",
+              path: "/social/feed",
+              selectedIcon: markRaw(RiGroupFill)
+            },
+            {
+              icon: markRaw(RiUserFollowLine),
+              name: "Friends",
+              path: "/social/friends",
+              selectedIcon: markRaw(RiUserFollowFill)
+            },
+            {
+              icon: markRaw(RiUserReceivedLine),
+              name: "Incoming Requests",
+              path: "/social/incoming",
+              selectedIcon: markRaw(RiUserReceivedFill),
               badge: friendStore.incomingFriends.length
                 ? friendStore.incomingFriends.length.toLocaleString()
-                : undefined,
-              scopesRequired: ["user.view"]
+                : undefined
             },
+            {
+              icon: markRaw(RiUserSharedLine),
+              name: "Pending Requests",
+              path: "/social/outgoing",
+              selectedIcon: markRaw(RiUserSharedFill)
+            },
+            {
+              icon: markRaw(RiUserForbidLine),
+              name: "Blocked Users",
+              path: "/social/blocked",
+              selectedIcon: markRaw(RiUserForbidFill)
+            },
+            {
+              icon: markRaw(RiUserAddLine),
+              name: "Add Friend",
+              path: "/social/new-friend",
+              selectedIcon: markRaw(RiUserAddFill)
+            },
+            {
+              icon: markRaw(RiCompassLine),
+              name: "Explore Users",
+              path: "/users",
+              selectedIcon: markRaw(RiCompassFill)
+            }
+          ],
+          [RailMode.CHAT]: [
+            ...(useExperimentsStore().experiments.SUPERBAR_SOCIAL_HUB
+              ? []
+              : [
+                  {
+                    icon: markRaw(RiGroup2Line),
+                    name: "Social Hub",
+                    path: "/social",
+                    selectedIcon: markRaw(RiGroup2Fill),
+                    badge: friendStore.incomingFriends.length
+                      ? friendStore.incomingFriends.length.toLocaleString()
+                      : undefined,
+                    scopesRequired: ["user.view"]
+                  }
+                ]),
             {
               icon: markRaw(RiAddLine),
               name: "Join or Create",
@@ -835,8 +920,33 @@ export const useProgressiveUIStore = defineStore("progressive", () => {
             path: "/gallery",
             selectedIcon: markRaw(RiFolderImageFill),
             badge: userStore.user?.pendingAutoCollects || "",
-            scopesRequired: ["gallery", "starred", "collections"]
+            scopesRequired: ["gallery", "starred", "collections"],
+            tutorialTip: {
+              component: h(MeetSuperbar),
+              key: "REGISTER_INTRO",
+              value: RegisterSteps.HANDOFF,
+              nextValue: RegisterSteps.GALLERY_INTRO
+            }
           },
+          ...(!useExperimentsStore().experiments.SUPERBAR_SOCIAL_HUB
+            ? []
+            : [
+                {
+                  icon: markRaw(RiGroup2Line),
+                  name: "Social Hub",
+                  id: RailMode.SOCIAL,
+                  selectedIcon: markRaw(RiGroup2Fill),
+                  badge: friendStore.incomingFriends.length,
+                  scopesRequired: ["user.view"],
+                  path: "/social",
+                  tutorialTip: {
+                    component: h(SocialHubTutorialTip),
+                    key: "REGISTER_INTRO",
+                    value: RegisterSteps.SOCIAL_HUB,
+                    nextValue: RegisterSteps.SETTINGS
+                  }
+                }
+              ]),
           {
             icon: markRaw(RiChat1Line),
             name: "Communications",
@@ -906,7 +1016,13 @@ export const useProgressiveUIStore = defineStore("progressive", () => {
             path: "/settings",
             selectedIcon: markRaw(RiSettings5Fill),
             misc: true,
-            scopesRequired: ["user.modify"]
+            scopesRequired: ["user.modify"],
+            tutorialTip: {
+              component: h(SettingsTutorialTip),
+              key: "REGISTER_INTRO",
+              value: RegisterSteps.SETTINGS,
+              nextValue: RegisterSteps.COMPLETE
+            }
           }
         ]
       };

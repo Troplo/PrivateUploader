@@ -3,10 +3,11 @@ import {
   NavigationOption,
   useProgressiveUIStore
 } from "@/store/progressive.store";
-import { computed, ref, useAttrs } from "vue";
+import { computed, onMounted, ref, useAttrs, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAppStore } from "@/store/app.store";
 import { useDisplay } from "vuetify";
+import { useExperimentsStore } from "@/store/experiments.store";
 
 const props = defineProps({
   highlighted: Boolean,
@@ -23,6 +24,9 @@ const props = defineProps({
   disabled: {
     type: Boolean,
     default: false
+  },
+  rail: {
+    type: Number
   }
 });
 
@@ -32,12 +36,67 @@ const route = useRoute();
 const attrs = useAttrs();
 const display = useDisplay();
 const uiStore = useProgressiveUIStore();
+const experimentsStore = useExperimentsStore();
 
 const selected = computed(() => {
   return props.selected || route?.path === (props.item?.path || props.to);
 });
 
+const tutorialTipActive = computed(() => {
+  if (!props.item?.tutorialTip) return false;
+  const value =
+    experimentsStore.experiments[props.item.tutorialTip.key] ===
+    props.item.tutorialTip.value;
+
+  if (value) {
+    if (display.mobile.value && appStore.mainDrawer) {
+      return true;
+    } else if (!display.mobile.value) {
+      return true;
+    }
+  }
+
+  return false;
+});
+
+const renderTooltip = ref(false);
+
+const shouldRenderTooltip = computed(() => {
+  return (
+    props.item?.tutorialTip?.component &&
+    tutorialTipActive.value &&
+    uiStore.navigationMode === props.rail
+  );
+});
+
+async function render() {
+  if (shouldRenderTooltip.value) {
+    // Hack to make sure the tooltip renders after the component is mounted
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    renderTooltip.value = true;
+  } else {
+    renderTooltip.value = false;
+  }
+}
+
+onMounted(() => {
+  render();
+});
+
+watch(
+  () => shouldRenderTooltip.value,
+  () => {
+    render();
+  }
+);
+
 function handleClick() {
+  if (tutorialTipActive.value) {
+    experimentsStore.setExperiment(
+      props.item.tutorialTip.key,
+      props.item.tutorialTip.nextValue ?? 0
+    );
+  }
   if (props.disabled) {
     return;
   } else {
@@ -88,7 +147,8 @@ function openContextMenu(event: MouseEvent) {
         'dark:bg-outline-dark bg-outline-light': selected || props.highlighted,
         'rounded-full': props.highlighted,
         'cursor-not-allowed opacity-50': props.disabled,
-        'dark:hover:bg-outline-amoled': !selected && !props.highlighted
+        'dark:hover:bg-outline-amoled': !selected && !props.highlighted,
+        'tutorial-tip-glow-superbar': tutorialTipActive
       }"
       @click.prevent.stop="handleClick"
       v-ripple
@@ -158,7 +218,18 @@ function openContextMenu(event: MouseEvent) {
         </div>
       </div>
     </div>
+    <component
+      :is="item.tutorialTip.component"
+      v-if="item?.tutorialTip?.component && tutorialTipActive"
+      :model-value="shouldRenderTooltip && renderTooltip"
+    />
   </component>
 </template>
 
 <style scoped></style>
+
+<style>
+.tutorial-tip-glow-superbar {
+  animation: tutorial-tip-glow 3s infinite;
+}
+</style>

@@ -23,34 +23,33 @@ export class UserSocketController {
 
   @OnConnect()
   async onConnect(@ConnectedSocket() socket: SocketAuth) {
-    // const session = await this.socketAuthMiddleware.use(
-    //   socket,
-    //   () => {},
-    //   SocketNamespaces.USER
-    // )
-    // if (session) {
-    //   socket.join(session.user.id)
-    //   const user = session.user
-    //   if (user.storedStatus === "invisible") return
-    //   if (user.status.toString() !== user.storedStatus.toString()) {
-    //     await User.update(
-    //       {
-    //         status: user.storedStatus
-    //       },
-    //       {
-    //         where: {
-    //           id: user.id
-    //         }
-    //       }
-    //     )
-    //   }
-    //   await this.userService.emitToTrackedUsers(user.id, "userStatus", {
-    //     id: user.id,
-    //     status: user.storedStatus.toUpperCase(),
-    //     // TODO: Platform presence
-    //     platforms: []
-    //   })
-    // }
+    const session = await this.socketAuthMiddleware.use(
+      socket,
+      () => {},
+      SocketNamespaces.USER
+    )
+    if (session) {
+      socket.join(session.user.id)
+      // if (user.storedStatus === "invisible") return
+      // if (user.status.toString() !== user.storedStatus.toString()) {
+      //   await User.update(
+      //     {
+      //       status: user.storedStatus
+      //     },
+      //     {
+      //       where: {
+      //         id: user.id
+      //       }
+      //     }
+      //   )
+      // }
+      // await this.userService.emitToTrackedUsers(user.id, "userStatus", {
+      //   id: user.id,
+      //   status: user.storedStatus.toUpperCase(),
+      //   TODO: Platform presence
+      // platforms: []
+      // })
+    }
     socket.emit("removed", {
       message:
         "Presence & Status on the legacy /gateway endpoint is no longer supported. Please move to the new GraphQL Subscriptions API."
@@ -95,6 +94,10 @@ export class UserSocketController {
     @ConnectedSocket() skt: SocketAuth,
     @MessageBody() data: number
   ) {
+    skt.emit("removed", {
+      message:
+        "Presence & Status on the legacy /gateway endpoint is no longer supported. Please move to the new GraphQL Subscriptions API."
+    })
     const session = await this.socketAuthMiddleware.use(
       skt,
       () => {},

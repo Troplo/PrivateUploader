@@ -3750,6 +3750,34 @@
       },
       {
         "kind": "INPUT_OBJECT",
+        "name": "CheckUsernameInput",
+        "description": null,
+        "isOneOf": false,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "username",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
         "name": "ClearCacheInput",
         "description": null,
         "isOneOf": false,
@@ -7802,6 +7830,18 @@
             "deprecationReason": null
           },
           {
+            "name": "HDWD_SURV_LNGUSR",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "HDWD_SURV_NEWUSR",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "HOVER_CHIP_CLOSE_DELAY",
             "description": null,
             "isDeprecated": false,
@@ -7833,6 +7873,30 @@
           },
           {
             "name": "INTERACTIVE_NOTES",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "JITSI_PRO_ELIGIBLE",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "JITSI_PRO_META",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "JITSI_PRO_REQUIREMENT",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "JITSI_SHOW_HOURS",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -7964,6 +8028,24 @@
             "deprecationReason": null
           },
           {
+            "name": "REGISTER_INTRO",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "REGISTER_V2",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "REGISTER_V2_LANDING",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "REMOVE_LEGACY_SOCKET",
             "description": null,
             "isDeprecated": false,
@@ -7983,6 +8065,24 @@
           },
           {
             "name": "SFX_KOLF",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "SNAPSPACES",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "SOCIAL_HUB_MOVE_INTRO",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "SUPERBAR_SOCIAL_HUB",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -18140,6 +18240,39 @@
                     "ofType": null
                   }
                 }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "checkUsername",
+            "description": null,
+            "args": [
+              {
+                "name": "input",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "CheckUsernameInput",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
               }
             },
             "isDeprecated": false,

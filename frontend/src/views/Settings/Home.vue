@@ -188,7 +188,7 @@
     <tpu-switch
       :model-value="!$experiments.experiments.DISABLE_ANIMATIONS"
       :label="$t('settings.home.preferences.animations')"
-      class="px-6"
+      class="px-6 pb-4"
       @update:model-value="
         $experiments.setExperiment('DISABLE_ANIMATIONS', $event ? 0 : 1)
       "
@@ -207,7 +207,7 @@
     <tpu-switch
       :model-value="!!$experiments.experiments.WEATHER"
       :label="$t('settings.home.preferences.weather')"
-      class="px-6"
+      class="px-6 pb-4"
       @update:model-value="
         $experiments.setExperiment('WEATHER', $event ? 1 : 0)
       "
@@ -225,7 +225,7 @@
     <tpu-switch
       :model-value="volume === 0"
       label="Mute Notifications"
-      class="px-6"
+      class="px-6 pb-4"
       @update:model-value="volume = $event ? 0 : 100"
     />
     <v-select
@@ -267,7 +267,6 @@
       item-title="name"
       item-value="id"
       multiple
-      variant="underlined"
       @update:model-value="$emit('update')"
     />
     <v-btn
@@ -378,7 +377,7 @@ export default defineComponent({
       themes: [
         { title: "Light", value: "light" },
         { title: "Dark", value: "dark" },
-        { title: "AMOLED", value: "amoled" }
+        { title: "Midnight", value: "amoled" }
       ],
       temperatureUnits: [
         { title: "Celsius (Metric)", value: "celsius" },

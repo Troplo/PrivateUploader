@@ -331,6 +331,7 @@ import Notifications from "@/components/Core/Notifications.vue";
 import SuperBarItemTemplate from "@/layouts/progressive/SuperBarItemTemplate.vue";
 import { IpcChannels } from "@/electron-types/ipc";
 import functions from "../../plugins/functions";
+import { RegisterSteps } from "@/views/Auth/registerSteps";
 
 const appStore = useAppStore();
 const uiStore = useProgressiveUIStore();
@@ -387,4 +388,31 @@ const calculateJitsi = computed(() => {
     Math.round((userStore.user?.subscription?.metadata?.hours / 8) * 100) || 0
   );
 });
+
+// TUTORIAL
+const tutorial = computed(() => {
+  return experimentsStore.experiments.REGISTER_INTRO === RegisterSteps.HANDOFF;
+});
+
+function animate() {
+  // for (const item of document.querySelectorAll(".super-bar-item")) {
+  //   // add class
+  //   item.classList.add("tutorial-tip-glow-superbar");
+  // }
+}
+
+onMounted(() => {
+  if (tutorial.value) {
+    animate();
+  }
+});
+
+watch(
+  () => tutorial.value,
+  (value) => {
+    if (value) {
+      animate();
+    }
+  }
+);
 </script>

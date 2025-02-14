@@ -1,4 +1,4 @@
-import { Arg, Authorized, Ctx, Mutation, Resolver } from "type-graphql"
+import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from "type-graphql"
 import { User } from "@app/models/user.model"
 import { Service } from "typedi"
 import { Context } from "@app/types/graphql/context"
@@ -15,6 +15,8 @@ import { Authorization } from "@app/lib/graphql/AuthChecker"
 import { BanReason } from "@app/classes/graphql/user/ban"
 import { GqlError } from "@app/lib/gqlErrors"
 import { GraphQLError } from "graphql/error"
+import { Matches, MaxLength, MinLength } from "class-validator"
+import { CheckUsernameInput } from "@app/classes/graphql/auth/checkUsername"
 
 @Resolver(User)
 @Service()
@@ -77,5 +79,22 @@ export class AuthResolver {
   @Mutation(() => Boolean)
   async reactivateAccount(@Ctx() ctx: Context) {
     return await this.authService.reactivateAccount(ctx.user!!.id, true)
+  }
+
+  @Query(() => Boolean)
+  async checkUsername(
+    @Arg("input", () => CheckUsernameInput)
+    input: CheckUsernameInput
+  ) {
+    if (blacklist.includes(input.username)) {
+      return false
+    }
+    const user = await User.findOne({
+      where: {
+        username: input.username
+      },
+      attributes: ["id"]
+    })
+    return !user
   }
 }

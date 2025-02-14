@@ -32,8 +32,7 @@
           v-if="
             !secondaryText &&
             !$slots['secondary-text'] &&
-            subtitle &&
-            $slots['subtitle']
+            (subtitle || $slots['subtitle'])
           "
           class="float-end"
         >

@@ -2,6 +2,8 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import { useUserStore } from "@/store/user.store";
 import { GalleryType } from "@/gql/graphql";
+import { useExperimentsStore } from "@/store/experiments.store";
+import { RegisterSteps } from "@/views/Auth/registerSteps";
 
 const routes = [
   {
@@ -14,7 +16,7 @@ const routes = [
         component: () => import("@/views/Communications/Join.vue")
       },
       {
-        path: "/social",
+        path: "/social/:tab?",
         name: "Social Hub",
         component: () => import("@/views/Communications/Home.vue")
       },
@@ -417,8 +419,18 @@ const router = createRouter({
 
 router.beforeEach(async (to, from) => {
   const user = useUserStore();
+  const experimentsStore = useExperimentsStore();
   // If there's a token, and _postInitRan hasn't been set to true yet, we shouldn't redirect. But if $user.user is null and _postInitRan is true, we should redirect.
   if (!user._postInitRan) return;
+  if (
+    user.user &&
+    experimentsStore.experiments.REGISTER_INTRO &&
+    <number>experimentsStore.experiments.REGISTER_INTRO <
+      RegisterSteps.HANDOFF &&
+    to.name !== "Register"
+  ) {
+    return { name: "Register" };
+  }
   if (
     !user.user &&
     ![
@@ -451,7 +463,8 @@ router.beforeEach(async (to, from) => {
     return { name: "Dashboard" };
   } else if (
     user.user &&
-    ["Home", "Login", "Register"].includes(to.name as string)
+    ["Home", "Login", "Register"].includes(to.name as string) &&
+    !experimentsStore.experiments.REGISTER_INTRO
   ) {
     console.log("Redirecting to dashboard");
     return { name: "Dashboard" };

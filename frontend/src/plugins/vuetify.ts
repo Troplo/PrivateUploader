@@ -227,19 +227,20 @@ export default createVuetify({
     VSlider: {
       color: "primary"
     },
-    VTextField: {
-      //color: "primary"
-      variant: "underlined",
-      color: "primary"
-    },
-    VSelect: {
-      color: "primary",
-      variant: "underlined"
-    },
-    VAutocomplete: {
-      color: "primary",
-      variant: "underlined"
-    },
+    // We are moving away from this design.
+    // VTextField: {
+    // color: "primary"
+    // variant: "underlined",
+    // color: "primary"
+    // },
+    // VSelect: {
+    //   color: "primary",
+    //   variant: "underlined"
+    // },
+    // VAutocomplete: {
+    //   color: "primary",
+    //   variant: "underlined"
+    // },
     VContainer: {
       fluid: true
     },

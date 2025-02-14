@@ -22,7 +22,11 @@
   <image-dialog v-model="$chat.dialogs.image.value" />
   <group-settings-dialog v-model="$chat.dialogs.groupSettings.value" />
   <v-app
-    v-if="$user.user"
+    v-if="
+      $user.user &&
+      (!$experiments.experiments.REGISTER_INTRO ||
+        $experiments.experiments.REGISTER_INTRO >= RegisterSteps.HANDOFF)
+    "
     class="bg"
     @drop="dragDropHandler"
     @dragover="dragOver"
@@ -130,7 +134,13 @@
     <template
       v-if="$route.name !== 'Slideshow' && $app.site.finishedSetup !== false"
     >
-      <unauth-bar v-if="!$experiments.experiments.PROGRESSIVE_UI" />
+      <unauth-bar
+        v-if="
+          !$experiments.experiments.PROGRESSIVE_UI ||
+          ($experiments.experiments.REGISTER_INTRO &&
+            $experiments.experiments.REGISTER_INTRO < RegisterSteps.HANDOFF)
+        "
+      />
       <progressive-app-bar v-else />
     </template>
     <default-view />
@@ -169,6 +179,7 @@ import GroupSettingsDialog from "@/components/Communications/Dialogs/GroupSettin
 import FlowinityLogoAnimated from "@/components/Brand/FlowinityLogoAnimated.vue";
 import UploadFileV2 from "@/components/Gallery/Dialogs/UploadFileV2.vue";
 import ProgressiveSideBarMobile from "@/layouts/progressive/ProgressiveSideBarMobile.vue";
+import { RegisterSteps } from "@/views/Auth/registerSteps";
 
 export default defineComponent({
   name: "TPUDefaultLayout",
@@ -220,6 +231,9 @@ export default defineComponent({
     };
   },
   computed: {
+    RegisterSteps() {
+      return RegisterSteps;
+    },
     currentRailComponent() {
       if (this.$app.railMode === "communications") {
         return "CommsSidebar";

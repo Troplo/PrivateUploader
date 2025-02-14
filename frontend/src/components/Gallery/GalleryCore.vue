@@ -186,8 +186,8 @@
     :title="`Delete ${selected.length} items?`"
     @submit="bulkDeleteConfirm()"
   />
-  <!-- Progressive Action Bar options -->
 
+  <!-- Progressive Action Bar options -->
   <teleport
     to="#appbar-options"
     v-if="$experiments.experiments.PROGRESSIVE_UI && $ui.ready"
@@ -227,13 +227,34 @@
               <v-btn
                 icon
                 size="small"
-                @click="$app.dialogs.upload.value = true"
+                @click="
+                  $app.dialogs.upload.value = true;
+                  $experiments.experiments.REGISTER_INTRO ===
+                  RegisterSteps.GALLERY_ACTION_BAR
+                    ? $experiments.setExperiment(
+                        'REGISTER_INTRO',
+                        RegisterSteps.SOCIAL_HUB
+                      )
+                    : null;
+                "
+                :class="{
+                  'tutorial-tip-glow-superbar':
+                    $experiments.experiments.REGISTER_INTRO ===
+                    RegisterSteps.GALLERY_ACTION_BAR
+                }"
               >
                 <v-tooltip activator="parent" location="bottom">
                   {{ $t("generic.upload") }}
                 </v-tooltip>
                 <RiUploadCloud2Line class="action-bar-item" />
               </v-btn>
+              <ActionBarTutorialTip
+                v-if="
+                  $experiments.experiments.REGISTER_INTRO ===
+                  RegisterSteps.GALLERY_ACTION_BAR
+                "
+                :model-value="true"
+              />
             </div>
           </slot>
         </template>
@@ -326,6 +347,7 @@
               </v-tooltip>
               <RiAddLine />
             </v-btn>
+
             <v-btn icon size="small" @click="$app.dialogs.upload.value = true">
               <v-tooltip activator="parent" location="bottom">
                 {{ $t("generic.upload") }}
@@ -366,9 +388,12 @@ import AccessibleTransition from "@/components/Core/AccessibleTransition.vue";
 import RiImageCloseLine from "@/components/Icons/v5/ri-image-close-line.vue";
 import WorkspaceDeleteDialog from "@/components/Workspaces/Dialogs/Delete.vue";
 import RiCheckLine from "@/components/Icons/v5/ri-check-line.vue";
+import { RegisterSteps } from "@/views/Auth/registerSteps";
+import ActionBarTutorialTip from "@/components/TutorialTips/ActionBarTutorialTip.vue";
 
 export default defineComponent({
   components: {
+    ActionBarTutorialTip,
     RiCheckboxMultipleFill,
     RiSearchLine,
     RiCheckLine,
@@ -456,6 +481,9 @@ export default defineComponent({
     };
   },
   computed: {
+    RegisterSteps() {
+      return RegisterSteps;
+    },
     RiImageCloseLine() {
       return RiImageCloseLine;
     },
