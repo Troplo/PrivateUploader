@@ -1,64 +1,58 @@
 <template>
-  <DevDialog
-    @close="$app.dialogs.brandingDebug = false"
-    :class="{ 'branding-debug-light': !$vuetify.theme.current.dark }"
-  >
-    <template #header>Branding Debug</template>
-    <v-container>
-      <small>Theme: Dark = {{ $vuetify.theme.current.dark }}</small>
-      <v-btn
-        variant="tonal"
-        @click="
-          $experiments.setExperiment(
-            'NEW_BRANDING',
-            $experiments.experiments.NEW_BRANDING ? 0 : 1
+  <v-container>
+    <small>Theme: Dark = {{ $vuetify.theme.current.dark }}</small>
+    <v-btn
+      variant="tonal"
+      @click="
+        $experiments.setExperiment(
+          'NEW_BRANDING',
+          $experiments.experiments.NEW_BRANDING ? 0 : 1
+        )
+      "
+    >
+      Set Brand Version
+    </v-btn>
+    <br />
+    ANIMATION DOES NOT SUPPORT SVG HOTSWAP
+    <div :key="$experiments.experiments.NEW_BRANDING as number">
+      <small>
+        Variant:
+        {{
+          $t(
+            `settings.home.preferences.prideVariants.${$experiments.experiments.PRIDE}`
           )
-        "
-      >
-        Set Brand Version
+        }}
+      </small>
+      <br />
+      Animated:
+      <FlowinityLogoAnimated
+        :animate="false"
+        style="max-width: 120px"
+        :key="`${forceAnimate}-${$vuetify.theme.current.dark}-${$experiments.experiments.PRIDE}`"
+      />
+      <v-btn variant="tonal" @click="forceAnimate++">Re-animate</v-btn>
+      <br />
+      Animated (Loading):
+      <FlowinityLogoAnimated
+        :animate="loading"
+        :skip-init="true"
+        style="max-width: 120px"
+        :key="`${$vuetify.theme.current.dark}-${$experiments.experiments.PRIDE}`"
+      />
+      <v-btn variant="tonal" @click="loading = !loading">
+        {{ loading }}
       </v-btn>
       <br />
-      ANIMATION DOES NOT SUPPORT SVG HOTSWAP
-      <div :key="$experiments.experiments.NEW_BRANDING as number">
-        <small>
-          Variant:
-          {{
-            $t(
-              `settings.home.preferences.prideVariants.${$experiments.experiments.PRIDE}`
-            )
-          }}
-        </small>
-        <br />
-        Animated:
-        <FlowinityLogoAnimated
-          :animate="false"
-          style="max-width: 120px"
-          :key="`${forceAnimate}-${$vuetify.theme.current.dark}-${$experiments.experiments.PRIDE}`"
-        />
-        <v-btn variant="tonal" @click="forceAnimate++">Re-animate</v-btn>
-        <br />
-        Animated (Loading):
-        <FlowinityLogoAnimated
-          :animate="loading"
-          :skip-init="true"
-          style="max-width: 120px"
-          :key="`${$vuetify.theme.current.dark}-${$experiments.experiments.PRIDE}`"
-        />
-        <v-btn variant="tonal" @click="loading = !loading">
-          {{ loading }}
-        </v-btn>
-        <br />
-        Not Animated:
-        <FlowinityLogo
-          :animate="false"
-          style="max-width: 120px"
-          :key="`${$vuetify.theme.current.dark}-${$experiments.experiments.PRIDE}`"
-        />
-        Header (Handled / Old UI and About):
-        <FlowinityBannerHandler style="max-height: 120px; max-width: 100%" />
-      </div>
-    </v-container>
-  </DevDialog>
+      Not Animated:
+      <FlowinityLogo
+        :animate="false"
+        style="max-width: 120px"
+        :key="`${$vuetify.theme.current.dark}-${$experiments.experiments.PRIDE}`"
+      />
+      Header (Handled / Old UI and About):
+      <FlowinityBannerHandler style="max-height: 120px; max-width: 100%" />
+    </div>
+  </v-container>
 </template>
 
 <script lang="ts" setup>

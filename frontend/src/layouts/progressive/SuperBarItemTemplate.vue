@@ -41,12 +41,9 @@
       :is="uiStore.navigationMode === item.id ? item.selectedIcon : item.icon"
     />
     <component
-      :is="item.tutorialTip.component"
-      v-if="item.tutorialTip?.component && tutorialTipActive"
-      :model-value="
-        experimentsStore.experiments[item.tutorialTip.key] ===
-        item.tutorialTip.value
-      "
+      :is="tutorialTipActive.component"
+      v-if="tutorialTipActive?.component"
+      :model-value="true"
     />
   </super-bar-item>
 </template>
@@ -57,6 +54,7 @@ import { RiLockLine } from "@remixicon/vue";
 import functions from "@/plugins/functions";
 import {
   NavigationOption,
+  TutorialTip,
   useProgressiveUIStore
 } from "@/store/progressive.store";
 import { useExperimentsStore } from "@/store/experiments.store";
@@ -80,27 +78,31 @@ const props = defineProps({
 const display = useDisplay();
 
 const tutorialTipActive = computed(() => {
-  if (!props.item.tutorialTip) return false;
-  const value =
-    experimentsStore.experiments[props.item.tutorialTip.key] ===
-    props.item.tutorialTip.value;
-
-  if (value) {
-    if (display.mobile.value && appStore.mainDrawer) {
-      return true;
-    } else if (!display.mobile.value) {
-      return true;
+  if (!props.item.tutorialTips?.length) return false;
+  let value = null as TutorialTip | null;
+  for (const tip of props.item.tutorialTips) {
+    if (experimentsStore.experiments[tip.key] === tip.value) {
+      value = tip;
+      break;
     }
   }
 
-  return false;
+  if (value) {
+    if (display.mobile.value && appStore.mainDrawer) {
+      return value;
+    } else if (!display.mobile.value) {
+      return value;
+    }
+  }
+
+  return null;
 });
 
 function doClick() {
   if (tutorialTipActive.value) {
     experimentsStore.setExperiment(
-      props.item.tutorialTip.key,
-      props.item.tutorialTip.nextValue ?? 0
+      tutorialTipActive.value.key,
+      tutorialTipActive.value.nextValue ?? 0
     );
   }
 

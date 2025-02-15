@@ -1,6 +1,7 @@
 import { registerEnumType } from "type-graphql"
 
 export enum Experiments {
+  DIALOG_REFRESH = "DIALOG_REFRESH",
   REGISTER_V2_LANDING = "REGISTER_V2_LANDING",
   REGISTER_V2 = "REGISTER_V2",
   REGISTER_INTRO = "REGISTER_INTRO",
@@ -99,6 +100,7 @@ export type ExperimentsLegacy = Experiments | ExperimentsMeta
 
 export function getExperiments() {
   return {
+    DIALOG_REFRESH: false,
     REGISTER_V2_LANDING: false,
     REGISTER_V2: true,
     REGISTER_INTRO: 0,
@@ -192,6 +194,11 @@ export function getExperiments() {
     // ALWAYS LAST! USED FOR CODEGEN
     ZZ_TEST: false,
     meta: {
+      DIALOG_REFRESH: {
+        description: "Use new design language for dialogs.",
+        createdAt: "2025-02-15T00:00:00.000Z",
+        versions: [4, 5]
+      },
       REGISTER_V2_LANDING: {
         description: "Show new registration with landing page.",
         createdAt: "2025-02-14T00:00:00.000Z",

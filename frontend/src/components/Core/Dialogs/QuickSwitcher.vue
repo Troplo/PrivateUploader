@@ -215,8 +215,8 @@ const options = computed(() => {
           rawName:
             chat.recipient &&
             chatStore.chatName(chat) !==
-              userStore.users[chat.recipient.id].username
-              ? userStore.users[chat.recipient.id].username
+              userStore.users[chat.recipient.id]?.username
+              ? userStore.users[chat.recipient.id]?.username
               : null,
           subtitle: chat.recipient ? "Direct Message" : "Group",
           path: `/communications/${chat.association?.id}`,

@@ -1,19 +1,16 @@
 <template>
-  <DevDialog @close="$app.dialogs.socketProfiler = false">
-    <template #header>Socket Profiler (QS -> SP)</template>
-    <v-container>
-      Refreshes every second.
-      <div v-for="item in sockets" :key="item.name">
-        <strong>{{ item.name }}:</strong>
-        <span :style="{ color: item.connected ? '#0190ea' : '#e12929' }">
-          &nbsp;
-          {{ item.connected ? "Connected" : "Disconnected" }}
-          <v-btn color="white" @click="item.disconnect">Kill</v-btn>
-        </span>
-      </div>
-      Ensure the scoped password/API has permissions for socket.
-    </v-container>
-  </DevDialog>
+  <v-container>
+    Refreshes every second.
+    <div v-for="item in sockets" :key="item.name">
+      <strong>{{ item.name }}:</strong>
+      <span :style="{ color: item.connected ? '#0190ea' : '#e12929' }">
+        &nbsp;
+        {{ item.connected ? "Connected" : "Disconnected" }}
+        <v-btn color="white" @click="item.disconnect">Kill</v-btn>
+      </span>
+    </div>
+    Ensure the scoped password/API has permissions for socket.
+  </v-container>
 </template>
 
 <script lang="ts">

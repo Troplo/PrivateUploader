@@ -109,7 +109,6 @@ export const useAppStore = defineStore("app", {
       },
       feedback: false,
       inviteAFriend: false,
-      experiments: false,
       nickname: {
         value: false,
         userId: 0
@@ -129,12 +128,7 @@ export const useAppStore = defineStore("app", {
         value: false,
         text: ""
       },
-      memoryProfiler: false,
-      socketProfiler: false,
-      actionDialog: false,
-      networkInspector: false,
-      createChat: false,
-      brandingDebug: false
+      createChat: false
     },
     platform: getPlatform(),
     desktop: {

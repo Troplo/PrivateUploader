@@ -1,14 +1,9 @@
 <template>
   <template v-if="slideshow === false">
-    <SocketProfiler v-if="$app.dialogs.socketProfiler" />
-    <ActionDialog v-if="$app.dialogs.actionDialog" />
-    <ExperimentsManagerDialog v-if="$app.dialogs.experiments" />
     <Maintenance
       v-if="$app.site.maintenance.enabled"
       v-model="$app.site.maintenance.enabled"
     />
-    <NetworkInspector v-if="$app.dialogs.networkInspector" />
-    <BrandingDebug v-if="$app.dialogs.brandingDebug" />
     <router-view />
   </template>
   <template v-else-if="slideshow === true">
@@ -19,23 +14,13 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import Maintenance from "@/components/Core/Dialogs/Maintenance.vue";
-import SocketProfiler from "@/components/Dev/Dialogs/SocketProfiler.vue";
-import ActionDialog from "@/components/Dev/Dialogs/ActionDialog.vue";
-import ExperimentsManagerDialog from "@/components/Dev/Dialogs/Experiments.vue";
 import { Platform } from "@/store/app.store";
 import { IpcChannels } from "@/electron-types/ipc";
 import Slideshow from "@/views/Slideshow.vue";
-import NetworkInspector from "@/components/Dev/Dialogs/NetworkInspector.vue";
-import BrandingDebug from "@/components/Dev/Dialogs/BrandingDebug.vue";
 
 export default defineComponent({
   name: "TPUApp",
   components: {
-    BrandingDebug,
-    NetworkInspector,
-    ExperimentsManagerDialog,
-    ActionDialog,
-    SocketProfiler,
     Maintenance,
     Slideshow
   },

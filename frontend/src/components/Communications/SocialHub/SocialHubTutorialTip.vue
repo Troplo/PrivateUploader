@@ -17,6 +17,7 @@
         </p>
         <strong>Click the item to get started!</strong>
         <small
+          v-if="tutorial"
           class="float-right cursor-pointer pa-4"
           @click="
             experimentsStore.setExperiment(
@@ -36,6 +37,13 @@
 import { useAppStore } from "@/store/app.store";
 import { useExperimentsStore } from "@/store/experiments.store";
 import { SkipRegisterStepStage } from "@/views/Auth/registerSteps";
+
+defineProps({
+  tutorial: {
+    type: Boolean,
+    required: true
+  }
+});
 
 const appStore = useAppStore();
 const experimentsStore = useExperimentsStore();

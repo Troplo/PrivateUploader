@@ -33,6 +33,7 @@ import { setupSockets } from "./boot/sockets";
 import TpuSwitch from "@/components/Framework/Input/TpuSwitch.vue";
 import { useEndpointsStore } from "./store/endpoints.store";
 import MasonryWall from "@yeger/vue-masonry-wall";
+import setupWidgets from "@/boot/widget-framework";
 
 const isSlideshow = window.location.pathname.startsWith("/slideshow/");
 
@@ -133,6 +134,7 @@ app.use(Toast, {
 app.config.globalProperties.$toast = useToast();
 app.use(i18n);
 app.use(MasonryWall);
+setupWidgets(app);
 
 if (import.meta.env.DEV) app.config.performance = true;
 

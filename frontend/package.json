@@ -1,6 +1,6 @@
 {
   "name": "tpu-frontend",
-  "version": "4.2.10",
+  "version": "4.2.11",
   "private": true,
   "author": "Troplo <troplo@troplo.com>",
   "type": "module",
@@ -90,6 +90,7 @@
     "@tiptap/pm": "^2.4.0",
     "@tiptap/starter-kit": "^2.4.0",
     "@tiptap/vue-3": "^2.4.0",
+    "@troplo/debug-overlay": "^1.0.1",
     "@types/animejs": "^3.1.12",
     "@types/codeflask": "^1.4.3",
     "@types/dompurify": "^2.4.0",

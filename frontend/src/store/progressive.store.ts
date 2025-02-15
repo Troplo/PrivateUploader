@@ -132,6 +132,15 @@ export enum RailMode {
   SETTINGS
 }
 
+export interface TutorialTip {
+  component: VNode;
+  key: string;
+  value: number;
+  // Used on dismiss if we want to show another tutorial tip using the same key
+  // Set to 0 to dismiss the tutorial tip
+  nextValue: number;
+}
+
 export interface NavigationOption {
   icon: Raw<any>;
   name: string;
@@ -151,14 +160,7 @@ export interface NavigationOption {
   options?: NavigationOption[];
   parentPath?: string;
   externalPath?: string;
-  tutorialTip?: {
-    component: VNode;
-    key: string;
-    value: number;
-    // Used on dismiss if we want to show another tutorial tip using the same key
-    // Set to 0 to dismiss the tutorial tip
-    nextValue: number;
-  };
+  tutorialTips?: TutorialTip[];
 }
 
 export interface ContextMenuItem {
@@ -318,12 +320,14 @@ export const useProgressiveUIStore = defineStore("progressive", () => {
               path: "/gallery",
               selectedIcon: markRaw(RiImage2Fill),
               scopesRequired: ["gallery.view"],
-              tutorialTip: {
-                component: h(GalleryTutorialTip),
-                key: "REGISTER_INTRO",
-                value: RegisterSteps.GALLERY_INTRO,
-                nextValue: RegisterSteps.GALLERY_ACTION_BAR
-              }
+              tutorialTips: [
+                {
+                  component: h(GalleryTutorialTip),
+                  key: "REGISTER_INTRO",
+                  value: RegisterSteps.GALLERY_INTRO,
+                  nextValue: RegisterSteps.GALLERY_ACTION_BAR
+                }
+              ]
             },
             {
               icon: markRaw(RiStarLine),
@@ -921,12 +925,14 @@ export const useProgressiveUIStore = defineStore("progressive", () => {
             selectedIcon: markRaw(RiFolderImageFill),
             badge: userStore.user?.pendingAutoCollects || "",
             scopesRequired: ["gallery", "starred", "collections"],
-            tutorialTip: {
-              component: h(MeetSuperbar),
-              key: "REGISTER_INTRO",
-              value: RegisterSteps.HANDOFF,
-              nextValue: RegisterSteps.GALLERY_INTRO
-            }
+            tutorialTips: [
+              {
+                component: h(MeetSuperbar),
+                key: "REGISTER_INTRO",
+                value: RegisterSteps.HANDOFF,
+                nextValue: RegisterSteps.GALLERY_INTRO
+              }
+            ]
           },
           ...(!useExperimentsStore().experiments.SUPERBAR_SOCIAL_HUB
             ? []
@@ -939,12 +945,24 @@ export const useProgressiveUIStore = defineStore("progressive", () => {
                   badge: friendStore.incomingFriends.length,
                   scopesRequired: ["user.view"],
                   path: "/social",
-                  tutorialTip: {
-                    component: h(SocialHubTutorialTip),
-                    key: "REGISTER_INTRO",
-                    value: RegisterSteps.SOCIAL_HUB,
-                    nextValue: RegisterSteps.SETTINGS
-                  }
+                  tutorialTips: [
+                    {
+                      component: h(SocialHubTutorialTip, {
+                        tutorial: true
+                      }),
+                      key: "REGISTER_INTRO",
+                      value: RegisterSteps.SOCIAL_HUB,
+                      nextValue: RegisterSteps.SETTINGS
+                    },
+                    {
+                      component: h(SocialHubTutorialTip, {
+                        tutorial: false
+                      }),
+                      key: "SOCIAL_HUB_MOVE_INTRO",
+                      value: 1,
+                      nextValue: 0
+                    }
+                  ]
                 }
               ]),
           {
@@ -1017,12 +1035,14 @@ export const useProgressiveUIStore = defineStore("progressive", () => {
             selectedIcon: markRaw(RiSettings5Fill),
             misc: true,
             scopesRequired: ["user.modify"],
-            tutorialTip: {
-              component: h(SettingsTutorialTip),
-              key: "REGISTER_INTRO",
-              value: RegisterSteps.SETTINGS,
-              nextValue: RegisterSteps.COMPLETE
-            }
+            tutorialTips: [
+              {
+                component: h(SettingsTutorialTip),
+                key: "REGISTER_INTRO",
+                value: RegisterSteps.SETTINGS,
+                nextValue: RegisterSteps.COMPLETE
+              }
+            ]
           }
         ]
       };

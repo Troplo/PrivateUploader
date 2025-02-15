@@ -37,7 +37,6 @@
     <NicknameDialog v-model="$app.dialogs.nickname.value" />
     <QuickSwitcher v-model="$app.dialogs.quickSwitcher" />
     <UploadFileV2 v-model="$app.dialogs.upload.value" />
-    <MemoryProfiler v-if="$app.dialogs.memoryProfiler" />
     <v-overlay
       v-if="!$experiments.experiments.PROGRESSIVE_UI"
       persistent
@@ -432,19 +431,9 @@ export default defineComponent({
       e.stopPropagation();
     },
     keydownEvent(e: KeyboardEvent) {
-      if (e.ctrlKey && e.altKey && e.key === "m") {
-        e.preventDefault();
-        this.$app.dialogs.actionDialog = !this.$app.dialogs.actionDialog;
-      } else if ((e.ctrlKey && e.key === "k") || (e.metaKey && e.key === "k")) {
+      if ((e.ctrlKey && e.key === "k") || (e.metaKey && e.key === "k")) {
         e.preventDefault();
         this.$app.dialogs.quickSwitcher = !this.$app.dialogs.quickSwitcher;
-      } else if (
-        e.ctrlKey &&
-        e.key === "q" &&
-        this.$app.site.release === "dev"
-      ) {
-        e.preventDefault();
-        this.$app.dialogs.experiments = !this.$app.dialogs.experiments;
       }
       if (
         (e.ctrlKey && e.altKey && e.key === "d") ||
