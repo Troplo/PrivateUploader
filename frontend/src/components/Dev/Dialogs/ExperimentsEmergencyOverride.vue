@@ -81,7 +81,7 @@ import { useAdminStore } from "@/store/admin.store";
 const emergency = ref({
   value: false,
   experiment: {
-    value: 0,
+    value: 0 as number | string,
     id: "",
     force: false
   },
@@ -132,7 +132,7 @@ const duplicates = computed(() => {
 async function createEmergencyOverride() {
   await experimentsStore.createEmergencyOverride({
     id: emergency.value.experiment.id,
-    value: parseInt(emergency.value.experiment.value),
+    value: parseInt(emergency.value.experiment.value as unknown as string),
     force: emergency.value.experiment.force,
     userId: selected.value
   });
@@ -168,8 +168,9 @@ watch(
 watch(
   () => emergency.value.experiment.id,
   () => {
-    emergency.value.experiment.value =
-      experimentsStore.experiments[emergency.value.experiment.id];
+    emergency.value.experiment.value = <number>(
+      experimentsStore.experiments[emergency.value.experiment.id]
+    );
   }
 );
 

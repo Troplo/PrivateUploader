@@ -15,7 +15,7 @@ export interface ExperimentsState {
 }
 
 export const useExperimentsStore = defineStore("experiments", () => {
-  const experiments = ref<Record<string, number>>({
+  const experiments = ref<Record<string, number | object>>({
     API_VERSION: 3,
     FLOWINITY: 1,
     DISABLE_ANIMATIONS: 0

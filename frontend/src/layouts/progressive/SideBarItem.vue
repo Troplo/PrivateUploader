@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {
   NavigationOption,
+  TutorialTip,
   useProgressiveUIStore
 } from "@/store/progressive.store";
 import { computed, onMounted, ref, useAttrs, watch } from "vue";
@@ -43,29 +44,31 @@ const selected = computed(() => {
 });
 
 const tutorialTipActive = computed(() => {
-  if (!props.item?.tutorialTip) return false;
-  const value =
-    experimentsStore.experiments[props.item.tutorialTip.key] ===
-    props.item.tutorialTip.value;
-
-  if (value) {
-    if (display.mobile.value && appStore.mainDrawer) {
-      return true;
-    } else if (!display.mobile.value) {
-      return true;
+  if (!props.item?.tutorialTips?.length) return null;
+  let value = null as TutorialTip | null;
+  for (const tip of props.item.tutorialTips) {
+    if (experimentsStore.experiments[tip.key] === tip.value) {
+      value = tip;
+      break;
     }
   }
 
-  return false;
+  if (value) {
+    if (display.mobile.value && appStore.mainDrawer) {
+      return value;
+    } else if (!display.mobile.value) {
+      return value;
+    }
+  }
+
+  return null;
 });
 
 const renderTooltip = ref(false);
 
 const shouldRenderTooltip = computed(() => {
   return (
-    props.item?.tutorialTip?.component &&
-    tutorialTipActive.value &&
-    uiStore.navigationMode === props.rail
+    tutorialTipActive.value?.component && uiStore.navigationMode === props.rail
   );
 });
 
@@ -93,8 +96,8 @@ watch(
 function handleClick() {
   if (tutorialTipActive.value) {
     experimentsStore.setExperiment(
-      props.item.tutorialTip.key,
-      props.item.tutorialTip.nextValue ?? 0
+      tutorialTipActive.value.key,
+      tutorialTipActive.value.nextValue ?? 0
     );
   }
   if (props.disabled) {
@@ -219,8 +222,8 @@ function openContextMenu(event: MouseEvent) {
       </div>
     </div>
     <component
-      :is="item.tutorialTip.component"
-      v-if="item?.tutorialTip?.component && tutorialTipActive"
+      :is="tutorialTipActive.component"
+      v-if="tutorialTipActive?.component"
       :model-value="shouldRenderTooltip && renderTooltip"
     />
   </component>

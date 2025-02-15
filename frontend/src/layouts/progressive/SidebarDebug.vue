@@ -10,9 +10,10 @@
       in CTRL + ALT + M Menu > Experiments
     </p>
 
-    <v-btn @click="$app.dialogs.actionDialog = !$app.dialogs.actionDialog">
-      Open Dialog
-    </v-btn>
+    <v-btn @click="toggleWidget('Action Dialog')">Open Dialog</v-btn>
   </div>
 </template>
-<script setup lang="ts"></script>
+
+<script setup lang="ts">
+import { toggleWidget } from "@troplo/debug-overlay/src";
+</script>

@@ -78,7 +78,7 @@ const props = defineProps({
 const display = useDisplay();
 
 const tutorialTipActive = computed(() => {
-  if (!props.item.tutorialTips?.length) return false;
+  if (!props.item.tutorialTips?.length) return null;
   let value = null as TutorialTip | null;
   for (const tip of props.item.tutorialTips) {
     if (experimentsStore.experiments[tip.key] === tip.value) {

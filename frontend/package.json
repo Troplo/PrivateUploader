@@ -8,10 +8,10 @@
   "scripts": {
     "dev": "vite",
     "serve": "vite",
-    "build-prod": "VITE_PROD_ANALYTICS=true vue-tsc --noEmit && FLOWINITY_ENDPOINTS=https://flowinity.com/endpoints.json VITE_PROD_ANALYTICS=true vite build && cp -r dist/* /var/www/html/tpu",
+    "build-prod": "VITE_PROD_ANALYTICS=true vue-tsc --noEmit && FLOWINITY_ENDPOINTS=https://www.flowinity.com/endpoints.json VITE_PROD_ANALYTICS=true vite build && cp -r dist/* /var/www/html/tpu",
     "build": "vue-tsc --noEmit -p tsconfig.json && vite build",
     "build-only": "vite build",
-    "build-only-prod": "FLOWINITY_ENDPOINTS=https://flowinity.com/endpoints.json VITE_PROD_ANALYTICS=true vite build && cp -r dist/* /var/www/html/tpu",
+    "build-only-prod": "FLOWINITY_ENDPOINTS=https://www.flowinity.com/endpoints.json VITE_PROD_ANALYTICS=true vite build && cp -r dist/* /var/www/html/tpu",
     "preview": "vite preview",
     "lint": "eslint . --fix --ignore-path .gitignore",
     "codegen": "graphql-codegen --config codegen.ts",

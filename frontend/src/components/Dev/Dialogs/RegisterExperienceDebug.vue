@@ -7,13 +7,13 @@
       item-title="text"
       :model-value="experimentsStore.experiments.REGISTER_INTRO"
       @update:model-value="
-        experimentsStore.setExperiment('REGISTER_INTRO', $event)
+        experimentsStore.setExperiment('REGISTER_INTRO', <number>$event)
       "
     ></v-select>
     <v-btn
       to="/register"
       :disabled="
-        experimentsStore.experiments.REGISTER_INTRO >= RegisterSteps.HANDOFF
+        <number>experimentsStore.experiments.REGISTER_INTRO >= RegisterSteps.HANDOFF
       "
     >
       Go to setup flow page

@@ -23,6 +23,7 @@ import { h } from "vue";
 import { CoreStateQuery } from "@/graphql/core/stateOnly.graphql";
 import { RiNewsFill } from "@remixicon/vue";
 import { useAdminStore } from "@/store/admin.store";
+import { toggleWidget } from "@troplo/debug-overlay/src";
 
 export enum Platform {
   WEB = "WEB",
@@ -289,7 +290,7 @@ export const useAppStore = defineStore("app", {
           id: 39,
           name: i18n.t("core.sidebar.secretMenu"),
           click() {
-            state.dialogs.actionDialog = !state.dialogs.actionDialog;
+            toggleWidget("Action Dialog");
           },
           icon: "mdi-bug",
           experimentsRequired: ["ACCOUNT_DEV_ELIGIBLE"]
